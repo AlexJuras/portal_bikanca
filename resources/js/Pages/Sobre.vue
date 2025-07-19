@@ -1,6 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
-import Layout from "@/Layouts/Principal.vue";
+import Principal from "@/Layouts/Principal.vue";
 
 defineProps({
     user: {
@@ -8,6 +7,9 @@ defineProps({
         default: "Anônimo",
     },
 });
+
+defineOptions({ layout: Principal});
+
 </script>
 
 <template>

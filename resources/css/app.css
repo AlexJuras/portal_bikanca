@@ -1,2 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+    --color-azul-oxford: #001f3e;
+    --color-azul-noite: #19196f;
+    --color-azul-lazuli: #336799;
+    --color-celeste: #aeeeee;
+    --color-cinza: #708090;
+}
+
+.transition-colors {
+    transition: color 1s ease;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.3s ease;
+}

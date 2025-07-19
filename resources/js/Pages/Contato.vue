@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from "vue";
 import Layout from "@/Layouts/Principal.vue";
 
 defineProps({

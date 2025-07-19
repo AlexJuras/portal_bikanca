@@ -12,8 +12,8 @@ class Midia extends Model
 
     protected $fillable = [
         'caminho',
-        'descricao',
-        'caminho',
+        'legenda',
+        'formato',
         'tipo',
         'creditos',
     ];

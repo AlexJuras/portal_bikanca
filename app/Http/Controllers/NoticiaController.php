@@ -2,9 +2,99 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Noticia;
+use App\Models\Autor;
+use App\Models\Categoria;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class NoticiaController extends Controller
 {
-    //
+    public function index()
+    {
+        $noticias = Noticia::with('autor', 'categoria', 'tags')->latest()->paginate(10);
+
+        return Inertia::render('Noticias/Index', [
+            'noticias' => $noticias
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Noticias/Create', [
+            'autores' => Autor::all(),
+            'categorias' => Categoria::all(),
+            'tags' => Tag::all()
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'slug' => 'nullable|string|unique:noticias,slug',
+            'conteudo' => 'required|string',
+            'autor_id' => 'required|exists:autors,id',
+            'categoria_id' => 'required|exists:categorias,id',
+            'tags' => 'nullable|array',
+            'layout' => 'nullable|string|max:50'
+        ]);
+
+        // $slug = $request->slug ?: Str::slug($request->titulo);
+
+        Noticia::create($request->all());
+
+        // if ($request->filled('tags')) {
+        //     $noticia->tags()->sync($request->tags);
+        // }
+
+        return redirect()->route('noticias.index')->with('success', 'Notícia criada com sucesso!');
+    }
+
+    public function edit(Noticia $noticia)
+    {
+        return Inertia::render('Noticias/Edit', [
+            'noticia' => $noticia->load('tags'),
+            'autores' => Autor::all(),
+            'categorias' => Categoria::all(),
+            'tags' => Tag::all()
+        ]);
+    }
+
+    public function update(Request $request, Noticia $noticia)
+    {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'slug' => 'nullable|string|unique:noticias,slug,' . $noticia->id,
+            'conteudo' => 'required|string',
+            'autor_id' => 'required|exists:autores,id',
+            'categoria_id' => 'required|exists:categorias,id',
+            'tags' => 'nullable|array',
+            'layout' => 'nullable|string|max:50'
+        ]);
+
+        $slug = $request->slug ?: Str::slug($request->titulo);
+
+        $noticia->update([
+            'titulo' => $request->titulo,
+            'slug' => $slug,
+            'conteudo' => $request->conteudo,
+            'autor_id' => $request->autor_id,
+            'categoria_id' => $request->categoria_id,
+            'layout' => $request->layout,
+        ]);
+
+        $noticia->tags()->sync($request->tags ?? []);
+
+        return redirect()->route('noticias.index')->with('success', 'Notícia atualizada com sucesso!');
+    }
+
+    public function destroy(Noticia $noticia)
+    {
+        $noticia->delete();
+
+        return redirect()->route('noticias.index')->with('success', 'Notícia removida com sucesso!');
+    }
 }

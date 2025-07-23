@@ -419,6 +419,29 @@ defineOptions({ layout: Principal });
         </div>
       </div>
     </section>
+    
+    <!-- Newsletter -->
+    <section class="py-12 bg-azul-oxford">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center space-y-6">
+          <h2 class="text-3xl font-bold text-white">Fique por dentro das notícias</h2>
+          <p class="text-cinza max-w-2xl mx-auto">
+            Receba as principais notícias do Portal Bikanca diretamente em seu email. 
+            Cadastre-se em nossa newsletter e não perca nenhuma informação importante.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <input 
+              type="email" 
+              placeholder="Digite seu email"
+              class="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-celeste"
+            />
+            <button class="bg-celeste hover:bg-azul-lazuli text-azul-oxford font-medium px-6 py-3 rounded-lg transition-all">
+              Inscrever-se
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 

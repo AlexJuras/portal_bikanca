@@ -16,6 +16,9 @@
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.0.14",
+        "@tiptap/extension-image": "^3.0.7",
+        "@tiptap/starter-kit": "^3.0.7",
+        "@tiptap/vue-3": "^3.0.7",
         "@vitejs/plugin-vue": "^6.0.0"
     }
 }

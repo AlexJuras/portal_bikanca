@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('noticias', function (Blueprint $table) {
             $table->id();
-
             $table->string('titulo');
             $table->string('slug')->unique();
             $table->text('resumo')->nullable();
             $table->longtext('conteudo');
-
+            
+            // Status e metadados
             $table->enum('status', ['rascunho', 'publicada', 'arquivada', 'agendada'])->default('rascunho');
             $table->timestamp('publicada_em')->nullable();
             $table->unsignedBigInteger('visualizacoes')->default(0);
-            $table->foreignId('imagem_capa')->constrained('midia')->onDelete('cascade');
-
-            //Relacionamentos
-            // $table->foreignId('autor_id')->constrained('autor')->onDelete('cascade');
-            // $table->foreignId('categoria_id')->nullable()->constrained('categorias')->nullOnDelete();
+            $table->string('layout')->nullable();
+            
+            // Relacionamentos (certifique-se que estas tabelas existam)
+            $table->foreignId('autor_id')->nullable()->constrained('autors')->nullOnDelete();
+            $table->foreignId('imagem_capa')->nullable()->constrained('midias')->nullOnDelete();
+            $table->foreignId('categoria_id')->nullable()->constrained('categorias')->nullOnDelete();
 
             $table->timestamps();
         });

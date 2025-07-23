@@ -17,7 +17,12 @@ class AutorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nome' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'bio' => fake()->paragraphs(1, true),
+            'foto' => 'autores/autor-' . fake()->numberBetween(1, 10) . '.jpg',
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

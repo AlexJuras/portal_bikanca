@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Midia;
 use App\Models\Noticia;
 use App\Models\Autor;
 use App\Models\Categoria;
@@ -32,25 +33,38 @@ class NoticiaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'slug' => 'nullable|string|unique:noticias,slug',
-            'conteudo' => 'required|string',
-            'autor_id' => 'required|exists:autors,id',
+
+        $validated = $request->validate([
+            'titulo' => 'required|max:200',
+            'slug' => 'required|unique:noticias,slug',
+            'resumo' => 'required|max:300',
+            'conteudo' => 'required',
+            'status' => 'required|in:rascunho,publicada,arquivada,agendada',
             'categoria_id' => 'required|exists:categorias,id',
-            'tags' => 'nullable|array',
-            'layout' => 'nullable|string|max:50'
+            'autor_id' => 'required|exists:autors,id',
+            'imagem_capa' => 'nullable|image|max:2048',
+            'tags' => 'nullable|array'
         ]);
 
-        // $slug = $request->slug ?: Str::slug($request->titulo);
+        if ($request->hasFile('imagem_capa')) {
+            $path = $request->file('imagem_capa')->store('midias', 'public');
 
-        Noticia::create($request->all());
+            $midia = Midia::create([
+                'caminho' => $path,
+                'formato' => 'capa',
+                'legenda' => $validated['titulo'],
+            ]);
+            $validated['imagem_capa'] = $midia->id;
+        }
 
-        // if ($request->filled('tags')) {
-        //     $noticia->tags()->sync($request->tags);
-        // }
+        $noticia = Noticia::create($validated);
 
-        return redirect()->route('noticias.index')->with('success', 'Notícia criada com sucesso!');
+        if (!empty($validated['tags'])) {
+            $noticia->tags()->sync($validated['tags']);
+        }
+
+        return redirect()->route('noticias.index')
+            ->with('success', 'Notícia criada com sucesso!');
     }
 
     public function edit(Noticia $noticia)

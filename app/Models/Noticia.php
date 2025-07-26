@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Noticia extends Model
@@ -12,7 +13,6 @@ class Noticia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'titulo',
         'titulo',
         'slug',
         'resumo',
@@ -26,12 +26,12 @@ class Noticia extends Model
         'imagem_capa'
     ];
 
-    public function autor()
+    public function autor(): BelongsTo
     {
         return $this->belongsTo(Autor::class, 'autor_id');
     }
 
-    public function categoria()
+    public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }

@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { Head, useForm, router } from "@inertiajs/vue3";
 import Principal from "@/Layouts/Principal.vue";
-import NoticiaEditor from "../Editor.vue";
+import NoticiaEditor from "@/Components/Editor.vue";
 
 defineOptions({ layout: Principal });
 
@@ -12,6 +12,10 @@ const props = defineProps({
         required: true,
     },
     autores: {
+        type: Array,
+        required: true,
+    },
+    tags: {
         type: Array,
         required: true,
     },
@@ -26,11 +30,11 @@ const form = useForm({
     status: "rascunho",
     categoria_id: "",
     publicada_em: "",
-    layout: "",
+    layout: "padrao", // Valor padrão para evitar undefined
     autor_id: "",
     imagem_capa: null,
     // gallery_images: [],
-    tags: [],
+    tag_ids: [],
 });
 
 // Estados locais
@@ -75,25 +79,50 @@ const removeFeaturedImage = () => {
     }
 };
 
-const gerarSlug = () => {
-    if (form.titulo) {
-        form.slug = form.titulo
+const gerarSlug = async () => {
+    if (!form.titulo) return;
+    
+    try {
+        let baseSlug = form.titulo
             .toLowerCase()
-            .replace(/[^\w-]+/g, "-")
-            .replace(/-+/g, "-")
-            .trim();
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+            .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+            .replace(/\s+/g, '-') // Substitui espaços por hífens
+            .replace(/-+/g, '-') // Remove hífens duplicados
+            .trim()
+            .replace(/^-+|-+$/g, ''); // Remove hífens do início e fim
+        
+        if (!baseSlug) {
+            baseSlug = 'noticia';
+        }
+        
+        // Adiciona timestamp para garantir unicidade
+        const timestamp = new Date().getTime().toString().slice(-6);
+        form.slug = `${baseSlug}-${timestamp}`;
+        
+    } catch (error) {
+        console.error('Erro ao gerar slug:', error);
+        // Garante que sempre teremos uma slug válida
+        form.slug = `noticia-${new Date().getTime().toString().slice(-6)}`;
     }
 };
 
 // Watch for title changes
 watch(
     () => form.titulo,
-    (novoTitulo) => {
+    async (novoTitulo) => {
         if (!form.slug || form.slug === "") {
-            gerarSlug();
+            await gerarSlug();
         }
     }
 );
+
+watch(tagInput, (newValue) => {
+    if (newValue !== "") {
+        addTag();
+    }
+});
 
 // const handleGalleryImageUpload = (event) => {
 //     const file = event.target.files[0];
@@ -120,15 +149,15 @@ watch(
 
 // Funções para tags
 const addTag = () => {
-    const tag = tagInput.value.trim();
-    if (tag && !form.tags.includes(tag)) {
-        form.tags.push(tag);
-        tagInput.value = "";
+    const selectedTag = props.tags.find((tag) => tag.id === tagInput.value);
+    if (selectedTag && !form.tag_ids.includes(selectedTag.id)) {
+        form.tag_ids.push(selectedTag.id);
+        tagInput.value = ""; // Limpar após adicionar
     }
 };
 
 const removeTag = (index) => {
-    form.tags.splice(index, 1);
+    form.tag_ids.splice(index, 1);
 };
 
 const addTagOnEnter = (event) => {
@@ -139,24 +168,36 @@ const addTagOnEnter = (event) => {
 };
 
 // Funções de submissão
+const processarSubmissao = async (status) => {
+    try {
+        // Garante que temos uma slug válida
+        if (!form.slug) {
+            await gerarSlug();
+        }
+
+        form.status = status;
+        await form.post(route("noticias.store"), {
+            forceFormData: true,
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                router.visit(route("noticias.index"));
+            },
+            onError: (errors) => {
+                console.error(`Erro ao ${status === 'rascunho' ? 'salvar rascunho' : 'publicar notícia'}:`, errors);
+            },
+        });
+    } catch (error) {
+        console.error('Erro ao processar submissão:', error);
+    }
+};
+
 const salvarRascunho = () => {
-    form.status = "rascunho";
-    form.post("/noticias", {
-        forceFormData: true,
-        onSuccess: () => {
-            router.visit("/noticias");
-        },
-    });
+    processarSubmissao("rascunho");
 };
 
 const publicarNoticia = () => {
-    form.status = "publicada";
-    form.post("/noticias", {
-        forceFormData: true,
-        onSuccess: () => {
-            router.visit("/noticias");
-        },
-    });
+    processarSubmissao("publicada");
 };
 
 // Função para preview
@@ -352,7 +393,7 @@ const formatDate = (dateString) => {
                     </div>
 
                     <div
-                        v-if="form.tags.length > 0"
+                        v-if="form.tag_ids.length > 0"
                         class="mt-8 pt-6 border-t border-gray-200"
                     >
                         <h4 class="text-sm font-semibold text-azul-oxford mb-2">
@@ -360,11 +401,14 @@ const formatDate = (dateString) => {
                         </h4>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                v-for="tag in form.tags"
-                                :key="tag"
+                                v-for="tagId in form.tag_ids"
+                                :key="tagId"
                                 class="bg-gray-100 text-azul-oxford px-3 py-1 rounded-full text-sm"
                             >
-                                {{ tag }}
+                                {{
+                                    props.tags.find((tag) => tag.id === tagId)
+                                        ?.nome
+                                }}
                             </span>
                         </div>
                     </div>
@@ -683,36 +727,41 @@ const formatDate = (dateString) => {
                         >
                             Tags
                         </label>
-                        <div class="flex space-x-2 mb-3">
-                            <input
-                                v-model="tagInput"
-                                type="text"
-                                @keypress="addTagOnEnter"
-                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                                placeholder="Digite uma tag"
-                            />
-                            <button
-                                type="button"
-                                @click="addTag"
-                                class="bg-azul-lazuli hover:bg-azul-oxford text-white px-3 py-2 rounded-lg transition-all duration-200"
+                        <select
+                            v-model="tagInput"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
+                        >
+                            <option value="">Selecione uma tag</option>
+                            <option
+                                v-for="tag in props.tags"
+                                :key="tag.id"
+                                :value="tag.id"
+                                :disabled="form.tag_ids.includes(tag.id)"
                             >
-                                Add
-                            </button>
-                        </div>
+                                {{ tag.nome }}
+                            </option>
+                        </select>
 
                         <div
-                            v-if="form.tags.length > 0"
+                            v-if="form.tag_ids.length > 0"
                             class="flex flex-wrap gap-2"
                         >
                             <span
-                                v-for="(tag, index) in form.tags"
-                                :key="index"
+                                v-for="tagId in form.tag_ids"
+                                :key="tagId"
                                 class="bg-celeste text-azul-oxford px-3 py-1 rounded-full text-sm flex items-center space-x-2"
                             >
-                                <span>{{ tag }}</span>
+                                <span>{{
+                                    props.tags.find((t) => t.id === tagId)?.nome
+                                }}</span>
                                 <button
                                     type="button"
-                                    @click="removeTag(index)"
+                                    @click="
+                                        () =>
+                                            removeTag(
+                                                form.tag_ids.indexOf(tagId)
+                                            )
+                                    "
                                     class="text-azul-oxford hover:text-azul-noite transition-colors"
                                 >
                                     <svg
@@ -726,7 +775,7 @@ const formatDate = (dateString) => {
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12"
-                                        ></path>
+                                        />
                                     </svg>
                                 </button>
                             </span>

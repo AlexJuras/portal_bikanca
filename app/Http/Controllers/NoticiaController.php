@@ -15,11 +15,17 @@ class NoticiaController extends Controller
 {
     public function index()
     {
-        $noticias = Noticia::with('autor', 'categoria', 'tags')->latest()->paginate(10);
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')->latest()->paginate(10);
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias
         ]);
+    }
+
+    public function checkSlug($slug)
+    {
+        $exists = Noticia::where('slug', $slug)->exists();
+        return response()->json(['exists' => $exists]);
     }
 
     public function create()
@@ -33,7 +39,6 @@ class NoticiaController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'titulo' => 'required|max:200',
             'slug' => 'required|unique:noticias,slug',
@@ -42,25 +47,31 @@ class NoticiaController extends Controller
             'status' => 'required|in:rascunho,publicada,arquivada,agendada',
             'categoria_id' => 'required|exists:categorias,id',
             'autor_id' => 'required|exists:autors,id',
-            'imagem_capa' => 'nullable|image|max:2048',
-            'tags' => 'nullable|array'
+            'imagem_capa' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
+            'tag_ids' => 'nullable|array'
         ]);
 
-        if ($request->hasFile('imagem_capa')) {
-            $path = $request->file('imagem_capa')->store('midias', 'public');
+        try {
+            if ($request->hasFile('imagem_capa')) {
+                $path = $request->file('imagem_capa')->store('midias', 'public');
+                
+                $midia = Midia::create([
+                    'caminho' => $path,
+                    'formato' => 'capa',
+                    'legenda' => $validated['titulo'],
+                ]);
+                $validated['imagem_capa'] = $midia->id;
+            }
 
-            $midia = Midia::create([
-                'caminho' => $path,
-                'formato' => 'capa',
-                'legenda' => $validated['titulo'],
-            ]);
-            $validated['imagem_capa'] = $midia->id;
-        }
+            $noticia = Noticia::create($validated);
 
-        $noticia = Noticia::create($validated);
-
-        if (!empty($validated['tags'])) {
-            $noticia->tags()->sync($validated['tags']);
+            if (!empty($validated['tag_ids'])) {
+                $noticia->tags()->sync($validated['tag_ids']);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Erro ao salvar a notícia: ' . $e->getMessage()])
+                ->withInput();
         }
 
         return redirect()->route('noticias.index')

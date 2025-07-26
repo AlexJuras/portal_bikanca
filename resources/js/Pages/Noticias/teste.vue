@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useForm, router } from "@inertiajs/vue3";
-import NoticiaEditor from "../Editor.vue";
+import NoticiaEditor from "@/Components/Editor.vue";
 import Principal from "@/Layouts/Principal.vue";
 
 defineOptions({ layout: Principal });

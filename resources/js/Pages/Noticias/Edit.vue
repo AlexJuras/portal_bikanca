@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { Head, useForm, router } from "@inertiajs/vue3";
 import Principal from "@/Layouts/Principal.vue";
-import NoticiaEditor from "../Editor.vue";
+import NoticiaEditor from "../../Components/Editor.vue";
 
 defineOptions({ layout: Principal });
 

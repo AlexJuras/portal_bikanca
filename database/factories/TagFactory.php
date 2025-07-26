@@ -17,11 +17,11 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
-        $nome = fake()->unique()->word();
+        $nome = fake()->unique()->words(rand(1, 3), true);
         return [
             'nome' => ucwords($nome),
             'slug' => Str::slug($nome),
-            'descricao' => fake()->sentence(6),
+            'descricao' => fake()->sentence(rand(8, 15)),
         ];
     }
 }

@@ -23,6 +23,11 @@ class Midia extends Model
         'creditos',
     ];
 
+    public function getCaminhoAttribute($value)
+    {
+        return '/storage/' . $value;
+    }
+
     public function noticias()
     {
         return $this->belongsToMany(Noticia::class, 'noticias_midia');

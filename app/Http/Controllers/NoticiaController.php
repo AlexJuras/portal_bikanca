@@ -16,9 +16,33 @@ class NoticiaController extends Controller
     public function index()
     {
         $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')->latest()->paginate(10);
+        
+        // Forçar serialização do relacionamento imagemCapa
+        $noticias->getCollection()->transform(function($noticia) {
+            $array = $noticia->toArray();
+            if ($noticia->imagemCapa) {
+                $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+            }
+            return $array;
+        });
+
+        $categorias = Categoria::all();
+        $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
+            ->orderBy('visualizacoes', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function($noticia) {
+                $array = $noticia->toArray();
+                if ($noticia->imagemCapa) {
+                    $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+                }
+                return $array;
+            });
 
         return Inertia::render('Noticias/Index', [
-            'noticias' => $noticias
+            'noticias' => $noticias,
+            'categorias' => $categorias,
+            'maisLidas' => $maisLidas
         ]);
     }
 
@@ -54,7 +78,7 @@ class NoticiaController extends Controller
         try {
             if ($request->hasFile('imagem_capa')) {
                 $path = $request->file('imagem_capa')->store('midias', 'public');
-                
+
                 $midia = Midia::create([
                     'caminho' => $path,
                     'formato' => 'capa',
@@ -121,5 +145,31 @@ class NoticiaController extends Controller
         $noticia->delete();
 
         return redirect()->route('noticias.index')->with('success', 'Notícia removida com sucesso!');
+    }
+
+    public function show(Noticia $noticia)
+    {
+        $noticiaComRelacionamentos = $noticia->load(['autor', 'categoria', 'tags', 'imagemCapa']);
+        
+        // Forçar a serialização do relacionamento imagemCapa
+        $noticiaArray = $noticiaComRelacionamentos->toArray();
+        if ($noticiaComRelacionamentos->imagemCapa) {
+            $noticiaArray['imagemCapa'] = $noticiaComRelacionamentos->imagemCapa->toArray();
+        }
+
+        return Inertia::render('Noticias/Show', [
+            'noticia' => $noticiaArray,
+            'noticiasRelacionadas' => Noticia::with(['autor', 'categoria', 'imagemCapa'])
+                ->where('id', '!=', $noticia->id)
+                ->take(3)
+                ->get()
+                ->map(function($n) {
+                    $array = $n->toArray();
+                    if ($n->imagemCapa) {
+                        $array['imagemCapa'] = $n->imagemCapa->toArray();
+                    }
+                    return $array;
+                })
+        ]);
     }
 }

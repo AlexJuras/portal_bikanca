@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Noticia extends Model
 {
-    /** @use HasFactory<\Database\Factories\NoticiaFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -45,6 +44,4 @@ class Noticia extends Model
     {
         return $this->belongsTo(Midia::class, 'imagem_capa');
     }
-
-
 }

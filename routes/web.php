@@ -49,15 +49,7 @@ Route::prefix('noticias')->group(function () {
     Route::post('/', [NoticiaController::class, 'store'])->name('noticias.store');
     
     // Rota para exibir uma notícia específica
-    Route::get('/{noticia}', function(Noticia $noticia) {
-        return Inertia::render('Noticias/Show', [
-            'noticia' => $noticia->load('autor', 'categoria', 'tags'),
-            'noticiasRelacionadas' => Noticia::where('categoria_id', $noticia->categoria_id)
-                ->where('id', '!=', $noticia->id)
-                ->take(3)
-                ->get(),
-        ]);
-    })->name('noticias.show');
+    Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('noticias.show');
 });
 
 // Rotas de Categorias

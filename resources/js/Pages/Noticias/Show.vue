@@ -51,8 +51,8 @@ const formatDate = (date) => {
                     <article class="bg-white rounded-lg shadow-sm overflow-hidden">
                         <!-- Imagem da Notícia -->
                         <img
-                            v-if="noticia.imagem_capa"
-                            :src="noticia.imagem_capa"
+                            v-if="noticia.imagemCapa?.caminho"
+                            :src="noticia.imagemCapa.caminho"
                             :alt="noticia.titulo"
                             class="w-full h-96 object-cover"
                         />
@@ -92,8 +92,8 @@ const formatDate = (date) => {
                             </div>
 
                             <!-- Conteúdo -->
-                            <div class="prose max-w-none">
-                                {{ noticia.conteudo }}
+                            <div class="prose max-w-none" v-html="noticia.conteudo">
+                                
                             </div>
 
                             <!-- Tags -->
@@ -104,7 +104,7 @@ const formatDate = (date) => {
                                         :key="tag.id"
                                         class="bg-gray-100 text-cinza px-3 py-1 rounded-full text-sm"
                                     >
-                                        #{{ tag.nome }}
+                                        {{ tag.nome }}
                                     </span>
                                 </div>
                             </div>
@@ -127,8 +127,8 @@ const formatDate = (date) => {
                             >
                                 <Link :href="route('noticias.show', noticia.id)">
                                     <img
-                                        v-if="noticia.imagem_capa"
-                                        :src="noticia.imagem_capa"
+                                        v-if="noticia.imagemCapa?.caminho"
+                                        :src="noticia.imagemCapa.caminho"
                                         :alt="noticia.titulo"
                                         class="w-full h-40 object-cover rounded-lg mb-3"
                                     />

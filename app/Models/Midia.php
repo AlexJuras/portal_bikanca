@@ -25,7 +25,13 @@ class Midia extends Model
 
     public function getCaminhoAttribute($value)
     {
-        return '/storage/' . $value;
+        // Se já é uma URL completa, retorna como está
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+        
+        // Caso contrário, adiciona o prefixo
+        return asset('storage/' . $value);
     }
 
     public function noticias()

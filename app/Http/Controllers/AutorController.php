@@ -58,6 +58,30 @@ class AutorController extends Controller
         return redirect()->route('autores.index')->with('success', 'Autor atualizado com sucesso!');
     }
 
+    public function show(Autor $autor)
+    {
+        // Carregar notícias do autor
+        $noticias = $autor->noticias()
+            ->with(['categoria', 'tags', 'imagemCapa'])
+            ->where('status', 'publicada')
+            ->latest('publicada_em')
+            ->paginate(10);
+
+        // Estatísticas do autor
+        $estatisticas = [
+            'total_noticias' => $autor->noticias()->count(),
+            'noticias_publicadas' => $autor->noticias()->where('status', 'publicada')->count(),
+            'noticias_recentes' => $autor->noticias()->where('status', 'publicada')->where('publicada_em', '>=', now()->subDays(30))->count(),
+            'mais_visualizada' => $autor->noticias()->where('status', 'publicada')->orderBy('visualizacoes', 'desc')->first(),
+        ];
+
+        return Inertia::render('Autores/Show', [
+            'autor' => $autor,
+            'noticias' => $noticias,
+            'estatisticas' => $estatisticas
+        ]);
+    }
+
     public function destroy(Autor $autor)
     {
         $autor->delete();

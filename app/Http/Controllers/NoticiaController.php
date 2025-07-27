@@ -29,7 +29,7 @@ class NoticiaController extends Controller
             return $array;
         });
 
-        $categorias = Categoria::all();
+        $categorias = Categoria::withCount('noticias')->get();
         $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
             ->publicadas()
             ->orderBy('visualizacoes', 'desc')

@@ -128,11 +128,11 @@ onMounted(() => {
                             <Link
                                 v-for="categoria in categoriasVisiveis"
                                 :key="`nav-${categoria.id}`"
-                                :href="`/categoria/${categoria.slug || categoria.id}`"
+                                :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
                                 class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
                                 :class="{
                                     'border-b-2 border-azul-celeste':
-                                        $page.url.includes(`/categoria/${categoria.slug || categoria.id}`),
+                                        $page.url.includes(`/noticias/categoria/${categoria.slug || categoria.id}`),
                                 }"
                             >
                                 {{ categoria.nome }}
@@ -169,7 +169,7 @@ onMounted(() => {
                                         <Link
                                             v-for="categoria in categoriasDropdown"
                                             :key="`dropdown-${categoria.id}`"
-                                            :href="`/categoria/${categoria.slug || categoria.id}`"
+                                            :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
                                             class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste hover:text-white transition-colors"
                                         >
                                             {{ categoria.nome }}
@@ -235,11 +235,11 @@ onMounted(() => {
                     <Link
                         v-for="categoria in categorias"
                         :key="`mobile-${categoria.id}`"
-                        :href="`/categoria/${categoria.slug || categoria.id}`"
+                        :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
                         class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
                         :class="{
                             'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
-                                $page.url.includes(`/categoria/${categoria.slug || categoria.id}`),
+                                $page.url.includes(`/noticias/categoria/${categoria.slug || categoria.id}`),
                         }"
                     >
                         {{ categoria.nome }}

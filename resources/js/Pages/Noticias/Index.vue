@@ -44,7 +44,10 @@ const pageData = ref({
     icon: "📰",
 });
 
-// Controles de filtro e ordenação
+// Detectar se estamos visualizando uma categoria específica
+const isVisualizandoCategoria = computed(() => !!props.categoria);
+
+// Controles de filtro e ordenação (apenas para página geral)
 const categoriaSelecionada = ref("all");
 const sortBy = ref("date"); // 'date' ou 'views'
 const searchQuery = ref("");
@@ -52,11 +55,16 @@ const currentPage = ref(1);
 const newsPerPage = 9;
 const totalNews = ref(156); // Total simulado
 
-// Computed para filtrar notícias
+// Computed para filtrar notícias (apenas na página geral)
 const noticiasFiltradas = computed(() => {
     let filtro = props.noticias.data;
 
-    // Filtrar por categoria
+    // Se estamos visualizando uma categoria específica, não aplicar filtros adicionais
+    if (isVisualizandoCategoria.value) {
+        return filtro;
+    }
+
+    // Filtrar por categoria (apenas na página geral)
     if (categoriaSelecionada.value !== "all") {
         filtro = filtro.filter(
             noticia => noticia.categoria_id === categoriaSelecionada.value
@@ -223,8 +231,8 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Filtros e Controles -->
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4">
+                <!-- Filtros e Controles (apenas na página geral) -->
+                <div v-if="!isVisualizandoCategoria" class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4">
                     <!-- Filtros de Categoria -->
                     <div class="flex flex-wrap gap-2">
                         <button
@@ -284,8 +292,36 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Estatísticas e Alertas -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                <!-- Informações da categoria específica (quando visualizando uma categoria) -->
+                <div v-if="isVisualizandoCategoria" class="bg-gradient-to-r from-azul-oxford to-azul-lazuli text-white rounded-lg p-6 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2">{{ categoria.nome }}</h2>
+                            <p class="text-blue-100 mb-3">
+                                Visualizando todas as notícias da categoria {{ categoria.nome.toLowerCase() }}
+                            </p>
+                            <div class="flex items-center space-x-4 text-sm text-blue-100">
+                                <span>{{ props.noticias.data.length }} {{ props.noticias.data.length === 1 ? 'notícia' : 'notícias' }}</span>
+                                <span>•</span>
+                                <span>Atualizado hoje</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <Link 
+                                href="/noticias"
+                                class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                                </svg>
+                                Ver todas as notícias
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas e Alertas (apenas na página geral) -->
+                <div v-if="!isVisualizandoCategoria" class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                     <div class="flex items-center space-x-6 text-sm text-cinza">
                         <span class="font-medium">
                             {{ noticiasFiltradas.length }} 

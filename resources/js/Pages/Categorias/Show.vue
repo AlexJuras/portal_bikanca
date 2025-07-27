@@ -157,7 +157,7 @@
                         </h3>
                         <div class="space-y-3">
                             <Link 
-                                :href="route('categorias.noticias', categoria.slug || categoria.id)"
+                                :href="route('noticias.categoria', categoria.slug || categoria.id)"
                                 class="w-full bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
                             >
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

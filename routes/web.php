@@ -1,69 +1,72 @@
 <?php
 
+use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\NoticiaController;
-use App\Models\Autor;
-use App\Models\Categoria;
-use App\Models\Midia;
-use App\Models\Noticia;
-use App\Models\Tag;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
-//Primeiro a URL, depois o nome do componente e depois os dados que serão passados para o componente
 
 // Páginas Estáticas
 Route::inertia('/', 'Inicio', ['user' => 'Bikanca']);
 Route::inertia('/sobre', 'Sobre', ['user' => 'Liam']);
 Route::inertia('/contato', 'Contato', ['contato' => '(86) 9 9493-7797']);
 
-// Rotas de Notícias
-Route::prefix('noticias')->group(function () {
-    Route::get('/check-slug/{slug}', function($slug) {
-        return response()->json(['exists' => Noticia::where('slug', $slug)->exists()]);
-    })->name('noticias.check-slug');
-    Route::inertia('/', 'Noticias/Index', [
-        'noticias' => Noticia::with(['autor', 'categoria', 'tags', 'imagemCapa'])
-        ->latest()
-        ->paginate(9),
-        'categorias' => Categoria::withCount('noticias')->get(),
-        'maisLidas' => Noticia::orderBy('visualizacoes', 'desc')
-        ->take(5)
-        ->get(),
-    ])->name('noticias.index');
+// ====== ROTAS DE NOTÍCIAS ======
+Route::prefix('noticias')->name('noticias.')->group(function () {
+    // API para verificar slug único
+    Route::get('/check-slug/{slug}', [NoticiaController::class, 'checkSlug']);
     
-    Route::inertia('/create', 'Noticias/Create', [
-        'autores' => Autor::all(),
-        'midias' => Midia::all(),
-        'categorias' => Categoria::all(),
-        'tags' => Tag::all(),
-    ])->name('noticias.create');
+    // Páginas públicas
+    Route::get('/', [NoticiaController::class, 'index'])->name('index');
+    Route::get('/categoria/{categoria}', [NoticiaController::class, 'categoria'])->name('categoria');
+    Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('show');
     
-    Route::inertia('/edit', 'Noticias/Edit', [
-        'autores' => Autor::all(),
-        'midias' => Midia::all(),
-        'categorias' => Categoria::all(),
-        'tags' => Tag::all(),
-    ])->name('noticias.edit');
-    
-    Route::post('/', [NoticiaController::class, 'store'])->name('noticias.store');
-    
-    // Rota para exibir uma notícia específica
-    Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('noticias.show');
+    // Páginas administrativas
+    Route::get('/admin/create', [NoticiaController::class, 'create'])->name('create');
+    Route::get('/admin/{noticia}/edit', [NoticiaController::class, 'edit'])->name('edit');
+    Route::post('/', [NoticiaController::class, 'store'])->name('store');
+    Route::put('/{noticia}', [NoticiaController::class, 'update'])->name('update');
+    Route::delete('/{noticia}', [NoticiaController::class, 'destroy'])->name('destroy');
 });
 
-// Rotas de Categorias
-Route::prefix('categoria')->group(function () {
-    Route::get('/{categoria}', [NoticiaController::class, 'categoria'])->name('categorias.show');
+// ====== ROTAS DE CATEGORIAS ======
+Route::prefix('categorias')->name('categorias.')->group(function () {
+    // Páginas públicas
+    Route::get('/', [CategoriaController::class, 'index'])->name('index');
+    Route::get('/{categoria}', [CategoriaController::class, 'show'])->name('show');
+    
+    // Páginas administrativas
+    Route::get('/admin/create', [CategoriaController::class, 'create'])->name('create');
+    Route::get('/admin/{categoria}/edit', [CategoriaController::class, 'edit'])->name('edit');
+    Route::post('/', [CategoriaController::class, 'store'])->name('store');
+    Route::put('/{categoria}', [CategoriaController::class, 'update'])->name('update');
+    Route::delete('/{categoria}', [CategoriaController::class, 'destroy'])->name('destroy');
 });
 
-Route::prefix('categorias')->group(function () {
-    Route::inertia('/', 'Categorias/Index')->name('categorias.index');
-    // Uncomment when needed
-    // Route::resource('/', CategoriaController::class);
+// ====== ROTAS DE TAGS ======
+Route::prefix('tags')->name('tags.')->group(function () {
+    // Páginas públicas
+    Route::get('/', [TagController::class, 'index'])->name('index');
+    Route::get('/{tag}', [TagController::class, 'show'])->name('show');
+    
+    // Páginas administrativas
+    Route::get('/admin/create', [TagController::class, 'create'])->name('create');
+    Route::get('/admin/{tag}/edit', [TagController::class, 'edit'])->name('edit');
+    Route::post('/', [TagController::class, 'store'])->name('store');
+    Route::put('/{tag}', [TagController::class, 'update'])->name('update');
+    Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
 });
 
-// Rotas de Tags
-Route::prefix('tags')->group(function () {
-    Route::inertia('/', 'Tag')->name('tags.index');
+// ====== ROTAS DE AUTORES ======
+Route::prefix('autores')->name('autores.')->group(function () {
+    // Páginas públicas
+    Route::get('/', [AutorController::class, 'index'])->name('index');
+    Route::get('/{autor}', [AutorController::class, 'show'])->name('show');
+    
+    // Páginas administrativas
+    Route::get('/admin/create', [AutorController::class, 'create'])->name('create');
+    Route::get('/admin/{autor}/edit', [AutorController::class, 'edit'])->name('edit');
+    Route::post('/', [AutorController::class, 'store'])->name('store');
+    Route::put('/{autor}', [AutorController::class, 'update'])->name('update');
+    Route::delete('/{autor}', [AutorController::class, 'destroy'])->name('destroy');
 });

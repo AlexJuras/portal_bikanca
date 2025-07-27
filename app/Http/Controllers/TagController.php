@@ -55,6 +55,30 @@ class TagController extends Controller
         return redirect()->route('tags.index')->with('success', 'Tag atualizada com sucesso!');
     }
 
+    public function show(Tag $tag)
+    {
+        // Carregar notícias com esta tag
+        $noticias = $tag->noticias()
+            ->with(['autor', 'categoria', 'imagemCapa'])
+            ->where('status', 'publicada')
+            ->latest('publicada_em')
+            ->paginate(10);
+
+        // Estatísticas da tag
+        $estatisticas = [
+            'total_noticias' => $tag->noticias()->count(),
+            'noticias_publicadas' => $tag->noticias()->where('status', 'publicada')->count(),
+            'noticias_recentes' => $tag->noticias()->where('status', 'publicada')->where('publicada_em', '>=', now()->subDays(30))->count(),
+            'mais_visualizada' => $tag->noticias()->where('status', 'publicada')->orderBy('visualizacoes', 'desc')->first(),
+        ];
+
+        return Inertia::render('Tags/Show', [
+            'tag' => $tag,
+            'noticias' => $noticias,
+            'estatisticas' => $estatisticas
+        ]);
+    }
+
     public function destroy(Tag $tag)
     {
         $tag->delete();

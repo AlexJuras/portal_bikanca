@@ -32,7 +32,7 @@ class TagController extends Controller
 
         Tag::create($request->all());
 
-        return redirect()->route('tags.index')->with('success', 'Tag criada com sucesso!');
+        return redirect()->route('admin.tags.index')->with('success', 'Tag criada com sucesso!');
     }
 
     public function edit(Tag $tag)
@@ -52,7 +52,7 @@ class TagController extends Controller
 
         $tag->update($request->all());
 
-        return redirect()->route('tags.index')->with('success', 'Tag atualizada com sucesso!');
+        return redirect()->route('admin.tags.index')->with('success', 'Tag atualizada com sucesso!');
     }
 
     public function show(Tag $tag)
@@ -83,6 +83,6 @@ class TagController extends Controller
     {
         $tag->delete();
 
-        return redirect()->route('tags.index')->with('success', 'Tag removida com sucesso!');
+        return redirect()->route('admin.tags.index')->with('success', 'Tag removida com sucesso!');
     }
 }

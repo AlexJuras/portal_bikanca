@@ -7,18 +7,18 @@
                 <nav class="text-sm mb-6" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-2">
                         <li>
-                            <Link href="/" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
+                            <Link href="/admin" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z"/>
                                 </svg>
-                                Home
+                                Admin
                             </Link>
                         </li>
                         <li class="flex items-center">
                             <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
-                            <Link href="/autores" class="text-azul-lazuli hover:text-azul-oxford transition-colors">
+                            <Link href="/admin/autores" class="text-azul-lazuli hover:text-azul-oxford transition-colors">
                                 Autores
                             </Link>
                         </li>
@@ -190,7 +190,7 @@
                         </h3>
                         <div class="space-y-3">
                             <Link 
-                                href="/autores"
+                                href="/admin/autores"
                                 class="w-full bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
                             >
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -200,13 +200,13 @@
                             </Link>
                             
                             <Link 
-                                href="/noticias"
+                                href="/admin"
                                 class="w-full bg-gray-100 hover:bg-gray-200 text-azul-oxford font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
                             >
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z" clip-rule="evenodd"/>
+                                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z"/>
                                 </svg>
-                                Todas as Notícias
+                                Dashboard
                             </Link>
                         </div>
                     </div>
@@ -239,11 +239,11 @@
 
 <script setup>
 import { computed } from "vue";
-import Principal from "@/Layouts/Principal.vue";
+import Admin from "@/Layouts/Admin.vue";
 import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
 const props = defineProps({
     autor: {

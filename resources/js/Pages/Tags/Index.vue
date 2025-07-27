@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import Principal from '@/Layouts/Principal.vue'
+import Admin from '@/Layouts/Admin.vue'
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
   name: 'Inicio'
 

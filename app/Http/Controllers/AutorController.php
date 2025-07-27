@@ -34,7 +34,7 @@ class AutorController extends Controller
 
         Autor::create($request->all());
 
-        return redirect()->route('autores.index')->with('success', 'Autor criado com sucesso!');
+        return redirect()->route('admin.autores.index')->with('success', 'Autor criado com sucesso!');
     }
 
     public function edit(Autor $autor)
@@ -55,7 +55,7 @@ class AutorController extends Controller
 
         $autor->update($request->all());
 
-        return redirect()->route('autores.index')->with('success', 'Autor atualizado com sucesso!');
+        return redirect()->route('admin.autores.index')->with('success', 'Autor atualizado com sucesso!');
     }
 
     public function show(Autor $autor)
@@ -86,7 +86,7 @@ class AutorController extends Controller
     {
         $autor->delete();
 
-        return redirect()->route('autores.index')->with('success', 'Autor removido com sucesso!');
+        return redirect()->route('admin.autores.index')->with('success', 'Autor removido com sucesso!');
     }
 
 }

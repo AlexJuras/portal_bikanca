@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { Head, useForm, router } from "@inertiajs/vue3";
-import Principal from "@/Layouts/Principal.vue";
+import Admin from "@/Layouts/Admin.vue";
 import NoticiaEditor from "../../Components/Editor.vue";
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
 const props = defineProps({
     categorias: {

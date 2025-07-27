@@ -1,10 +1,10 @@
 <script setup>
 import { ref, reactive } from "vue";
-import Principal from "@/Layouts/Principal.vue";
+import Admin from "@/Layouts/Admin.vue";
 import { Link, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
 const props = defineProps({
     autores: {
@@ -510,7 +510,7 @@ const excluirAutor = () => {
                             >
                                 <!-- Visualizar -->
                                 <Link
-                                    :href="route('autores.show', autor.id)"
+                                    :href="route('admin.autores.show', autor.id)"
                                     class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg transition-colors"
                                     title="Visualizar perfil"
                                 >
@@ -532,7 +532,7 @@ const excluirAutor = () => {
 
                                 <!-- Editar -->
                                 <Link
-                                    :href="route('autores.edit', autor.id)"
+                                    :href="route('admin.autores.edit', autor.id)"
                                     class="bg-green-50 hover:bg-green-100 text-green-600 p-2 rounded-lg transition-colors"
                                     title="Editar autor"
                                 >

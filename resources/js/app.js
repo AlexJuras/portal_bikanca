@@ -2,10 +2,12 @@ import './bootstrap';
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy'
+import Principal from './Layouts/Principal.vue'
 
 createInertiaApp({
   resolve: name => {
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    const layouts = import.meta.glob('./Layouts/**/*.vue', { eager: true })
     let page = pages[`./Pages/${name}.vue`]
     page.default.layout = page.default.layout || Principal;
     return page;

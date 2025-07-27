@@ -7,18 +7,18 @@
                 <nav class="text-sm mb-6" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-2">
                         <li>
-                            <Link href="/" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
+                            <Link href="/admin" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                                 </svg>
-                                Home
+                                Admin
                             </Link>
                         </li>
                         <li class="flex items-center">
                             <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
-                            <Link href="/tags" class="text-azul-lazuli hover:text-azul-oxford transition-colors">
+                            <Link :href="route('admin.tags.index')" class="text-azul-lazuli hover:text-azul-oxford transition-colors">
                                 Tags
                             </Link>
                         </li>
@@ -219,7 +219,7 @@
                         </h3>
                         <div class="space-y-3">
                             <Link 
-                                href="/tags"
+                                :href="route('admin.tags.index')"
                                 class="w-full bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
                             >
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -249,7 +249,7 @@
                             <Link
                                 v-for="tagRelacionada in tagsRelacionadas"
                                 :key="tagRelacionada.id"
-                                :href="route('tags.show', tagRelacionada.slug)"
+                                :href="route('admin.tags.show', tagRelacionada.id)"
                                 class="text-sm bg-gray-100 hover:bg-azul-lazuli hover:text-white text-gray-700 px-3 py-2 rounded-full transition-colors"
                             >
                                 #{{ tagRelacionada.nome }}
@@ -289,11 +289,11 @@
 
 <script setup>
 import { computed } from "vue";
-import Principal from "@/Layouts/Principal.vue";
+import Admin from "@/Layouts/Admin.vue";
 import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
 const props = defineProps({
     tag: {

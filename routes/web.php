@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\NoticiaController;
@@ -10,6 +11,43 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'Inicio', ['user' => 'Bikanca']);
 Route::inertia('/sobre', 'Sobre', ['user' => 'Liam']);
 Route::inertia('/contato', 'Contato', ['contato' => '(86) 9 9493-7797']);
+
+// ====== PAINEL ADMINISTRATIVO ======
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard principal
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Gerenciamento de Autores (área restrita)
+    Route::prefix('autores')->name('autores.')->group(function () {
+        Route::get('/', [AutorController::class, 'index'])->name('index');
+        Route::get('/create', [AutorController::class, 'create'])->name('create');
+        Route::post('/', [AutorController::class, 'store'])->name('store');
+        Route::get('/{autor}', [AutorController::class, 'show'])->name('show');
+        Route::get('/{autor}/edit', [AutorController::class, 'edit'])->name('edit');
+        Route::put('/{autor}', [AutorController::class, 'update'])->name('update');
+        Route::delete('/{autor}', [AutorController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Gerenciamento de Tags (área restrita)
+    Route::prefix('tags')->name('tags.')->group(function () {
+        Route::get('/', [TagController::class, 'index'])->name('index');
+        Route::get('/create', [TagController::class, 'create'])->name('create');
+        Route::post('/', [TagController::class, 'store'])->name('store');
+        Route::get('/{tag}', [TagController::class, 'show'])->name('show');
+        Route::get('/{tag}/edit', [TagController::class, 'edit'])->name('edit');
+        Route::put('/{tag}', [TagController::class, 'update'])->name('update');
+        Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Redirecionamentos para outras páginas administrativas
+    Route::get('/noticias', function () {
+        return redirect()->route('noticias.index');
+    })->name('noticias');
+    
+    Route::get('/categorias', function () {
+        return redirect()->route('categorias.index');
+    })->name('categorias');
+});
 
 // ====== ROTAS DE NOTÍCIAS ======
 Route::prefix('noticias')->name('noticias.')->group(function () {
@@ -41,32 +79,4 @@ Route::prefix('categorias')->name('categorias.')->group(function () {
     Route::post('/', [CategoriaController::class, 'store'])->name('store');
     Route::put('/{categoria}', [CategoriaController::class, 'update'])->name('update');
     Route::delete('/{categoria}', [CategoriaController::class, 'destroy'])->name('destroy');
-});
-
-// ====== ROTAS DE TAGS ======
-Route::prefix('tags')->name('tags.')->group(function () {
-    // Páginas públicas
-    Route::get('/', [TagController::class, 'index'])->name('index');
-    Route::get('/{tag}', [TagController::class, 'show'])->name('show');
-    
-    // Páginas administrativas
-    Route::get('/admin/create', [TagController::class, 'create'])->name('create');
-    Route::get('/admin/{tag}/edit', [TagController::class, 'edit'])->name('edit');
-    Route::post('/', [TagController::class, 'store'])->name('store');
-    Route::put('/{tag}', [TagController::class, 'update'])->name('update');
-    Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
-});
-
-// ====== ROTAS DE AUTORES ======
-Route::prefix('autores')->name('autores.')->group(function () {
-    // Páginas públicas
-    Route::get('/', [AutorController::class, 'index'])->name('index');
-    Route::get('/{autor}', [AutorController::class, 'show'])->name('show');
-    
-    // Páginas administrativas
-    Route::get('/admin/create', [AutorController::class, 'create'])->name('create');
-    Route::get('/admin/{autor}/edit', [AutorController::class, 'edit'])->name('edit');
-    Route::post('/', [AutorController::class, 'store'])->name('store');
-    Route::put('/{autor}', [AutorController::class, 'update'])->name('update');
-    Route::delete('/{autor}', [AutorController::class, 'destroy'])->name('destroy');
 });

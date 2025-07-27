@@ -90,6 +90,15 @@ onMounted(() => {
                         <div class="text-white">
                             <span>{{ dataAtual }}</span>
                         </div>
+                        <div>
+                            <Link 
+                                href="/admin"
+                                class="text-white hover:text-celeste text-xs px-2 py-1 rounded transition-colors"
+                                title="Painel Administrativo"
+                            >
+                                Admin
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

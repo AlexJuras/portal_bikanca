@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 defineProps({
     user: {
@@ -9,9 +9,18 @@ defineProps({
     },
 });
 
+// Acessar dados globais compartilhados
+const page = usePage();
+const categorias = computed(() => page.props.categorias || []);
+
 const mostraMenuMobile = ref(false);
 const exibeDropdown = ref(false);
 let dropdownTimeout = null;
+
+// Configuração para limitar categorias visíveis
+const MAX_CATEGORIAS_VISIVEIS = 4;
+const categoriasVisiveis = computed(() => categorias.value.slice(0, MAX_CATEGORIAS_VISIVEIS));
+const categoriasDropdown = computed(() => categorias.value.slice(MAX_CATEGORIAS_VISIVEIS));
 
 const mostrarDropdown = () => {
     clearTimeout(dropdownTimeout);
@@ -103,69 +112,35 @@ onMounted(() => {
                     <!-- Desktop Navigation -->
                     <nav class="hidden md:flex">
                         <div class="flex space-x-8">
+                            <!-- Link para todas as notícias -->
                             <Link
-                                href="/municipios"
+                                href="/noticias"
                                 class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
                                 :class="{
                                     'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/municipios'),
+                                        $page.url.startsWith('/noticias') && !$page.url.includes('/categoria/'),
                                 }"
                             >
-                                Municípios
-                            </Link>
-                            <Link
-                                href="/brasil"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
-                                :class="{
-                                    'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/brasil'),
-                                }"
-                            >
-                                Brasil
-                            </Link>
-                            <Link
-                                href="/politica"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
-                                :class="{
-                                    'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/politica'),
-                                }"
-                            >
-                                Política
-                            </Link>
-                            <Link
-                                href="/policial"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
-                                :class="{
-                                    'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/policial'),
-                                }"
-                            >
-                                Policial
-                            </Link>
-                            <Link
-                                href="/esporte"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
-                                :class="{
-                                    'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/esporte'),
-                                }"
-                            >
-                                Esporte
-                            </Link>
-                            <Link
-                                href="/opiniao"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
-                                :class="{
-                                    'border-b-2 border-azul-celeste':
-                                        $page.url.startsWith('/opiniao'),
-                                }"
-                            >
-                                Opinião
+                                Todas
                             </Link>
 
-                            <!-- Categorias Dropdown -->
+                            <!-- Categorias visíveis diretamente na navbar -->
+                            <Link
+                                v-for="categoria in categoriasVisiveis"
+                                :key="`nav-${categoria.id}`"
+                                :href="`/categoria/${categoria.slug || categoria.id}`"
+                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
+                                :class="{
+                                    'border-b-2 border-azul-celeste':
+                                        $page.url.includes(`/categoria/${categoria.slug || categoria.id}`),
+                                }"
+                            >
+                                {{ categoria.nome }}
+                            </Link>
+
+                            <!-- Dropdown para categorias adicionais -->
                             <div
+                                v-if="categoriasDropdown.length > 0"
                                 class="relative"
                                 @mouseenter="mostrarDropdown"
                                 @mouseleave="esconderDropdown"
@@ -173,7 +148,7 @@ onMounted(() => {
                                 <button
                                     class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium flex items-center hover:scale-120"
                                 >
-                                    Categorias
+                                    Mais Categorias
                                     <svg
                                         class="ml-1 w-4 h-4"
                                         fill="currentColor"
@@ -188,33 +163,22 @@ onMounted(() => {
                                 </button>
                                 <div
                                     v-show="exibeDropdown"
-                                    class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50"
+                                    class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border"
                                 >
                                     <div class="py-1">
                                         <Link
-                                            href="/categoria/mundo"
-                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste"
-                                            >Mundo</Link
+                                            v-for="categoria in categoriasDropdown"
+                                            :key="`dropdown-${categoria.id}`"
+                                            :href="`/categoria/${categoria.slug || categoria.id}`"
+                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste hover:text-white transition-colors"
                                         >
-                                        <Link
-                                            href="/categoria/economia"
-                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste"
-                                            >Economia</Link
-                                        >
-                                        <Link
-                                            href="/categoria/tecnologia"
-                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste"
-                                            >Tecnologia</Link
-                                        >
-                                        <Link
-                                            href="/categoria/cultura"
-                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste"
-                                            >Cultura</Link
-                                        >
+                                            {{ categoria.nome }}
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Links fixos adicionais -->
                             <Link
                                 href="/videos"
                                 class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
@@ -255,66 +219,43 @@ onMounted(() => {
             <!-- Mobile Navigation -->
             <div v-show="mostraMenuMobile" class="md:hidden bg-azul-noite">
                 <div class="px-2 pt-2 pb-3 space-y-1">
+                    <!-- Link para todas as notícias -->
                     <Link
-                        href="/municipios"
+                        href="/noticias"
                         class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Municípios</Link
+                        :class="{
+                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                                $page.url.startsWith('/noticias') && !$page.url.includes('/categoria/'),
+                        }"
                     >
+                        Todas
+                    </Link>
+
+                    <!-- Todas as categorias no mobile -->
                     <Link
-                        href="/brasil"
+                        v-for="categoria in categorias"
+                        :key="`mobile-${categoria.id}`"
+                        :href="`/categoria/${categoria.slug || categoria.id}`"
                         class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Brasil</Link
+                        :class="{
+                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                                $page.url.includes(`/categoria/${categoria.slug || categoria.id}`),
+                        }"
                     >
-                    <Link
-                        href="/politica"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Política</Link
-                    >
-                    <Link
-                        href="/policial"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Policial</Link
-                    >
-                    <Link
-                        href="/esporte"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Esporte</Link
-                    >
-                    <Link
-                        href="/opiniao"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Opinião</Link
-                    >
-                    <div class="px-3 py-2">
-                        <div class="text-celeste font-medium mb-2">Categorias</div>
-                        <div class="ml-4 space-y-1">
-                            <Link
-                                href="/categoria/mundo"
-                                class="block py-1 text-white hover:text-celeste"
-                                >Mundo</Link
-                            >
-                            <Link
-                                href="/categoria/economia"
-                                class="block py-1 text-white hover:text-celeste"
-                                >Economia</Link
-                            >
-                            <Link
-                                href="/categoria/tecnologia"
-                                class="block py-1 text-white hover:text-celeste"
-                                >Tecnologia</Link
-                            >
-                            <Link
-                                href="/categoria/cultura"
-                                class="block py-1 text-white hover:text-celeste"
-                                >Cultura</Link
-                            >
-                        </div>
-                    </div>
+                        {{ categoria.nome }}
+                    </Link>
+
+                    <!-- Link fixo adicional -->
                     <Link
                         href="/videos"
                         class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
-                        >Vídeos</Link
+                        :class="{
+                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                                $page.url.startsWith('/videos'),
+                        }"
                     >
+                        Vídeos
+                    </Link>
                 </div>
             </div>
         </header>

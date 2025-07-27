@@ -153,6 +153,49 @@ class NoticiaController extends Controller
         return redirect()->route('noticias.index')->with('success', 'Notícia removida com sucesso!');
     }
 
+    public function categoria($categoria)
+    {
+        // Buscar categoria por slug ou ID
+        $categoriaObj = Categoria::where('slug', $categoria)
+            ->orWhere('id', $categoria)
+            ->firstOrFail();
+
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')
+            ->publicadas()
+            ->where('categoria_id', $categoriaObj->id)
+            ->latest('publicada_em')
+            ->paginate(10);
+        
+        // Forçar serialização do relacionamento imagemCapa
+        $noticias->getCollection()->transform(function($noticia) {
+            $array = $noticia->toArray();
+            if ($noticia->imagemCapa) {
+                $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+            }
+            return $array;
+        });
+
+        $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
+            ->publicadas()
+            ->where('categoria_id', $categoriaObj->id)
+            ->orderBy('visualizacoes', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function($noticia) {
+                $array = $noticia->toArray();
+                if ($noticia->imagemCapa) {
+                    $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+                }
+                return $array;
+            });
+
+        return Inertia::render('Noticias/Index', [
+            'noticias' => $noticias,
+            'categoria' => $categoriaObj,
+            'maisLidas' => $maisLidas
+        ]);
+    }
+
     public function show(Noticia $noticia)
     {
         // Verificar se a notícia está publicada

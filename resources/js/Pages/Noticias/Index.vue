@@ -9,14 +9,6 @@ const userImage = '/images/user-placeholder.png';
 
 defineOptions({ layout: Principal });
 
-// Dados da página
-const pageData = ref({
-    name: "Todas as Notícias",
-    description:
-        "Acompanhe todas as principais notícias do Brasil e do mundo em tempo real, organizadas por relevância e data de publicação.",
-    icon: "📰",
-});
-
 const props = defineProps({
     noticias: {
         type: Object,
@@ -36,6 +28,20 @@ const props = defineProps({
         required: true,
         default: () => [],
     },
+    categoria: {
+        type: Object,
+        required: false,
+        default: null,
+    },
+});
+
+// Atualizar dados da página baseado na categoria
+const pageData = ref({
+    name: props.categoria ? `Categoria: ${props.categoria.nome}` : "Todas as Notícias",
+    description: props.categoria 
+        ? `Acompanhe as principais notícias da categoria ${props.categoria.nome}.`
+        : "Acompanhe todas as principais notícias do Brasil e do mundo em tempo real, organizadas por relevância e data de publicação.",
+    icon: "📰",
 });
 
 // Controles de filtro e ordenação
@@ -565,37 +571,6 @@ onMounted(() => {
                                 </span>
                             </button>
                         </div>
-                    </div>
-
-                    <!-- Últimas da Política -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
-                            <span class="text-2xl mr-2">🏛️</span>
-                            Últimas da Política
-                        </h3>
-                        <div class="space-y-3">
-                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
-                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
-                                    Senado aprova projeto de modernização eleitoral
-                                </h4>
-                                <p class="text-xs text-cinza">Há 2 horas</p>
-                            </article>
-                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
-                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
-                                    Ministros se reúnem para discutir orçamento 2025
-                                </h4>
-                                <p class="text-xs text-cinza">Há 4 horas</p>
-                            </article>
-                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
-                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
-                                    Governadores debatem segurança pública
-                                </h4>
-                                <p class="text-xs text-cinza">Há 6 horas</p>
-                            </article>
-                        </div>
-                        <button class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium mt-3">
-                            Ver todas as notícias de política →
-                        </button>
                     </div>
 
                     <!-- Espaço para Propaganda - Sidebar Rodapé -->

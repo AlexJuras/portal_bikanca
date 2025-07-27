@@ -53,8 +53,12 @@ Route::prefix('noticias')->group(function () {
 });
 
 // Rotas de Categorias
+Route::prefix('categoria')->group(function () {
+    Route::get('/{categoria}', [NoticiaController::class, 'categoria'])->name('categorias.show');
+});
+
 Route::prefix('categorias')->group(function () {
-    Route::inertia('/', 'Categoria')->name('categorias.index');
+    Route::inertia('/', 'Categorias/Index')->name('categorias.index');
     // Uncomment when needed
     // Route::resource('/', CategoriaController::class);
 });

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Carbon\Carbon;
 
 class Noticia extends Model
 {
@@ -17,13 +18,35 @@ class Noticia extends Model
         'resumo',
         'conteudo',
         'status',
-        'publicada_em',
         'visualizacoes',
         'layout',
         'autor_id',
         'categoria_id',
         'imagem_capa'
     ];
+
+    protected $casts = [
+        'publicada_em' => 'datetime',
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($noticia) {
+            // Se o status está sendo alterado para 'publicada'
+            if ($noticia->status === 'publicada') {
+                // Se é uma nova notícia ou se o status estava diferente de 'publicada'
+                if (!$noticia->exists || $noticia->getOriginal('status') !== 'publicada') {
+                    $noticia->publicada_em = Carbon::now();
+                }
+            }
+            // Se o status não é 'publicada', limpar a data de publicação
+            elseif ($noticia->status !== 'publicada') {
+                $noticia->publicada_em = null;
+            }
+        });
+    }
 
     public function autor(): BelongsTo
     {
@@ -43,5 +66,21 @@ class Noticia extends Model
     public function imagemCapa()
     {
         return $this->belongsTo(Midia::class, 'imagem_capa');
+    }
+
+    /**
+     * Verifica se a notícia está publicada
+     */
+    public function isPublicada(): bool
+    {
+        return $this->status === 'publicada';
+    }
+
+    /**
+     * Scope para buscar apenas notícias publicadas
+     */
+    public function scopePublicadas($query)
+    {
+        return $query->where('status', 'publicada');
     }
 }

@@ -5,6 +5,17 @@ const props = defineProps({
         required: true,
     },
 });
+
+const translateLabel = (label) => {
+    const translations = {
+        '&laquo; Previous': '&laquo; Anterior',
+        'Previous': 'Anterior',
+        'Next &raquo;': 'Próximo &raquo;',
+        'Next': 'Próximo'
+    };
+    
+    return translations[label] || label;
+};
 </script>
 
 <template>
@@ -14,7 +25,7 @@ const props = defineProps({
             <div
                 v-if="link.url === null"
                 class="px-4 py-2 text-sm text-gray-500 bg-gray-100 rounded-lg"
-                v-html="link.label"
+                v-html="translateLabel(link.label)"
             />
             
             <Link
@@ -25,7 +36,7 @@ const props = defineProps({
                     'bg-azul-lazuli text-white': link.active,
                     'bg-gray-100 text-gray-700 hover:bg-gray-200': !link.active
                 }"
-                v-html="link.label"
+                v-html="translateLabel(link.label)"
             />
         </template>
     </div>

@@ -81,18 +81,6 @@ onMounted(() => {
                         <div class="text-white">
                             <span>{{ dataAtual }}</span>
                         </div>
-                        <!-- <div class="flex space-x-4 text-white">
-                            <Link
-                                href="/contato"
-                                class="hover:text-celeste transition-colors"
-                                >Contato</Link
-                            >
-                            <Link
-                                href="/sobre"
-                                class="hover:text-celeste transition-colors"
-                                >Sobre</Link
-                            >
-                        </div> -->
                     </div>
                 </div>
             </div>

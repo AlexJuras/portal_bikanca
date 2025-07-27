@@ -15,7 +15,10 @@ class NoticiaController extends Controller
 {
     public function index()
     {
-        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')->latest()->paginate(10);
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')
+            ->publicadas()
+            ->latest('publicada_em')
+            ->paginate(10);
         
         // Forçar serialização do relacionamento imagemCapa
         $noticias->getCollection()->transform(function($noticia) {
@@ -28,6 +31,7 @@ class NoticiaController extends Controller
 
         $categorias = Categoria::all();
         $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
+            ->publicadas()
             ->orderBy('visualizacoes', 'desc')
             ->limit(5)
             ->get()
@@ -118,6 +122,7 @@ class NoticiaController extends Controller
             'titulo' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:noticias,slug,' . $noticia->id,
             'conteudo' => 'required|string',
+            'status' => 'required|in:rascunho,publicada,arquivada,agendada',
             'autor_id' => 'required|exists:autores,id',
             'categoria_id' => 'required|exists:categorias,id',
             'tags' => 'nullable|array',
@@ -130,6 +135,7 @@ class NoticiaController extends Controller
             'titulo' => $request->titulo,
             'slug' => $slug,
             'conteudo' => $request->conteudo,
+            'status' => $request->status,
             'autor_id' => $request->autor_id,
             'categoria_id' => $request->categoria_id,
             'layout' => $request->layout,
@@ -149,6 +155,11 @@ class NoticiaController extends Controller
 
     public function show(Noticia $noticia)
     {
+        // Verificar se a notícia está publicada
+        if (!$noticia->isPublicada()) {
+            abort(404, 'Notícia não encontrada ou não publicada.');
+        }
+
         $noticiaComRelacionamentos = $noticia->load(['autor', 'categoria', 'tags', 'imagemCapa']);
         
         // Forçar a serialização do relacionamento imagemCapa
@@ -160,6 +171,8 @@ class NoticiaController extends Controller
         return Inertia::render('Noticias/Show', [
             'noticia' => $noticiaArray,
             'noticiasRelacionadas' => Noticia::with(['autor', 'categoria', 'imagemCapa'])
+                ->publicadas()
+                ->where('categoria_id', $noticia->categoria_id)
                 ->where('id', '!=', $noticia->id)
                 ->take(3)
                 ->get()

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import Principal from "@/Layouts/Principal.vue";
 import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
@@ -41,6 +41,7 @@ const props = defineProps({
 // Controles de filtro e ordenação
 const categoriaSelecionada = ref("all");
 const sortBy = ref("date"); // 'date' ou 'views'
+const searchQuery = ref("");
 const currentPage = ref(1);
 const newsPerPage = 9;
 const totalNews = ref(156); // Total simulado
@@ -56,6 +57,14 @@ const noticiasFiltradas = computed(() => {
         );
     }
 
+    // Filtrar por busca no título
+    if (searchQuery.value.trim()) {
+        const query = searchQuery.value.toLowerCase().trim();
+        filtro = filtro.filter(noticia => 
+            noticia.titulo.toLowerCase().includes(query)
+        );
+    }
+
     return filtro;
 });
 
@@ -67,16 +76,12 @@ const noticiaDestaque = computed(() => {
     return props.noticias.data[0];
 });
 
-// Computed para paginação
-// const noticiasPaginadas = computed(() => {
-//     const start = (currentPage.value - 1) * newsPerPage;
-//     const end = start + newsPerPage;
-//     return noticiasFiltradas.value.slice(start, end);
-// });
-
-// const totalPages = computed(() => {
-//     return Math.ceil(noticiasFiltradas.value.length / newsPerPage);
-// });
+// Computed para nome da categoria selecionada
+const categoriaSelecionadaNome = computed(() => {
+    if (categoriaSelecionada.value === "all") return "Todas";
+    const categoria = props.categorias.find(cat => cat.id === categoriaSelecionada.value);
+    return categoria?.nome || "Todas";
+});
 
 // Função para navegar páginas
 const goToPage = (page) => {
@@ -88,11 +93,21 @@ const goToPage = (page) => {
 const filterByCategory = (category) => {
     categoriaSelecionada.value = category;
     currentPage.value = 1;
+    // Limpar busca quando trocar categoria
+    searchQuery.value = "";
 };
 
 // Função para alterar ordenação
 const changeSortBy = (sort) => {
     sortBy.value = sort;
+    currentPage.value = 1;
+};
+
+// Função para limpar filtros
+const clearFilters = () => {
+    categoriaSelecionada.value = "all";
+    searchQuery.value = "";
+    sortBy.value = "date";
     currentPage.value = 1;
 };
 
@@ -121,6 +136,11 @@ const formatDate = (date) => {
     });
 };
 
+// Watch para atualizar contadores quando a busca mudar
+watch([searchQuery, categoriaSelecionada], () => {
+    currentPage.value = 1;
+});
+
 onMounted(() => {
     updateCategoryCounts();
 });
@@ -131,11 +151,30 @@ onMounted(() => {
         <!-- Cabeçalho da Página -->
         <section class="bg-white shadow-sm border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Breadcrumb -->
-                <nav class="text-sm text-cinza mb-4">
-                    <span>Home</span>
-                    <span class="mx-2">></span>
-                    <span class="text-azul-oxford">{{ pageData.name }}</span>
+                <!-- Breadcrumb Melhorado -->
+                <nav class="text-sm mb-6" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2">
+                        <li>
+                            <Link href="/" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                </svg>
+                                Home
+                            </Link>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-gray-600">Notícias</span>
+                        </li>
+                        <li v-if="categoriaSelecionada !== 'all'" class="flex items-center">
+                            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-azul-oxford font-medium">{{ categoriaSelecionadaNome }}</span>
+                        </li>
+                    </ol>
                 </nav>
 
                 <!-- Título da Página -->
@@ -143,7 +182,7 @@ onMounted(() => {
                     <div class="text-4xl">{{ pageData.icon }}</div>
                     <div>
                         <h1 class="text-4xl font-bold text-azul-oxford">
-                            {{ pageData.name }}
+                            {{ categoriaSelecionada === 'all' ? pageData.name : `Notícias de ${categoriaSelecionadaNome}` }}
                         </h1>
                         <p class="text-gray-600 mt-2">
                             {{ pageData.description }}
@@ -151,12 +190,49 @@ onMounted(() => {
                     </div>
                 </div>
 
+                <!-- Barra de Pesquisa -->
+                <div class="mb-6">
+                    <div class="relative max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Pesquisar notícias pelo título..."
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-azul-oxford focus:border-transparent"
+                        />
+                        <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <button
+                                @click="searchQuery = ''"
+                                class="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Filtros e Controles -->
-                <div
-                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-4"
-                >
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 mb-4">
                     <!-- Filtros de Categoria -->
                     <div class="flex flex-wrap gap-2">
+                        <button
+                            @click="filterByCategory('all')"
+                            :class="[
+                                'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                                categoriaSelecionada === 'all'
+                                    ? 'bg-azul-oxford text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                            ]"
+                        >
+                            Todas
+                            <span class="ml-1 text-xs opacity-75">({{ props.noticias.data.length }})</span>
+                        </button>
                         <button
                             v-for="categoria in categorias"
                             :key="categoria.id"
@@ -164,39 +240,59 @@ onMounted(() => {
                             :class="[
                                 'px-4 py-2 rounded-full text-sm font-medium transition-all',
                                 categoriaSelecionada === categoria.id
-                                    ? 'bg-azul-lazuli text-white'
+                                    ? 'bg-azul-oxford text-white shadow-md'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
                             ]"
                         >
                             {{ categoria.nome }}
-                            <span class="ml-1 text-xs opacity-75"
-                                >({{ categoria.count || 0 }})</span
-                            >
+                            <span class="ml-1 text-xs opacity-75">({{ categoria.count || 0 }})</span>
                         </button>
                     </div>
 
-                    <!-- Ordenação -->
+                    <!-- Controles à direita -->
                     <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-600">Ordenar por:</span>
-                        <select
-                            v-model="sortBy"
-                            @change="changeSortBy(sortBy)"
-                            class="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-azul-oxford"
+                        <!-- Ordenação -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Ordenar por:</span>
+                            <select
+                                v-model="sortBy"
+                                @change="changeSortBy(sortBy)"
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-azul-oxford"
+                            >
+                                <option value="date">Mais recentes</option>
+                                <option value="views">Mais lidas</option>
+                            </select>
+                        </div>
+
+                        <!-- Botão limpar filtros -->
+                        <button
+                            v-if="categoriaSelecionada !== 'all' || searchQuery.trim()"
+                            @click="clearFilters"
+                            class="text-sm text-azul-lazuli hover:text-azul-oxford font-medium flex items-center space-x-1"
                         >
-                            <option value="date">Mais recentes</option>
-                            <option value="views">Mais lidas</option>
-                        </select>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            <span>Limpar filtros</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Estatísticas -->
-                <div class="flex items-center space-x-6 text-sm text-cinza">
-                    <span
-                        >{{ noticiasFiltradas.length }} notícias
-                        encontradas</span
-                    >
-                    <span>Atualizado hoje</span>
-                    <span>Última atualização: 16:30</span>
+                <!-- Estatísticas e Alertas -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                    <div class="flex items-center space-x-6 text-sm text-cinza">
+                        <span class="font-medium">
+                            {{ noticiasFiltradas.length }} 
+                            {{ noticiasFiltradas.length === 1 ? 'notícia encontrada' : 'notícias encontradas' }}
+                        </span>
+                        <span>Atualizado hoje</span>
+                        <span>Última atualização: 16:30</span>
+                    </div>
+                    
+                    <!-- Alerta quando não há resultados -->
+                    <div v-if="searchQuery.trim() && noticiasFiltradas.length === 0" class="text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                        Nenhuma notícia encontrada para "{{ searchQuery }}"
+                    </div>
                 </div>
             </div>
         </section>
@@ -204,15 +300,9 @@ onMounted(() => {
         <!-- Espaço para Propaganda - Banner Principal -->
         <section class="bg-white border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div
-                    class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center"
-                >
-                    <p class="text-gray-500 text-sm mb-2">
-                        ESPAÇO PUBLICITÁRIO
-                    </p>
-                    <p class="text-gray-400 text-xs">
-                        Banner Principal 970x250
-                    </p>
+                <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
+                    <p class="text-gray-400 text-xs">Banner Principal 970x250</p>
                 </div>
             </div>
         </section>
@@ -222,9 +312,9 @@ onMounted(() => {
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <!-- Conteúdo Principal -->
                 <div class="lg:col-span-8">
-                    <!-- Notícia Principal em Destaque (apenas se "Todas" estiver selecionado) -->
+                    <!-- Notícia Principal em Destaque (apenas se "Todas" estiver selecionado e sem busca) -->
                     <article
-                        v-if="categoriaSelecionada === 'all' && noticiaDestaque"
+                        v-if="categoriaSelecionada === 'all' && !searchQuery.trim() && noticiaDestaque"
                         class="bg-white rounded-lg shadow-sm overflow-hidden mb-8"
                     >
                         <div class="relative">
@@ -234,9 +324,7 @@ onMounted(() => {
                                 :alt="noticiaDestaque.titulo"
                                 class="w-full h-80 object-cover"
                             />
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
-                            ></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
                             <!-- Conteúdo sobreposto -->
                             <div class="absolute bottom-0 left-0 right-0 p-6">
@@ -252,15 +340,11 @@ onMounted(() => {
                                     </span>
                                 </div>
 
-                                <h2
-                                    class="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight"
-                                >
+                                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
                                     {{ noticiaDestaque.titulo }}
                                 </h2>
 
-                                <p
-                                    class="text-gray-200 text-sm mb-4 line-clamp-2"
-                                >
+                                <p class="text-gray-200 text-sm mb-4 line-clamp-2">
                                     {{ noticiaDestaque.resumo }}
                                 </p>
 
@@ -272,14 +356,10 @@ onMounted(() => {
                                             class="w-8 h-8 rounded-full border-2 border-white"
                                         />
                                         <div>
-                                            <p
-                                                class="text-white text-sm font-medium"
-                                            >
+                                            <p class="text-white text-sm font-medium">
                                                 {{ noticiaDestaque.autor?.nome }}
                                             </p>
-                                            <p class="text-gray-300 text-xs">
-                                                Jornalista
-                                            </p>
+                                            <p class="text-gray-300 text-xs">Jornalista</p>
                                         </div>
                                     </div>
 
@@ -295,23 +375,15 @@ onMounted(() => {
                     </article>
 
                     <!-- Espaço para Propaganda - Meio do Conteúdo -->
-                    <div
-                        class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8"
-                    >
-                        <p class="text-gray-500 text-sm mb-2">
-                            ESPAÇO PUBLICITÁRIO
-                        </p>
-                        <p class="text-gray-400 text-xs">
-                            Banner Horizontal 728x90
-                        </p>
+                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8">
+                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-gray-400 text-xs">Banner Horizontal 728x90</p>
                     </div>
 
                     <!-- Grade de Notícias -->
-                    <div
-                        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
-                    >
+                    <div v-if="noticiasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                         <article
-                            v-for="noticia in noticias.data"
+                            v-for="noticia in noticiasFiltradas"
                             :key="noticia.id"
                             class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
                         >
@@ -321,22 +393,10 @@ onMounted(() => {
                                     :alt="noticia.titulo"
                                     class="w-full h-48 object-cover"
                                 />
-                                <!-- <div
-                                    v-if="noticia.isBreaking"
-                                    class="absolute top-2 left-2"
-                                >
-                                    <span
-                                        class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold animate-pulse"
-                                    >
-                                        🔴 URGENTE
-                                    </span>
-                                </div> -->
                             </div>
 
                             <div class="p-6">
-                                <div
-                                    class="flex items-center justify-between mb-3"
-                                >
+                                <div class="flex items-center justify-between mb-3">
                                     <span
                                         v-if="noticia.categoria"
                                         class="bg-azul-lazuli text-white px-2 py-1 rounded text-xs font-medium"
@@ -348,15 +408,11 @@ onMounted(() => {
                                     </span>
                                 </div>
 
-                                <h3
-                                    class="text-lg font-semibold text-azul-oxford mb-2 line-clamp-2"
-                                >
+                                <h3 class="text-lg font-semibold text-azul-oxford mb-2 line-clamp-2">
                                     {{ noticia.titulo }}
                                 </h3>
 
-                                <p
-                                    class="text-gray-600 text-sm mb-4 line-clamp-3"
-                                >
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                                     {{ noticia.resumo }}
                                 </p>
 
@@ -367,9 +423,7 @@ onMounted(() => {
                                             :alt="noticia.autor?.nome"
                                             class="w-6 h-6 rounded-full"
                                         />
-                                        <span class="text-sm text-cinza">{{
-                                            noticia.autor?.nome
-                                        }}</span>
+                                        <span class="text-sm text-cinza">{{ noticia.autor?.nome }}</span>
                                     </div>
 
                                     <div class="flex items-center space-x-4">
@@ -385,34 +439,40 @@ onMounted(() => {
                         </article>
                     </div>
 
-                    <!-- Paginação -->
-                    <div
-                        class="flex items-center justify-center space-x-2 mb-8"
-                         > 1"
-                    >
-                        <Pagination :links="noticias.links" class="mt-6"/>
+                    <!-- Estado vazio quando não há resultados -->
+                    <div v-else class="text-center py-12">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-azul-oxford mb-2">
+                            Nenhuma notícia encontrada
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Não encontramos notícias que correspondam aos seus critérios de pesquisa.
+                        </p>
+                        <button
+                            @click="clearFilters"
+                            class="bg-azul-oxford hover:bg-azul-noite text-white px-6 py-3 rounded-lg font-medium transition-all"
+                        >
+                            Limpar filtros e ver todas as notícias
+                        </button>
+                    </div>
+
+                    <!-- Paginação Melhorada -->
+                    <div v-if="noticiasFiltradas.length > 0" class="flex items-center justify-center mb-8">
+                        <Pagination :links="noticias.links" class="bg-white rounded-lg shadow-sm p-4" />
                     </div>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="lg:col-span-4">
                     <!-- Espaço para Propaganda - Sidebar Topo -->
-                    <div
-                        class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8"
-                    >
-                        <p class="text-gray-500 text-sm mb-2">
-                            ESPAÇO PUBLICITÁRIO
-                        </p>
-                        <p class="text-gray-400 text-xs">
-                            Banner Lateral 300x250
-                        </p>
+                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8">
+                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-gray-400 text-xs">Banner Lateral 300x250</p>
                     </div>
 
                     <!-- Mais Lidas -->
                     <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3
-                            class="text-xl font-bold text-azul-oxford mb-4 flex items-center"
-                        >
+                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
                             <span class="text-2xl mr-2">📈</span>
                             Mais Lidas
                         </h3>
@@ -423,15 +483,10 @@ onMounted(() => {
                                 class="flex space-x-3 pb-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors cursor-pointer"
                             >
                                 <div class="flex-shrink-0">
-                                    <span
-                                        class="text-2xl font-bold text-celeste"
-                                        >{{ index + 1 }}</span
-                                    >
+                                    <span class="text-2xl font-bold text-celeste">{{ index + 1 }}</span>
                                 </div>
                                 <div class="flex-1">
-                                    <div
-                                        class="flex items-center space-x-2 mb-1"
-                                    >
+                                    <div class="flex items-center space-x-2 mb-1">
                                         <span
                                             v-if="noticia.categoria"
                                             class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded"
@@ -439,14 +494,10 @@ onMounted(() => {
                                             {{ noticia.categoria.nome }}
                                         </span>
                                     </div>
-                                    <h4
-                                        class="font-semibold text-azul-oxford text-sm mb-1 line-clamp-2"
-                                    >
+                                    <h4 class="font-semibold text-azul-oxford text-sm mb-1 line-clamp-2">
                                         {{ noticia.titulo }}
                                     </h4>
-                                    <div
-                                        class="flex items-center justify-between"
-                                    >
+                                    <div class="flex items-center justify-between">
                                         <p class="text-cinza text-xs">
                                             {{ formatDate(noticia.publicada_em) }}
                                         </p>
@@ -458,13 +509,35 @@ onMounted(() => {
 
                     <!-- Filtro Rápido por Categoria -->
                     <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3
-                            class="text-xl font-bold text-azul-oxford mb-4 flex items-center"
-                        >
+                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
                             <span class="text-2xl mr-2">📂</span>
                             Categorias
                         </h3>
                         <div class="space-y-3">
+                            <button
+                                @click="filterByCategory('all')"
+                                :class="[
+                                    'flex items-center justify-between w-full p-3 rounded-lg transition-colors text-left',
+                                    categoriaSelecionada === 'all'
+                                        ? 'bg-azul-oxford text-white'
+                                        : 'hover:bg-gray-50',
+                                ]"
+                            >
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-3 h-3 rounded-full bg-azul-lazuli"></div>
+                                    <span class="font-medium">Todas</span>
+                                </div>
+                                <span
+                                    :class="[
+                                        'text-sm px-2 py-1 rounded-full',
+                                        categoriaSelecionada === 'all'
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-gray-100 text-gray-700'
+                                    ]"
+                                >
+                                    {{ props.noticias.data.length }}
+                                </span>
+                            </button>
                             <button
                                 v-for="categoria in categorias"
                                 :key="categoria.id"
@@ -477,15 +550,16 @@ onMounted(() => {
                                 ]"
                             >
                                 <div class="flex items-center space-x-3">
-                                    <div
-                                        class="w-3 h-3 rounded-full bg-azul-lazuli"
-                                    ></div>
-                                    <span class="font-medium">{{
-                                        categoria.nome
-                                    }}</span>
+                                    <div class="w-3 h-3 rounded-full bg-azul-lazuli"></div>
+                                    <span class="font-medium">{{ categoria.nome }}</span>
                                 </div>
                                 <span
-                                    class="text-sm opacity-75 bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                                    :class="[
+                                        'text-sm px-2 py-1 rounded-full',
+                                        categoriaSelecionada === categoria.id
+                                            ? 'bg-white/20 text-white'
+                                            : 'bg-gray-100 text-gray-700'
+                                    ]"
                                 >
                                     {{ categoria.count || 0 }}
                                 </span>
@@ -493,133 +567,41 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <!-- Newsletter -->
-                    <div class="bg-azul-oxford rounded-lg p-6 text-white mb-8">
-                        <h3 class="text-xl font-bold mb-4 flex items-center">
-                            <span class="text-2xl mr-2">📧</span>
-                            Newsletter
-                        </h3>
-                        <p class="text-sm mb-4">
-                            Receba todas as principais notícias em seu email
-                        </p>
-                        <div class="space-y-3">
-                            <input
-                                type="email"
-                                placeholder="Seu email"
-                                class="w-full px-3 py-2 rounded text-azul-oxford"
-                            />
-                            <button
-                                class="w-full bg-celeste hover:bg-azul-lazuli text-azul-oxford font-medium py-2 rounded transition-all"
-                            >
-                                Inscrever-se
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Últimas da Política -->
                     <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3
-                            class="text-xl font-bold text-azul-oxford mb-4 flex items-center"
-                        >
+                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
                             <span class="text-2xl mr-2">🏛️</span>
                             Últimas da Política
                         </h3>
                         <div class="space-y-3">
-                            <article
-                                class="pb-3 border-b border-gray-200 last:border-b-0"
-                            >
-                                <h4
-                                    class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2"
-                                >
-                                    Senado aprova projeto de modernização
-                                    eleitoral
+                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
+                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
+                                    Senado aprova projeto de modernização eleitoral
                                 </h4>
                                 <p class="text-xs text-cinza">Há 2 horas</p>
                             </article>
-                            <article
-                                class="pb-3 border-b border-gray-200 last:border-b-0"
-                            >
-                                <h4
-                                    class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2"
-                                >
-                                    Ministros se reúnem para discutir orçamento
-                                    2025
+                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
+                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
+                                    Ministros se reúnem para discutir orçamento 2025
                                 </h4>
                                 <p class="text-xs text-cinza">Há 4 horas</p>
                             </article>
-                            <article
-                                class="pb-3 border-b border-gray-200 last:border-b-0"
-                            >
-                                <h4
-                                    class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2"
-                                >
+                            <article class="pb-3 border-b border-gray-200 last:border-b-0">
+                                <h4 class="font-semibold text-sm text-azul-oxford mb-1 line-clamp-2">
                                     Governadores debatem segurança pública
                                 </h4>
                                 <p class="text-xs text-cinza">Há 6 horas</p>
                             </article>
                         </div>
-                        <button
-                            class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium mt-3"
-                        >
+                        <button class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium mt-3">
                             Ver todas as notícias de política →
                         </button>
                     </div>
 
                     <!-- Espaço para Propaganda - Sidebar Rodapé -->
-                    <div
-                        class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center"
-                    >
-                        <p class="text-gray-500 text-sm mb-2">
-                            ESPAÇO PUBLICITÁRIO
-                        </p>
-                        <p class="text-gray-400 text-xs">
-                            Banner Vertical 300x600
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Seção de Notícias por Categoria (quando não é "Todas") -->
-            <div v-if="categoriaSelecionada !== 'all'" class="mt-12">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-azul-oxford">
-                        Todas as notícias de {{ categorias.find(cat => cat.id === categoriaSelecionada)?.nome }}
-                    </h2>
-                    <button
-                        @click="filterByCategory('all')"
-                        class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium"
-                    >
-                        Ver todas as categorias
-                    </button>
-                </div>
-
-                <!-- Estatísticas da categoria selecionada -->
-                <div
-                    class="bg-white rounded-lg p-4 mb-6 border border-gray-200"
-                >
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div
-                                class="w-4 h-4 rounded-full"
-                                :class="{
-                                    'bg-azul-lazuli': true
-                                }"
-                            ></div>
-                            <span class="font-medium text-azul-oxford">{{
-                                categorias.find(cat => cat.id === categoriaSelecionada)?.nome || 'Todas'
-                            }}</span>
-                            <span class="text-sm text-cinza"
-                                >{{ noticiasFiltradas.length }} notícias</span
-                            >
-                        </div>
-                        <div class="text-sm text-cinza">
-                            Ordenado por:
-                            {{
-                                sortBy === "date"
-                                    ? "Mais recentes"
-                                    : "Mais lidas"
-                            }}
-                        </div>
+                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-gray-400 text-xs">Banner Vertical 300x600</p>
                     </div>
                 </div>
             </div>
@@ -649,8 +631,7 @@ onMounted(() => {
 }
 
 @keyframes pulse {
-    0%,
-    100% {
+    0%, 100% {
         opacity: 1;
     }
     50% {
@@ -658,8 +639,9 @@ onMounted(() => {
     }
 }
 
-/* Personalização do select */
-select:focus {
+/* Personalização do select e inputs */
+select:focus,
+input:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
 }
@@ -675,5 +657,68 @@ select:focus {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+}
+
+/* Personalização da paginação */
+/* .pagination-wrapper {
+    @apply flex items-center justify-center space-x-2;
+} */
+
+/* Efeitos de hover para botões */
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Estilo para breadcrumb links */
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Animação para o estado vazio */
+.empty-state {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade melhorada para filtros */
+/* @media (max-width: 640px) {
+    .category-filters {
+        @apply flex-col space-y-2;
+    }
+    
+    .category-filters button {
+        @apply w-full justify-center;
+    }
+} */
+
+/* Estilo para campo de pesquisa com foco */
+input[type="text"]:focus {
+    border-color: #1e40af;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* Melhor contraste para textos */
+.text-cinza {
+    color: #6b7280;
+}
+
+/* Efeito de elevação para cards ativos */
+.category-button-active {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
 }
 </style>

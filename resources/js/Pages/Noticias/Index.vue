@@ -55,15 +55,23 @@ const currentPage = ref(1);
 const newsPerPage = 9;
 const totalNews = ref(156); // Total simulado
 
-// Computed para filtrar notícias (apenas na página geral)
+// Computed para filtrar notícias
 const noticiasFiltradas = computed(() => {
     let filtro = props.noticias.data;
 
-    // Se estamos visualizando uma categoria específica, não aplicar filtros adicionais
+    // Se estamos visualizando uma categoria específica, aplicar apenas filtro de busca
     if (isVisualizandoCategoria.value) {
+        // Filtrar por busca no título (funciona em páginas de categoria)
+        if (searchQuery.value.trim()) {
+            const query = searchQuery.value.toLowerCase().trim();
+            filtro = filtro.filter(noticia => 
+                noticia.titulo.toLowerCase().includes(query)
+            );
+        }
         return filtro;
     }
 
+    // Para página geral, aplicar todos os filtros
     // Filtrar por categoria (apenas na página geral)
     if (categoriaSelecionada.value !== "all") {
         filtro = filtro.filter(
@@ -215,7 +223,7 @@ onMounted(() => {
                         <input
                             v-model="searchQuery"
                             type="text"
-                            placeholder="Pesquisar notícias pelo título..."
+                            :placeholder="categoria ? `Pesquisar em ${categoria.nome}...` : 'Pesquisar notícias pelo título...'"
                             class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-azul-oxford focus:border-transparent"
                         />
                         <div v-if="searchQuery" class="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -298,24 +306,44 @@ onMounted(() => {
                         <div>
                             <h2 class="text-2xl font-bold mb-2">{{ categoria.nome }}</h2>
                             <p class="text-blue-100 mb-3">
-                                Visualizando todas as notícias da categoria {{ categoria.nome.toLowerCase() }}
+                                {{ searchQuery.trim() 
+                                    ? `Pesquisando por "${searchQuery}" em ${categoria.nome.toLowerCase()}`
+                                    : `Visualizando todas as notícias da categoria ${categoria.nome.toLowerCase()}`
+                                }}
                             </p>
                             <div class="flex items-center space-x-4 text-sm text-blue-100">
-                                <span>{{ props.noticias.data.length }} {{ props.noticias.data.length === 1 ? 'notícia' : 'notícias' }}</span>
+                                <span>
+                                    {{ searchQuery.trim() ? noticiasFiltradas.length : props.noticias.data.length }} 
+                                    {{ (searchQuery.trim() ? noticiasFiltradas.length : props.noticias.data.length) === 1 ? 'notícia' : 'notícias' }}
+                                    {{ searchQuery.trim() ? 'encontrada' : '' }}
+                                </span>
                                 <span>•</span>
                                 <span>Atualizado hoje</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <Link 
-                                href="/noticias"
-                                class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                            >
-                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-                                </svg>
-                                Ver todas as notícias
-                            </Link>
+                            <div class="space-y-2">
+                                <Link 
+                                    href="/noticias"
+                                    class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                >
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Ver todas as notícias
+                                </Link>
+                                <div v-if="searchQuery.trim()" class="block">
+                                    <button
+                                        @click="searchQuery = ''"
+                                        class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                    >
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Limpar pesquisa
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

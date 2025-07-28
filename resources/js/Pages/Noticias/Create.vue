@@ -47,6 +47,27 @@ const galleryPreviews = ref([]);
 const featuredImageInput = ref(null);
 // const galleryImageInput = ref(null);
 
+// Computed para campos pendentes
+const camposPendentes = computed(() => {
+    const pendentes = [];
+    if (!form.titulo || form.titulo.trim() === '') {
+        pendentes.push('Título');
+    }
+    if (!form.resumo || form.resumo.trim() === '') {
+        pendentes.push('Resumo');
+    }
+    if (!form.conteudo || form.conteudo.trim() === '' || form.conteudo === 'Digite o conteúdo da notícia aqui...') {
+        pendentes.push('Conteúdo');
+    }
+    if (!form.categoria_id) {
+        pendentes.push('Categoria');
+    }
+    if (!form.autor_id) {
+        pendentes.push('Autor');
+    }
+    return pendentes;
+});
+
 // Computed properties
 const tituloLength = computed(() => form.titulo.length);
 const resumoLength = computed(() => form.resumo.length);
@@ -108,15 +129,33 @@ const gerarSlug = async () => {
     }
 };
 
+// Função para limpar erros de validação específicos
+const limparErroValidacao = (campo) => {
+    if (validationErrors.value[campo]) {
+        delete validationErrors.value[campo];
+        validationErrors.value = { ...validationErrors.value };
+    }
+    if (showValidationAlert.value && Object.keys(validationErrors.value).length === 0) {
+        showValidationAlert.value = false;
+    }
+};
+
 // Watch for title changes
 watch(
     () => form.titulo,
     async (novoTitulo) => {
+        limparErroValidacao('titulo');
         if (!form.slug || form.slug === "") {
             await gerarSlug();
         }
     }
 );
+
+// Watch para outros campos
+watch(() => form.resumo, () => limparErroValidacao('resumo'));
+watch(() => form.conteudo, () => limparErroValidacao('conteudo'));
+watch(() => form.categoria_id, () => limparErroValidacao('categoria_id'));
+watch(() => form.autor_id, () => limparErroValidacao('autor_id'));
 
 watch(tagInput, (newValue) => {
     if (newValue !== "") {
@@ -167,9 +206,55 @@ const addTagOnEnter = (event) => {
     }
 };
 
+// Estados para controle de validação
+const validationErrors = ref({});
+const showValidationAlert = ref(false);
+
+// Função para validar campos obrigatórios
+const validarCamposObrigatorios = () => {
+    const errors = {};
+    
+    if (!form.titulo || form.titulo.trim() === '') {
+        errors.titulo = 'O título é obrigatório';
+    }
+    
+    if (!form.resumo || form.resumo.trim() === '') {
+        errors.resumo = 'O resumo é obrigatório';
+    }
+    
+    if (!form.conteudo || form.conteudo.trim() === '' || form.conteudo === 'Digite o conteúdo da notícia aqui...') {
+        errors.conteudo = 'O conteúdo da notícia é obrigatório';
+    }
+    
+    if (!form.categoria_id) {
+        errors.categoria_id = 'A categoria é obrigatória';
+    }
+    
+    if (!form.autor_id) {
+        errors.autor_id = 'O autor é obrigatório';
+    }
+    
+    validationErrors.value = errors;
+    return Object.keys(errors).length === 0;
+};
+
+// Função para exibir alerta de campos obrigatórios
+const mostrarAlertaValidacao = () => {
+    showValidationAlert.value = true;
+    setTimeout(() => {
+        showValidationAlert.value = false;
+    }, 5000);
+};
+
 // Funções de submissão
 const processarSubmissao = async (status) => {
     try {
+        // Validar campos obrigatórios
+        if (!validarCamposObrigatorios()) {
+            mostrarAlertaValidacao();
+            return;
+        }
+
         // Garante que temos uma slug válida
         if (!form.slug) {
             await gerarSlug();
@@ -185,6 +270,10 @@ const processarSubmissao = async (status) => {
             },
             onError: (errors) => {
                 console.error(`Erro ao ${status === 'rascunho' ? 'salvar rascunho' : 'publicar notícia'}:`, errors);
+                // Atualizar erros de validação se houver
+                if (errors) {
+                    validationErrors.value = { ...validationErrors.value, ...errors };
+                }
             },
         });
     } catch (error) {
@@ -220,6 +309,30 @@ const formatDate = (dateString) => {
     <Head title="Criar Nova Notícia" />
 
     <div class="min-h-screen bg-gray-50">
+        <!-- Alerta de Validação -->
+        <div 
+            v-if="showValidationAlert" 
+            class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 animate-pulse"
+        >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z">
+                </path>
+            </svg>
+            <div>
+                <p class="font-medium">Campos obrigatórios não preenchidos!</p>
+                <p class="text-sm opacity-90">Verifique os campos marcados abaixo e preencha todos os dados obrigatórios.</p>
+            </div>
+            <button 
+                @click="showValidationAlert = false"
+                class="ml-4 text-white hover:text-gray-200"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
         <!-- Header -->
         <section class="bg-white shadow-sm border-b-2 border-azul-lazuli">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -259,6 +372,7 @@ const formatDate = (dateString) => {
                             @click="salvarRascunho"
                             :disabled="form.processing"
                             class="flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+                            :class="{ 'animate-pulse': Object.keys(validationErrors).length > 0 }"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -283,6 +397,7 @@ const formatDate = (dateString) => {
                             @click="publicarNoticia"
                             :disabled="form.processing"
                             class="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+                            :class="{ 'animate-pulse': Object.keys(validationErrors).length > 0 }"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -434,14 +549,17 @@ const formatDate = (dateString) => {
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli text-lg"
                             placeholder="Digite o título da notícia..."
                             maxlength="200"
-                            :class="{ 'border-red-500': form.errors.titulo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.titulo || validationErrors.titulo,
+                                'border-green-500 bg-green-50': form.titulo && form.titulo.trim() !== ''
+                            }"
                         />
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.titulo"
-                                class="text-sm text-red-600"
+                                v-if="form.errors.titulo || validationErrors.titulo"
+                                class="text-sm text-red-600 font-medium"
                             >
-                                {{ form.errors.titulo }}
+                                {{ form.errors.titulo || validationErrors.titulo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ tituloLength }}/200 caracteres
@@ -462,14 +580,17 @@ const formatDate = (dateString) => {
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
                             placeholder="Escreva um resumo da notícia..."
                             maxlength="300"
-                            :class="{ 'border-red-500': form.errors.resumo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.resumo || validationErrors.resumo,
+                                'border-green-500 bg-green-50': form.resumo && form.resumo.trim() !== ''
+                            }"
                         ></textarea>
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.resumo"
-                                class="text-sm text-red-600"
+                                v-if="form.errors.resumo || validationErrors.resumo"
+                                class="text-sm text-red-600 font-medium"
                             >
-                                {{ form.errors.resumo }}
+                                {{ form.errors.resumo || validationErrors.resumo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ resumoLength }}/300 caracteres
@@ -489,14 +610,17 @@ const formatDate = (dateString) => {
                             v-model="form.conteudo"
                             placeholder="Escreva o conteúdo da notícia..."
                             class="min-h-[200px] w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.conteudo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.conteudo || validationErrors.conteudo,
+                                'border-green-500 bg-green-50': form.conteudo && form.conteudo.trim() !== '' && form.conteudo !== 'Digite o conteúdo da notícia aqui...'
+                            }"
                         />
 
                         <p
-                            v-if="form.errors.conteudo"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.conteudo || validationErrors.conteudo"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.conteudo }}
+                            {{ form.errors.conteudo || validationErrors.conteudo }}
                         </p>
                     </div>
 
@@ -576,6 +700,59 @@ const formatDate = (dateString) => {
 
                 <!-- Sidebar -->
                 <div class="space-y-6">
+                    <!-- Campos Obrigatórios Pendentes -->
+                    <div 
+                        v-if="camposPendentes.length > 0" 
+                        class="bg-red-50 border border-red-200 rounded-lg shadow-sm p-6"
+                    >
+                        <h3 class="text-lg font-medium text-red-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
+                            </svg>
+                            Campos Obrigatórios
+                        </h3>
+                        <p class="text-sm text-red-700 mb-3">
+                            Os seguintes campos são obrigatórios para salvar a notícia:
+                        </p>
+                        <ul class="space-y-2">
+                            <li 
+                                v-for="campo in camposPendentes" 
+                                :key="campo"
+                                class="flex items-center text-sm text-red-700"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                {{ campo }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Campos Preenchidos -->
+                    <div 
+                        v-if="camposPendentes.length < 5" 
+                        class="bg-green-50 border border-green-200 rounded-lg shadow-sm p-6"
+                    >
+                        <h3 class="text-lg font-medium text-green-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Progresso
+                        </h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-green-700">{{ 5 - camposPendentes.length }} de 5 campos preenchidos</span>
+                            <span class="text-sm font-medium text-green-800">{{ Math.round((5 - camposPendentes.length) / 5 * 100) }}%</span>
+                        </div>
+                        <div class="w-full bg-green-200 rounded-full h-2">
+                            <div 
+                                class="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                                :style="{ width: `${(5 - camposPendentes.length) / 5 * 100}%` }"
+                            ></div>
+                        </div>
+                    </div>
+
                     <!-- Status -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-lg font-medium text-azul-oxford mb-4">
@@ -674,7 +851,10 @@ const formatDate = (dateString) => {
                         <select
                             v-model="form.categoria_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.categoria }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.categoria_id || validationErrors.categoria_id,
+                                'border-green-500 bg-green-50': form.categoria_id
+                            }"
                         >
                             <option value="">Selecione uma categoria</option>
                             <option
@@ -686,10 +866,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.categoria"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.categoria_id || validationErrors.categoria_id"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.categoria }}
+                            {{ form.errors.categoria_id || validationErrors.categoria_id }}
                         </p>
                     </div>
                     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -701,7 +881,10 @@ const formatDate = (dateString) => {
                         <select
                             v-model="form.autor_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.autor_id }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.autor_id || validationErrors.autor_id,
+                                'border-green-500 bg-green-50': form.autor_id
+                            }"
                         >
                             <option value="">Selecione um(a) autor(a)</option>
                             <option
@@ -713,10 +896,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.autor_id"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.autor_id || validationErrors.autor_id"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.autor_id }}
+                            {{ form.errors.autor_id || validationErrors.autor_id }}
                         </p>
                     </div>
 

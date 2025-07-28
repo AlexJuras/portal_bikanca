@@ -74,6 +74,24 @@ class NoticiaController extends Controller
             'autor_id' => 'required|exists:autors,id',
             'imagem_capa' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             'tag_ids' => 'nullable|array'
+        ], [
+            'titulo.required' => 'O título é obrigatório',
+            'titulo.max' => 'O título não pode ter mais que 200 caracteres',
+            'slug.required' => 'O slug é obrigatório',
+            'slug.unique' => 'Este slug já está sendo usado por outra notícia',
+            'resumo.required' => 'O resumo é obrigatório',
+            'resumo.max' => 'O resumo não pode ter mais que 300 caracteres',
+            'conteudo.required' => 'O conteúdo da notícia é obrigatório',
+            'status.required' => 'O status é obrigatório',
+            'status.in' => 'Status inválido',
+            'categoria_id.required' => 'A categoria é obrigatória',
+            'categoria_id.exists' => 'A categoria selecionada não existe',
+            'autor_id.required' => 'O autor é obrigatório',
+            'autor_id.exists' => 'O autor selecionado não existe',
+            'imagem_capa.file' => 'A imagem deve ser um arquivo válido',
+            'imagem_capa.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg ou gif',
+            'imagem_capa.max' => 'A imagem não pode ser maior que 2MB',
+            'tag_ids.array' => 'As tags devem ser um array válido'
         ]);
 
         try {

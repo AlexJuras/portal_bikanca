@@ -174,11 +174,11 @@
                                     <div class="mt-2 space-y-1">
                                         <!-- Notícias -->
                                         <Link
-                                            href="/noticias"
+                                            href="/admin/noticias"
                                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
                                             :class="
                                                 $page.url.startsWith(
-                                                    '/noticias'
+                                                    '/admin/noticias'
                                                 )
                                                     ? 'bg-azul-lazuli text-white'
                                                     : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
@@ -202,11 +202,11 @@
 
                                         <!-- Categorias -->
                                         <Link
-                                            href="/categorias"
+                                            href="/admin/categorias"
                                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
                                             :class="
                                                 $page.url.startsWith(
-                                                    '/categorias'
+                                                    '/admin/categorias'
                                                 )
                                                     ? 'bg-azul-lazuli text-white'
                                                     : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'

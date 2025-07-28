@@ -41,9 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
     
     // Redirecionamentos para outras páginas administrativas
-    Route::get('/noticias', function () {
-        return redirect()->route('noticias.index');
-    })->name('noticias');
+    Route::get('/noticias', [NoticiaController::class, 'admin'])->name('noticias');
     
     Route::get('/categorias', function () {
         return redirect()->route('categorias.index');

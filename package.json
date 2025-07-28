@@ -25,6 +25,7 @@
         "@vitejs/plugin-vue": "^6.0.0",
         "@vueuse/core": "^13.5.0",
         "add": "^2.0.6",
+        "lodash": "^4.17.21",
         "vue-material-design-icons": "^5.3.1"
     }
 }

@@ -48,6 +48,25 @@ class NoticiaController extends Controller
         ]);
     }
 
+    public function admin(Request $request)
+    {
+        $query = Noticia::with(['autor', 'categoria', 'imagemCapa'])
+            ->latest('updated_at');
+
+        // Aplicar filtro de pesquisa se fornecido
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('titulo', 'like', "%{$search}%");
+        }
+
+        $noticias = $query->paginate(15);
+
+        return Inertia::render('Admin/Noticias/Index', [
+            'noticias' => $noticias,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
     public function checkSlug($slug)
     {
         $exists = Noticia::where('slug', $slug)->exists();

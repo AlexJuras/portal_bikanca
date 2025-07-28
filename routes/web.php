@@ -5,6 +5,7 @@ use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\VideoController;
 use Illuminate\Support\Facades\Route;
 
 // Páginas Estáticas
@@ -79,4 +80,19 @@ Route::prefix('categorias')->name('categorias.')->group(function () {
     Route::post('/', [CategoriaController::class, 'store'])->name('store');
     Route::put('/{categoria}', [CategoriaController::class, 'update'])->name('update');
     Route::delete('/{categoria}', [CategoriaController::class, 'destroy'])->name('destroy');
+});
+
+// ====== ROTAS DE VÍDEOS ======
+Route::prefix('videos')->name('videos.')->group(function () {
+    // Páginas públicas
+    Route::get('/', [VideoController::class, 'index'])->name('index');
+    Route::get('/categoria/{categoria}', [VideoController::class, 'categoria'])->name('categoria');
+    Route::get('/{midia}', [VideoController::class, 'show'])->name('show')->where('midia', '[0-9]+');
+    
+    // Páginas administrativas
+    Route::get('/admin/create', [VideoController::class, 'create'])->name('create');
+    Route::get('/admin/{midia}/edit', [VideoController::class, 'edit'])->name('edit');
+    Route::post('/', [VideoController::class, 'store'])->name('store');
+    Route::put('/{midia}', [VideoController::class, 'update'])->name('update');
+    Route::delete('/{midia}', [VideoController::class, 'destroy'])->name('destroy');
 });

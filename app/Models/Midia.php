@@ -16,12 +16,99 @@ class Midia extends Model
         'destaque' => [1200, 600],
         'galeria' => [600, 400]
     ];
+    
     protected $fillable = [
         'caminho',
         'legenda',
         'formato',
         'creditos',
+        'tipo',
+        'titulo',
+        'descricao',
+        'url_externa',
+        'thumbnail',
+        'duracao',
+        'categoria_id',
+        'autor_id',
+        'visualizacoes',
+        'status',
+        'publicada_em',
     ];
+
+    protected $casts = [
+        'publicada_em' => 'datetime',
+        'visualizacoes' => 'integer'
+    ];
+
+    // Relacionamentos
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function autor()
+    {
+        return $this->belongsTo(Autor::class);
+    }
+
+    public function noticias()
+    {
+        return $this->belongsToMany(Noticia::class, 'noticias_midia');
+    }
+
+    // Scopes
+    public function scopeVideos($query)
+    {
+        return $query->where('tipo', 'video');
+    }
+
+    public function scopeImagens($query)
+    {
+        return $query->where('tipo', 'imagem');
+    }
+
+    public function scopePublicadas($query)
+    {
+        return $query->where('status', 'publicada');
+    }
+
+    // Métodos auxiliares
+    public function isVideo()
+    {
+        return $this->tipo === 'video';
+    }
+
+    public function getYoutubeIdAttribute()
+    {
+        if (!$this->url_externa) return null;
+        
+        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/';
+        preg_match($pattern, $this->url_externa, $matches);
+        
+        return $matches[1] ?? null;
+    }
+
+    public function getThumbnailUrlAttribute()
+    {
+        if ($this->thumbnail) {
+            return $this->thumbnail;
+        }
+        
+        if ($this->isVideo() && $this->youtube_id) {
+            return "https://img.youtube.com/vi/{$this->youtube_id}/maxresdefault.jpg";
+        }
+        
+        return '/images/video-placeholder.png';
+    }
+
+    public function getEmbedUrlAttribute()
+    {
+        if ($this->isVideo() && $this->youtube_id) {
+            return "https://www.youtube.com/embed/{$this->youtube_id}?rel=0";
+        }
+        
+        return null;
+    }
 
     public function getCaminhoAttribute($value)
     {
@@ -33,9 +120,4 @@ class Midia extends Model
         // Caso contrário, adiciona o prefixo
         return asset('storage/' . $value);
     }
-
-    public function noticias()
-    {
-        return $this->belongsToMany(Noticia::class, 'noticias_midia');
-    }
-}
+}   

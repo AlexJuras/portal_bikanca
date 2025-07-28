@@ -20,4 +20,14 @@ class Categoria extends Model
     {
         return $this->hasMany(Noticia::class, 'categoria_id');
     }
+
+    public function midias()
+    {
+        return $this->hasMany(Midia::class, 'categoria_id');
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(Midia::class, 'categoria_id')->where('tipo', 'video');
+    }
 }

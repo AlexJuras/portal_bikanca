@@ -318,7 +318,7 @@ onMounted(() => {
             <p class="text-gray-400 text-xs">Propaganda 300x250</p>
           </div>
 
-          <!-- Newsletter -->
+          <!-- Ao Vivo -->
           <div class="bg-azul-oxford rounded-lg p-6 text-white mb-8">
             <h3 class="text-xl font-bold mb-4">Ao Vivo</h3>
             <p class="text-sm mb-4">Acompanhe nossa live!</p>

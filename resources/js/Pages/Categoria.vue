@@ -504,27 +504,6 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- Newsletter -->
-          <div class="bg-azul-oxford rounded-lg p-6 text-white mb-8">
-            <h3 class="text-xl font-bold mb-4 flex items-center">
-              <span class="text-2xl mr-2">📧</span>
-              Newsletter
-            </h3>
-            <p class="text-sm mb-4">
-              Receba as principais notícias de política em seu email
-            </p>
-            <div class="space-y-3">
-              <input 
-                type="email" 
-                placeholder="Seu email"
-                class="w-full px-3 py-2 rounded text-azul-oxford"
-              />
-              <button class="w-full bg-celeste hover:bg-azul-lazuli text-azul-oxford font-medium py-2 rounded transition-all">
-                Inscrever-se
-              </button>
-            </div>
-          </div>
-
           <!-- Espaço para Propaganda - Sidebar Rodapé -->
           <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>

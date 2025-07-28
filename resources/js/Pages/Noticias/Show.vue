@@ -235,22 +235,6 @@ const shareFacebook = () => {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Widget de Newsletter -->
-                    <div class="bg-azul-oxford text-white rounded-lg p-6">
-                        <h3 class="text-lg font-bold mb-3">Newsletter</h3>
-                        <p class="text-sm mb-4 opacity-90">Receba as principais notícias no seu email</p>
-                        <div class="space-y-3">
-                            <input 
-                                type="email" 
-                                placeholder="Seu email"
-                                class="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white placeholder-white/70 focus:outline-none focus:border-white/50"
-                            >
-                            <button class="w-full bg-azul-lazuli hover:bg-blue-600 text-white py-2 rounded font-medium transition-colors">
-                                Inscrever-se
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

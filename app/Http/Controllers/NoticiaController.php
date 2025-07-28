@@ -29,7 +29,6 @@ class NoticiaController extends Controller
             return $array;
         });
 
-        $categorias = Categoria::withCount('noticias')->get();
         $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
             ->publicadas()
             ->orderBy('visualizacoes', 'desc')
@@ -45,7 +44,6 @@ class NoticiaController extends Controller
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,
-            'categorias' => $categorias,
             'maisLidas' => $maisLidas
         ]);
     }
@@ -60,7 +58,6 @@ class NoticiaController extends Controller
     {
         return Inertia::render('Noticias/Create', [
             'autores' => Autor::all(),
-            'categorias' => Categoria::all(),
             'tags' => Tag::all()
         ]);
     }
@@ -111,7 +108,6 @@ class NoticiaController extends Controller
         return Inertia::render('Noticias/Edit', [
             'noticia' => $noticia->load('tags'),
             'autores' => Autor::all(),
-            'categorias' => Categoria::all(),
             'tags' => Tag::all()
         ]);
     }

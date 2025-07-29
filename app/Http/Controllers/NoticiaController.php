@@ -59,11 +59,16 @@ class NoticiaController extends Controller
             $query->where('titulo', 'like', "%{$search}%");
         }
 
+        // Aplicar filtro de status se fornecido
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $noticias = $query->paginate(15);
 
         return Inertia::render('Admin/Noticias/Index', [
             'noticias' => $noticias,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search', 'status'])
         ]);
     }
 
@@ -151,6 +156,23 @@ class NoticiaController extends Controller
 
     public function update(Request $request, Noticia $noticia)
     {
+        // Se for apenas atualização de status (requisição PATCH)
+        if ($request->isMethod('patch') && $request->has('status') && count($request->all()) == 1) {
+            $request->validate([
+                'status' => 'required|in:rascunho,publicada,arquivada,agendada',
+            ]);
+
+            $noticia->update([
+                'status' => $request->status,
+            ]);
+
+            return response()->json([
+                'message' => 'Status atualizado com sucesso!',
+                'status' => $noticia->status
+            ]);
+        }
+
+        // Atualização completa da notícia
         $request->validate([
             'titulo' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:noticias,slug,' . $noticia->id,
@@ -176,7 +198,7 @@ class NoticiaController extends Controller
 
         $noticia->tags()->sync($request->tags ?? []);
 
-        return redirect()->route('noticias.index')->with('success', 'Notícia atualizada com sucesso!');
+        return redirect()->route('admin.noticias.index')->with('success', 'Notícia atualizada com sucesso!');
     }
 
     public function destroy(Noticia $noticia)

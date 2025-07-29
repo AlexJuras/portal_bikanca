@@ -18,7 +18,7 @@
             </Link>
         </div>
 
-        <!-- Barra de Pesquisa -->
+        <!-- Barra de Pesquisa e Filtros -->
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
@@ -46,16 +46,38 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Filtro por Status -->
+                <div class="md:w-48">
+                    <label
+                        for="statusFilter"
+                        class="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                        Filtrar por Status
+                    </label>
+                    <select
+                        id="statusFilter"
+                        v-model="statusFilter"
+                        @change="applyFilters"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        <option value="">Todos os Status</option>
+                        <option value="publicada">Publicadas</option>
+                        <option value="rascunho">Rascunhos</option>
+                        <option value="arquivada">Arquivadas</option>
+                    </select>
+                </div>
+                
                 <div class="flex items-end">
                     <button
-                        v-if="search"
-                        @click="clearSearch"
+                        v-if="search || statusFilter"
+                        @click="clearFilters"
                         class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                     >
                         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
-                        Limpar
+                        Limpar Filtros
                     </button>
                 </div>
             </div>
@@ -174,12 +196,40 @@
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                    :class="getStatusClass(noticia.status)"
-                                >
-                                    {{ getStatusText(noticia.status) }}
-                                </span>
+                                <div class="relative">
+                                    <button
+                                        @click="toggleStatusDropdown(noticia.id)"
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                                        :class="getStatusClass(noticia.status)"
+                                    >
+                                        {{ getStatusText(noticia.status) }}
+                                        <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Dropdown Menu -->
+                                    <div
+                                        v-if="activeDropdown === noticia.id"
+                                        class="absolute top-full left-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10"
+                                    >
+                                        <div class="py-1">
+                                            <button
+                                                v-for="status in statusOptions"
+                                                :key="status.value"
+                                                @click="alterarStatus(noticia, status.value)"
+                                                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center"
+                                                :class="noticia.status === status.value ? 'bg-gray-50 font-medium' : ''"
+                                            >
+                                                <div 
+                                                    class="w-3 h-3 rounded-full mr-2"
+                                                    :class="status.color"
+                                                ></div>
+                                                {{ status.label }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                             <td
                                 class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"
@@ -254,7 +304,7 @@
                             <p class="text-sm text-gray-500 line-clamp-1 mt-1">
                                 {{ noticia.resumo }}
                             </p>
-                            <div class="mt-2 flex flex-wrap gap-2">
+                            <div class="mt-2 flex flex-wrap gap-2 items-center">
                                 <span
                                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
                                     :class="
@@ -265,12 +315,42 @@
                                 >
                                     {{ noticia.categoria?.nome }}
                                 </span>
-                                <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="getStatusClass(noticia.status)"
-                                >
-                                    {{ getStatusText(noticia.status) }}
-                                </span>
+                                
+                                <!-- Status Dropdown Mobile -->
+                                <div class="relative">
+                                    <button
+                                        @click="toggleStatusDropdown(noticia.id)"
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+                                        :class="getStatusClass(noticia.status)"
+                                    >
+                                        {{ getStatusText(noticia.status) }}
+                                        <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Dropdown Menu Mobile -->
+                                    <div
+                                        v-if="activeDropdown === noticia.id"
+                                        class="absolute top-full left-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10"
+                                    >
+                                        <div class="py-1">
+                                            <button
+                                                v-for="status in statusOptions"
+                                                :key="status.value"
+                                                @click="alterarStatus(noticia, status.value)"
+                                                class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center"
+                                                :class="noticia.status === status.value ? 'bg-gray-50 font-medium' : ''"
+                                            >
+                                                <div 
+                                                    class="w-3 h-3 rounded-full mr-2"
+                                                    :class="status.color"
+                                                ></div>
+                                                {{ status.label }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="mt-2 flex justify-between items-center">
                                 <div class="text-xs text-gray-500">
@@ -369,7 +449,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onUnmounted } from "vue";
 import { Link, router } from "@inertiajs/vue3";
 import Admin from "@/Layouts/Admin.vue";
 import Pagination from "@/Components/Pagination.vue";
@@ -382,32 +462,48 @@ const props = defineProps({
     filters: Object,
 });
 
-// Estados da pesquisa
+// Estados da pesquisa e filtros
 const search = ref(props.filters?.search || "");
+const statusFilter = ref(props.filters?.status || "");
 
-// Estados do modal
+// Estados do modal e dropdown
 const showDeleteModal = ref(false);
 const noticiaParaExcluir = ref(null);
 const excluindo = ref(false);
+const activeDropdown = ref(null);
+const atualizandoStatus = ref(false);
+
+// Opções de status
+const statusOptions = [
+    { value: 'publicada', label: 'Publicada', color: 'bg-green-500' },
+    { value: 'rascunho', label: 'Rascunho', color: 'bg-yellow-500' },
+    { value: 'arquivada', label: 'Arquivada', color: 'bg-gray-500' }
+];
 
 // Pesquisa com debounce
 const debouncedSearch = debounce(() => {
+    applyFilters();
+}, 500);
+
+const applyFilters = () => {
     router.get(
-        route("admin.noticias"),
+        route("admin.noticias.index"),
         {
             search: search.value,
+            status: statusFilter.value,
         },
         {
             preserveState: true,
             replace: true,
         }
     );
-}, 500);
+};
 
-const clearSearch = () => {
+const clearFilters = () => {
     search.value = "";
+    statusFilter.value = "";
     router.get(
-        route("admin.noticias"),
+        route("admin.noticias.index"),
         {},
         {
             preserveState: true,
@@ -415,6 +511,57 @@ const clearSearch = () => {
         }
     );
 };
+
+// Funções de dropdown de status
+const toggleStatusDropdown = (noticiaId) => {
+    activeDropdown.value = activeDropdown.value === noticiaId ? null : noticiaId;
+};
+
+const alterarStatus = async (noticia, novoStatus) => {
+    if (atualizandoStatus.value || noticia.status === novoStatus) {
+        activeDropdown.value = null;
+        return;
+    }
+
+    atualizandoStatus.value = true;
+    
+    try {
+        await router.patch(route('admin.noticias.update', noticia.id), {
+            status: novoStatus
+        }, {
+            preserveState: true,
+            onSuccess: () => {
+                // Atualizar o status localmente para feedback imediato
+                noticia.status = novoStatus;
+                activeDropdown.value = null;
+            },
+            onError: (errors) => {
+                console.error('Erro ao alterar status:', errors);
+                // Aqui você pode adicionar uma notificação de erro
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao alterar status:', error);
+    } finally {
+        atualizandoStatus.value = false;
+    }
+};
+
+// Fechar dropdown ao clicar fora
+const closeDropdownOnClickOutside = (event) => {
+    if (!event.target.closest('.relative')) {
+        activeDropdown.value = null;
+    }
+};
+
+// Adicionar listener para fechar dropdown
+watch(() => activeDropdown.value, (newValue) => {
+    if (newValue) {
+        document.addEventListener('click', closeDropdownOnClickOutside);
+    } else {
+        document.removeEventListener('click', closeDropdownOnClickOutside);
+    }
+});
 
 // Estatísticas computadas
 const totalNoticias = computed(
@@ -504,6 +651,11 @@ const excluirNoticia = () => {
         },
     });
 };
+
+// Limpeza dos event listeners
+onUnmounted(() => {
+    document.removeEventListener('click', closeDropdownOnClickOutside);
+});
 </script>
 
 <style scoped>

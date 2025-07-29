@@ -27,6 +27,136 @@
 
                     <!-- Menu Superior -->
                     <div class="hidden md:flex items-center space-x-6">
+                        <!-- Dropdown de Navegação -->
+                        <div class="relative">
+                            <button
+                                @click="showNavMenu = !showNavMenu"
+                                class="flex items-center text-gray-700 hover:text-azul-lazuli transition-colors bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-md border"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                                </svg>
+                                <span class="font-medium">{{ currentPageName }}</span>
+                                <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu de Navegação -->
+                            <div
+                                ref="navMenuRef"
+                                v-show="showNavMenu"
+                                class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg border border-gray-200 py-2 z-50"
+                            >
+                                <!-- Dashboard -->
+                                <Link
+                                    href="/admin"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url === '/admin' 
+                                        ? 'bg-azul-lazuli text-white font-medium' 
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z"/>
+                                    </svg>
+                                    Dashboard
+                                </Link>
+
+                                <!-- Divisor -->
+                                <div class="border-t border-gray-100 my-2"></div>
+                                
+                                <!-- Seção: Conteúdo -->
+                                <div class="px-4 py-1">
+                                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Conteúdo</h3>
+                                </div>
+
+                                <!-- Notícias -->
+                                <Link
+                                    :href="route('admin.noticias.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/noticias')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                                    </svg>
+                                    Notícias
+                                </Link>
+
+                                <!-- Vídeos -->
+                                <Link
+                                    :href="route('admin.videos.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/videos')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Vídeos
+                                </Link>
+
+                                <!-- Categorias -->
+                                <Link
+                                    :href="route('admin.categorias.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/categorias')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+                                    </svg>
+                                    Categorias
+                                </Link>
+
+                                <!-- Tags -->
+                                <Link
+                                    :href="route('admin.tags.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/tags')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                    </svg>
+                                    Tags
+                                </Link>
+
+                                <!-- Divisor -->
+                                <div class="border-t border-gray-100 my-2"></div>
+                                
+                                <!-- Seção: Usuários -->
+                                <div class="px-4 py-1">
+                                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Usuários</h3>
+                                </div>
+
+                                <!-- Autores -->
+                                <Link
+                                    :href="route('admin.autores.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/autores')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 h-5 w-5">
+                                        <path d="M5 20V19C5 15.134 8.13401 12 12 12V12C15.866 12 19 15.134 19 19V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Autores
+                                </Link>
+                            </div>
+                        </div>
+
                         <Link
                             href="/"
                             target="_blank"
@@ -105,253 +235,125 @@
                     </div>
 
                     <!-- Menu Mobile -->
-                    <button
-                        @click="showMobileMenu = !showMobileMenu"
-                        class="md:hidden p-2 text-gray-600 hover:text-azul-lazuli"
-                    >
-                        <svg
-                            class="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                    <div class="md:hidden flex items-center space-x-4">
+                        <!-- Indicador da Página Atual Mobile -->
+                        <div class="flex items-center">
+                            <span class="text-sm font-medium text-gray-700">{{ currentPageName }}</span>
+                        </div>
+                        
+                        <button
+                            @click="showMobileMenu = !showMobileMenu"
+                            class="p-2 text-gray-600 hover:text-azul-lazuli"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            />
-                        </svg>
-                    </button>
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <div class="flex">
-            <!-- Sidebar -->
-            <aside class="hidden md:flex md:flex-shrink-0">
-                <div class="flex flex-col w-64">
-                    <div
-                        class="flex flex-col h-0 flex-1 bg-white border-r border-gray-200"
-                    >
-                        <div
-                            class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto"
-                        >
-                            <nav class="mt-5 flex-1 px-2 space-y-1">
-                                <!-- Dashboard -->
-                                <Link
-                                    href="/admin"
-                                    class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                    :class="
-                                        $page.url === '/admin'
-                                            ? 'bg-azul-lazuli text-white'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                    "
-                                >
-                                    <svg
-                                        class="mr-3 h-6 w-6"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z"
-                                        />
+        <!-- Breadcrumb -->
+        <div class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between py-3">
+                    <nav class="flex" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <Link href="/admin" class="text-gray-500 hover:text-azul-lazuli transition-colors">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L9 5.414V17a1 1 0 102 0V5.414l5.293 5.293a1 1 0 001.414-1.414l-7-7z"/>
                                     </svg>
-                                    Dashboard
+                                    Admin
                                 </Link>
-
-                                <!-- Seção: Conteúdo -->
-                                <div class="pt-4">
-                                    <h3
-                                        class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Conteúdo
-                                    </h3>
-                                    <div class="mt-2 space-y-1">
-                                        <!-- Notícias -->
-                                        <Link
-                                            :href="route('admin.noticias.index')"
-                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                            :class="
-                                                $page.url.startsWith(
-                                                    '/admin/noticias'
-                                                )
-                                                    ? 'bg-azul-lazuli text-white'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                            "
-                                        >
-                                            <svg
-                                                class="mr-3 h-6 w-6"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                                                />
-                                            </svg>
-                                            Notícias
-                                        </Link>
-
-                                        <!-- Vídeos -->
-                                        <Link
-                                            :href="route('admin.videos.index')"
-                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                            :class="
-                                                $page.url.startsWith(
-                                                    '/admin/videos'
-                                                )
-                                                    ? 'bg-azul-lazuli text-white'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                            "
-                                        >
-                                            <svg
-                                                class="mr-3 h-6 w-6"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                                                />
-                                            </svg>
-                                            Vídeos
-                                        </Link>
-
-                                        <!-- Categorias -->
-                                        <Link
-                                            :href="route('admin.categorias.index')"
-                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                            :class="
-                                                $page.url.startsWith(
-                                                    '/admin/categorias'
-                                                )
-                                                    ? 'bg-azul-lazuli text-white'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                            "
-                                        >
-                                            <svg
-                                                class="mr-3 h-6 w-6"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"
-                                                />
-                                            </svg>
-                                            Categorias
-                                        </Link>
-
-                                        <!-- Tags -->
-                                        <Link
-                                            :href="route('admin.tags.index')"
-                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                            :class="
-                                                $page.url.startsWith('/admin/tags')
-                                                    ? 'bg-azul-lazuli text-white'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                            "
-                                        >
-                                            <svg
-                                                class="mr-3 h-6 w-6"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                                                />
-                                            </svg>
-                                            Tags
-                                        </Link>
-                                    </div>
+                            </li>
+                            <li v-if="currentPageName !== 'Dashboard'">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="ml-1 font-medium text-azul-oxford">{{ currentPageName }}</span>
                                 </div>
-
-                                <!-- Seção: Usuários -->
-                                <div class="pt-4">
-                                    <h3
-                                        class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Usuários
-                                    </h3>
-                                    <div class="mt-2 space-y-1">
-                                        <!-- Autores -->
-                                        <Link
-                                            :href="route('admin.autores.index')"
-                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
-                                            :class="
-                                                $page.url.startsWith('/admin/autores')
-                                                    ? 'bg-azul-lazuli text-white'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
-                                            "
-                                        >
-                                            <!-- <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                                            </svg> -->
-                                            <svg
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="mr-3 h-6 w-6"
-                                            >
-                                                <g
-                                                    id="SVGRepo_bgCarrier"
-                                                    stroke-width="0"
-                                                ></g>
-                                                <g
-                                                    id="SVGRepo_tracerCarrier"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                ></g>
-                                                <g id="SVGRepo_iconCarrier">
-                                                    <path
-                                                        d="M5 20V19C5 15.134 8.13401 12 12 12V12C15.866 12 19 15.134 19 19V20"
-                                                        stroke="#000000"
-                                                        stroke-width="1.5"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                    ></path>
-                                                    <path
-                                                        d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
-                                                        stroke="#000000"
-                                                        stroke-width="1.5"
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                    ></path>
-                                                </g>
-                                            </svg>
-                                            Autores
-                                        </Link>
-                                    </div>
-                                </div>
-                            </nav>
-                        </div>
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Ações da Página Atual -->
+                    <div class="flex items-center space-x-2">
+                        <Link 
+                            v-if="currentPageName === 'Notícias'" 
+                            :href="route('admin.noticias.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Nova Notícia
+                        </Link>
+                        
+                        <Link 
+                            v-if="currentPageName === 'Vídeos'" 
+                            :href="route('admin.videos.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Novo Vídeo
+                        </Link>
+                        
+                        <Link 
+                            v-if="currentPageName === 'Categorias'" 
+                            :href="route('admin.categorias.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Nova Categoria
+                        </Link>
+                        
+                        <Link 
+                            v-if="currentPageName === 'Tags'" 
+                            :href="route('admin.tags.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Nova Tag
+                        </Link>
+                        
+                        <Link 
+                            v-if="currentPageName === 'Autores'" 
+                            :href="route('admin.autores.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Novo Autor
+                        </Link>
                     </div>
                 </div>
-            </aside>
-
-            <!-- Conteúdo Principal -->
-            <main class="flex-1 relative overflow-y-auto focus:outline-none">
-                <slot />
-            </main>
+            </div>
         </div>
+
+        <!-- Conteúdo Principal -->
+        <main class="w-full relative overflow-y-auto focus:outline-none">
+            <slot />
+        </main>
 
         <!-- Menu Mobile -->
         <div v-show="showMobileMenu" class="fixed inset-0 flex z-40 md:hidden">
@@ -383,8 +385,133 @@
                 </div>
 
                 <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                    <nav class="mt-5 px-2 space-y-1">
-                        <!-- Menu mobile content here -->
+                    <div class="px-4 mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Navegação</h2>
+                    </div>
+                    
+                    <nav class="px-2 space-y-1">
+                        <!-- Dashboard -->
+                        <Link
+                            href="/admin"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url === '/admin' 
+                                ? 'bg-azul-lazuli text-white' 
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7z"/>
+                            </svg>
+                            Dashboard
+                        </Link>
+
+                        <!-- Divisor -->
+                        <div class="border-t border-gray-200 my-3"></div>
+                        
+                        <!-- Seção: Conteúdo -->
+                        <div class="px-3 py-2">
+                            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Conteúdo</h3>
+                        </div>
+
+                        <!-- Notícias -->
+                        <Link
+                            :href="route('admin.noticias.index')"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url.startsWith('/admin/noticias')
+                                ? 'bg-azul-lazuli text-white'
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                            </svg>
+                            Notícias
+                        </Link>
+
+                        <!-- Vídeos -->
+                        <Link
+                            :href="route('admin.videos.index')"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url.startsWith('/admin/videos')
+                                ? 'bg-azul-lazuli text-white'
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Vídeos
+                        </Link>
+
+                        <!-- Categorias -->
+                        <Link
+                            :href="route('admin.categorias.index')"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url.startsWith('/admin/categorias')
+                                ? 'bg-azul-lazuli text-white'
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+                            </svg>
+                            Categorias
+                        </Link>
+
+                        <!-- Tags -->
+                        <Link
+                            :href="route('admin.tags.index')"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url.startsWith('/admin/tags')
+                                ? 'bg-azul-lazuli text-white'
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            Tags
+                        </Link>
+
+                        <!-- Divisor -->
+                        <div class="border-t border-gray-200 my-3"></div>
+                        
+                        <!-- Seção: Usuários -->
+                        <div class="px-3 py-2">
+                            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Usuários</h3>
+                        </div>
+
+                        <!-- Autores -->
+                        <Link
+                            :href="route('admin.autores.index')"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                            :class="$page.url.startsWith('/admin/autores')
+                                ? 'bg-azul-lazuli text-white'
+                                : 'text-gray-700 hover:bg-gray-50'"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-3 h-5 w-5">
+                                <path d="M5 20V19C5 15.134 8.13401 12 12 12V12C15.866 12 19 15.134 19 19V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Autores
+                        </Link>
+
+                        <!-- Divisor -->
+                        <div class="border-t border-gray-200 my-3"></div>
+
+                        <!-- Ver Site -->
+                        <Link
+                            href="/"
+                            target="_blank"
+                            @click="showMobileMenu = false"
+                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                        >
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                            Ver Site
+                        </Link>
                     </nav>
                 </div>
             </div>
@@ -393,17 +520,39 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { Link } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+import { Link, usePage } from "@inertiajs/vue3";
 import { onClickOutside } from "@vueuse/core";
 
 const showUserMenu = ref(false);
 const showMobileMenu = ref(false);
+const showNavMenu = ref(false);
 const userMenuRef = ref(null);
+const navMenuRef = ref(null);
 
-// Fecha o menu quando clica fora
+const page = usePage();
+
+// Determinar o nome da página atual
+const currentPageName = computed(() => {
+    const url = page.url;
+    
+    if (url === '/admin') return 'Dashboard';
+    if (url.startsWith('/admin/noticias')) return 'Notícias';
+    if (url.startsWith('/admin/videos')) return 'Vídeos';
+    if (url.startsWith('/admin/categorias')) return 'Categorias';
+    if (url.startsWith('/admin/tags')) return 'Tags';
+    if (url.startsWith('/admin/autores')) return 'Autores';
+    
+    return 'Admin';
+});
+
+// Fecha os menus quando clica fora
 onClickOutside(userMenuRef, () => {
     showUserMenu.value = false;
+});
+
+onClickOutside(navMenuRef, () => {
+    showNavMenu.value = false;
 });
 </script>
 

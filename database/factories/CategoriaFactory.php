@@ -17,11 +17,31 @@ class CategoriaFactory extends Factory
      */
     public function definition(): array
     {
-        $nome = fake()->unique()->words(1, true);
+        $categorias = [
+            'Política' => 'Notícias sobre política nacional e internacional',
+            'Economia' => 'Mercado financeiro, negócios e economia',
+            'Esportes' => 'Cobertura esportiva e resultados',
+            'Tecnologia' => 'Inovações tecnológicas e gadgets',
+            'Saúde' => 'Medicina, bem-estar e saúde pública',
+            'Educação' => 'Ensino, universidades e política educacional',
+            'Cultura' => 'Arte, música, cinema e literatura',
+            'Ciência' => 'Descobertas científicas e pesquisas',
+            'Meio Ambiente' => 'Sustentabilidade e questões ambientais',
+            'Internacional' => 'Notícias do exterior e relações internacionais',
+            'Segurança' => 'Segurança pública e criminalidade',
+            'Turismo' => 'Destinos turísticos e viagem',
+            'Gastronomia' => 'Culinária e restaurantes',
+            'Moda' => 'Tendências e indústria da moda',
+            'Automóveis' => 'Carros, motos e setor automotivo'
+        ];
+
+        $categoria = fake()->unique()->randomElement(array_keys($categorias));
+        $descricao = $categorias[$categoria];
+
         return [
-            'nome' => ucwords($nome),
-            'slug' => Str::slug($nome),
-            'descricao' => fake()->sentence(3),
+            'nome' => $categoria,
+            'slug' => Str::slug($categoria),
+            'descricao' => $descricao,
             'created_at' => now(),
             'updated_at' => now(),
         ];

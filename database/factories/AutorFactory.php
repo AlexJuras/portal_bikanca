@@ -16,10 +16,19 @@ class AutorFactory extends Factory
      */
     public function definition(): array
     {
+        $especialidades = [
+            'jornalismo investigativo', 'política', 'economia', 'esportes', 'tecnologia',
+            'cultura', 'internacional', 'saúde', 'educação', 'meio ambiente'
+        ];
+        
+        $especialidade = fake()->randomElement($especialidades);
+        $anosExperiencia = fake()->numberBetween(2, 25);
+        
         return [
             'nome' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'bio' => fake()->paragraphs(1, true),
+            'bio' => "Jornalista especializado em {$especialidade} com {$anosExperiencia} anos de experiência. " . 
+                     fake()->sentence(rand(10, 20)),
             'foto' => 'autores/autor-' . fake()->numberBetween(1, 10) . '.jpg',
             'created_at' => now(),
             'updated_at' => now(),

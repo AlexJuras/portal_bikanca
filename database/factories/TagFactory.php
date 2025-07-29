@@ -17,9 +17,26 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
-        $nome = fake()->unique()->words(rand(1, 3), true);
+        $tags = [
+            'Eleições', 'Congresso', 'Presidente', 'Reforma', 'COVID-19', 'Vacina', 
+            'Olimpíadas', 'Copa do Mundo', 'Futebol', 'Basquete', 'Vôlei',
+            'Inteligência Artificial', 'Smartphone', 'Internet', 'Aplicativo', 'Software',
+            'Universidade', 'ENEM', 'Professores', 'Ensino Superior', 'Bolsa de Estudos',
+            'Cinema', 'Música', 'Teatro', 'Festival', 'Arte', 'Literatura',
+            'Pesquisa', 'NASA', 'Medicina', 'Descoberta', 'Estudo',
+            'Sustentabilidade', 'Reciclagem', 'Energia Renovável', 'Aquecimento Global',
+            'Mercado', 'Bolsa', 'Dólar', 'Inflação', 'PIB', 'Emprego',
+            'Segurança Pública', 'Polícia', 'Crime', 'Violência',
+            'Viagem', 'Turismo', 'Hotel', 'Destino', 'Férias',
+            'Receita', 'Restaurante', 'Chef', 'Culinária',
+            'Tendência', 'Fashion Week', 'Estilo', 'Moda',
+            'Carro', 'Moto', 'Elétrico', 'Combustível'
+        ];
+
+        $nome = fake()->unique()->randomElement($tags);
+        
         return [
-            'nome' => ucwords($nome),
+            'nome' => $nome,
             'slug' => Str::slug($nome),
             'descricao' => fake()->sentence(rand(8, 15)),
         ];

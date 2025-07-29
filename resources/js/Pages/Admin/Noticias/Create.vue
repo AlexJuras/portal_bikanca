@@ -261,12 +261,12 @@ const processarSubmissao = async (status) => {
         }
 
         form.status = status;
-        await form.post(route("noticias.store"), {
+        await form.post(route("admin.noticias.store"), {
             forceFormData: true,
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                router.visit(route("noticias.index"));
+                router.visit(route("admin.noticias.index"));
             },
             onError: (errors) => {
                 console.error(`Erro ao ${status === 'rascunho' ? 'salvar rascunho' : 'publicar notícia'}:`, errors);

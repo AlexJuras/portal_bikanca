@@ -80,7 +80,8 @@ class NoticiaController extends Controller
 
     public function create()
     {
-        return Inertia::render('Noticias/Create', [
+        return Inertia::render('Admin/Noticias/Create', [
+            'categorias' => Categoria::all(),
             'autores' => Autor::all(),
             'tags' => Tag::all()
         ]);
@@ -120,10 +121,11 @@ class NoticiaController extends Controller
 
         try {
             if ($request->hasFile('imagem_capa')) {
-                $path = $request->file('imagem_capa')->store('midias', 'public');
+                $arquivo = $request->file('imagem_capa');
+                $nomeArquivo = $arquivo->store('midias', 'public');
 
                 $midia = Midia::create([
-                    'caminho' => $path,
+                    'caminho' => asset('storage/' . $nomeArquivo),
                     'formato' => 'capa',
                     'legenda' => $validated['titulo'],
                 ]);
@@ -141,7 +143,7 @@ class NoticiaController extends Controller
                 ->withInput();
         }
 
-        return redirect()->route('noticias.index')
+        return redirect()->route('admin.noticias.index')
             ->with('success', 'Notícia criada com sucesso!');
     }
 
@@ -239,7 +241,7 @@ class NoticiaController extends Controller
     {
         $noticia->delete();
 
-        return redirect()->route('noticias.index')->with('success', 'Notícia removida com sucesso!');
+        return redirect()->route('admin.noticias.index')->with('success', 'Notícia removida com sucesso!');
     }
 
     public function categoria($categoria)

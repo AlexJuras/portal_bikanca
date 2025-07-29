@@ -50,14 +50,18 @@
 
         <!-- Estatísticas -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="text-center">
                     <h3 class="text-2xl font-bold text-blue-600">{{ totalCategorias }}</h3>
                     <p class="text-gray-600">Total de Categorias</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-2xl font-bold text-green-600">{{ categoriasAtivas }}</h3>
-                    <p class="text-gray-600">Categorias Ativas</p>
+                    <h3 class="text-2xl font-bold text-green-600">{{ totalNoticias }}</h3>
+                    <p class="text-gray-600">Total de Notícias</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-purple-600">{{ categoriaComMaisNoticias?.noticias_count || 0 }}</h3>
+                    <p class="text-gray-600">Categoria Mais Usada</p>
                 </div>
             </div>
         </div>
@@ -307,7 +311,12 @@ const clearSearch = () => {
 
 // Estatísticas computadas
 const totalCategorias = computed(() => props.categorias.total || props.categorias.data.length)
-const categoriasAtivas = computed(() => props.categorias.data.length)
+const totalNoticias = computed(() => props.categorias.data.reduce((total, categoria) => total + (categoria.noticias_count || 0), 0))
+const categoriaComMaisNoticias = computed(() => {
+    return props.categorias.data.reduce((maior, categoria) => {
+        return (categoria.noticias_count || 0) > (maior?.noticias_count || 0) ? categoria : maior
+    }, null)
+})
 
 // Funções de formatação
 const formatDate = (dateString) => {

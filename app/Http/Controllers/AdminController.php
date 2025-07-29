@@ -17,6 +17,10 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
+        $hoje = Carbon::today();
+        $inicioSemana = Carbon::now()->startOfWeek();
+        $inicioMes = Carbon::now()->startOfMonth();
+
         // Estatísticas básicas
         $estatisticas = [
             'total_noticias' => Noticia::count(),
@@ -25,38 +29,55 @@ class AdminController extends Controller
             'total_categorias' => Categoria::count(),
             'total_tags' => Tag::count(),
             'total_autores' => Autor::count(),
-            'noticias_hoje' => 0,
-            'noticias_semana' => 0,
-            'noticias_mes' => 0,
+            'noticias_hoje' => Noticia::whereDate('created_at', $hoje)->count(),
+            'noticias_semana' => Noticia::where('created_at', '>=', $inicioSemana)->count(),
+            'noticias_mes' => Noticia::where('created_at', '>=', $inicioMes)->count(),
         ];
 
-        // Últimas notícias
-        $ultimasNoticias = Noticia::orderBy('created_at', 'desc')->take(5)->get();
+        // Últimas notícias com relacionamentos
+        $ultimasNoticias = Noticia::with(['autor', 'categoria', 'imagem_capa'])
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
 
         // Notícias populares
-        $noticiasPopulares = Noticia::where('status', 'publicada')
+        $noticiasPopulares = Noticia::with(['autor', 'categoria'])
+            ->where('status', 'publicada')
             ->orderBy('visualizacoes', 'desc')
             ->take(5)
             ->get();
 
-        // Categorias
-        $categoriasMaisUsadas = Categoria::take(5)->get();
+        // Categorias mais usadas com contagem de notícias
+        $categoriasMaisUsadas = Categoria::withCount('noticias')
+            ->orderBy('noticias_count', 'desc')
+            ->take(8)
+            ->get();
 
-        // Tags
-        $tagsMaisUsadas = Tag::take(10)->get();
+        // Tags mais usadas com contagem de notícias
+        $tagsMaisUsadas = Tag::withCount('noticias')
+            ->orderBy('noticias_count', 'desc')
+            ->take(12)
+            ->get();
 
-        // Autores
-        $autoresMaisAtivos = Autor::take(5)->get();
+        // Autores mais ativos
+        $autoresMaisAtivos = Autor::withCount('noticias')
+            ->orderBy('noticias_count', 'desc')
+            ->take(5)
+            ->get();
 
-        // Dados do gráfico
-        $noticiasPorMes = collect([
-            ['mes' => 'Jan/2025', 'total' => 0],
-            ['mes' => 'Fev/2025', 'total' => 0],
-            ['mes' => 'Mar/2025', 'total' => 0],
-            ['mes' => 'Abr/2025', 'total' => 0],
-            ['mes' => 'Mai/2025', 'total' => 0],
-            ['mes' => 'Jun/2025', 'total' => 0],
-        ]);
+        // Dados de notícias por mês (últimos 6 meses)
+        $noticiasPorMes = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $mes = Carbon::now()->subMonths($i);
+            $count = Noticia::whereYear('created_at', $mes->year)
+                           ->whereMonth('created_at', $mes->month)
+                           ->count();
+            
+            $noticiasPorMes->push([
+                'mes' => $mes->format('M/Y'),
+                'total' => $count
+            ]);
+        }
 
         return Inertia::render('Admin/Dashboard', [
             'estatisticas' => $estatisticas,

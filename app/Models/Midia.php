@@ -51,9 +51,10 @@ class Midia extends Model
         return $this->belongsTo(Autor::class);
     }
 
-    public function noticias()
+    // Relacionamento inverso para notícias que usam esta mídia como capa
+    public function noticiasCapa()
     {
-        return $this->belongsToMany(Noticia::class, 'noticias_midia');
+        return $this->hasMany(Noticia::class, 'imagem_capa');
     }
 
     // Scopes

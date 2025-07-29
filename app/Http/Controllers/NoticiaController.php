@@ -15,29 +15,29 @@ class NoticiaController extends Controller
 {
     public function index()
     {
-        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagem_capa')
             ->publicadas()
             ->latest('publicada_em')
             ->paginate(10);
         
-        // Forçar serialização do relacionamento imagemCapa
+        // Forçar serialização do relacionamento imagem_capa
         $noticias->getCollection()->transform(function($noticia) {
             $array = $noticia->toArray();
-            if ($noticia->imagemCapa) {
-                $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+            if ($noticia->imagem_capa) {
+                $array['imagem_capa'] = $noticia->imagem_capa->toArray();
             }
             return $array;
         });
 
-        $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
+        $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
             ->publicadas()
             ->orderBy('visualizacoes', 'desc')
             ->limit(5)
             ->get()
             ->map(function($noticia) {
                 $array = $noticia->toArray();
-                if ($noticia->imagemCapa) {
-                    $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+                if ($noticia->imagem_capa) {
+                    $array['imagem_capa'] = $noticia->imagem_capa->toArray();
                 }
                 return $array;
             });
@@ -50,7 +50,7 @@ class NoticiaController extends Controller
 
     public function admin(Request $request)
     {
-        $query = Noticia::with(['autor', 'categoria', 'imagemCapa'])
+        $query = Noticia::with(['autor', 'categoria', 'imagem_capa'])
             ->latest('updated_at');
 
         // Aplicar filtro de pesquisa se fornecido
@@ -150,7 +150,7 @@ class NoticiaController extends Controller
     public function edit(Noticia $noticia)
     {
         return Inertia::render('Admin/Noticias/Edit', [
-            'noticia' => $noticia->load('tags', 'categoria', 'autor', 'imagemCapa'),
+            'noticia' => $noticia->load('tags', 'categoria', 'autor', 'imagem_capa'),
             'categorias' => Categoria::all(),
             'autores' => Autor::all(),
             'tags' => Tag::all()
@@ -251,22 +251,22 @@ class NoticiaController extends Controller
             ->orWhere('id', $categoria)
             ->firstOrFail();
 
-        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagemCapa')
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagem_capa')
             ->publicadas()
             ->where('categoria_id', $categoriaObj->id)
             ->latest('publicada_em')
             ->paginate(10);
         
-        // Forçar serialização do relacionamento imagemCapa
+        // Forçar serialização do relacionamento imagem_capa
         $noticias->getCollection()->transform(function($noticia) {
             $array = $noticia->toArray();
-            if ($noticia->imagemCapa) {
-                $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+            if ($noticia->imagem_capa) {
+                $array['imagem_capa'] = $noticia->imagem_capa->toArray();
             }
             return $array;
         });
 
-        $maisLidas = Noticia::with('autor', 'categoria', 'imagemCapa')
+        $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
             ->publicadas()
             ->where('categoria_id', $categoriaObj->id)
             ->orderBy('visualizacoes', 'desc')
@@ -274,8 +274,8 @@ class NoticiaController extends Controller
             ->get()
             ->map(function($noticia) {
                 $array = $noticia->toArray();
-                if ($noticia->imagemCapa) {
-                    $array['imagemCapa'] = $noticia->imagemCapa->toArray();
+                if ($noticia->imagem_capa) {
+                    $array['imagem_capa'] = $noticia->imagem_capa->toArray();
                 }
                 return $array;
             });

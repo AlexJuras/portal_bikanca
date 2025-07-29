@@ -16,8 +16,8 @@ class Tag extends Model
         'descricao',
     ];
 
-    public function Noticias()
+    public function noticias()
     {
-        return $this->belongsToMany('App\Models\Noticias', 'noticias_tags');
+        return $this->belongsToMany(Noticia::class, 'noticia_tag');
     }
 }

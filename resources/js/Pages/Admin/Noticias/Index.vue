@@ -149,7 +149,7 @@
                                     <div class="flex-shrink-0 h-12 w-12 mr-3">
                                         <img
                                             :src="
-                                                noticia.imagemCapa?.caminho ||
+                                                noticia.imagem_capa?.caminho ||
                                                 '/logo.png'
                                             "
                                             :alt="noticia.titulo"
@@ -301,7 +301,7 @@
                 >
                     <div class="flex items-start space-x-3">
                         <img
-                            :src="noticia.imagemCapa?.caminho || '/logo.png'"
+                            :src="noticia.imagem_capa?.caminho || '/logo.png'"
                             :alt="noticia.titulo"
                             class="h-16 w-16 object-cover rounded-lg flex-shrink-0"
                         />

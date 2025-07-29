@@ -191,18 +191,36 @@
                                 <div class="relative">
                                     <button
                                         @click="toggleStatusDropdown(noticia.id)"
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
-                                        :class="getStatusClass(noticia.status)"
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity relative"
+                                        :class="[
+                                            getStatusClass(noticia.status),
+                                            atualizandoStatus ? 'opacity-70' : ''
+                                        ]"
+                                        :disabled="atualizandoStatus"
                                     >
                                         {{ getStatusText(noticia.status) }}
-                                        <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg 
+                                            v-if="!atualizandoStatus"
+                                            class="w-3 h-3 ml-1" 
+                                            fill="currentColor" 
+                                            viewBox="0 0 20 20"
+                                        >
                                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <svg 
+                                            v-else
+                                            class="animate-spin w-3 h-3 ml-1" 
+                                            fill="none" 
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </button>
                                     
                                     <!-- Dropdown Menu -->
                                     <div
-                                        v-if="activeDropdown === noticia.id"
+                                        v-if="activeDropdown === noticia.id && !atualizandoStatus"
                                         class="absolute top-full left-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10"
                                     >
                                         <div class="py-1">
@@ -312,18 +330,36 @@
                                 <div class="relative">
                                     <button
                                         @click="toggleStatusDropdown(noticia.id)"
-                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
-                                        :class="getStatusClass(noticia.status)"
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity relative"
+                                        :class="[
+                                            getStatusClass(noticia.status),
+                                            atualizandoStatus ? 'opacity-70' : ''
+                                        ]"
+                                        :disabled="atualizandoStatus"
                                     >
                                         {{ getStatusText(noticia.status) }}
-                                        <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg 
+                                            v-if="!atualizandoStatus"
+                                            class="w-3 h-3 ml-1" 
+                                            fill="currentColor" 
+                                            viewBox="0 0 20 20"
+                                        >
                                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <svg 
+                                            v-else
+                                            class="animate-spin w-3 h-3 ml-1" 
+                                            fill="none" 
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     </button>
                                     
                                     <!-- Dropdown Menu Mobile -->
                                     <div
-                                        v-if="activeDropdown === noticia.id"
+                                        v-if="activeDropdown === noticia.id && !atualizandoStatus"
                                         class="absolute top-full left-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10"
                                     >
                                         <div class="py-1">
@@ -517,24 +553,35 @@ const alterarStatus = async (noticia, novoStatus) => {
 
     atualizandoStatus.value = true;
     
+    // Atualizar o status localmente para feedback imediato
+    const statusAnterior = noticia.status;
+    noticia.status = novoStatus;
+    activeDropdown.value = null;
+    
     try {
-        await router.patch(route('admin.noticias.update', noticia.id), {
+        router.patch(route('admin.noticias.update', noticia.id), {
             status: novoStatus
         }, {
             preserveState: true,
-            onSuccess: () => {
-                // Atualizar o status localmente para feedback imediato
-                noticia.status = novoStatus;
-                activeDropdown.value = null;
+            preserveScroll: true,
+            onSuccess: (page) => {
+                console.log('Status atualizado com sucesso para:', novoStatus);
             },
             onError: (errors) => {
+                // Reverter o status em caso de erro
+                noticia.status = statusAnterior;
                 console.error('Erro ao alterar status:', errors);
-                // Aqui você pode adicionar uma notificação de erro
+                alert('Erro ao alterar status: ' + (errors.status || 'Erro desconhecido'));
+            },
+            onFinish: () => {
+                atualizandoStatus.value = false;
             }
         });
     } catch (error) {
+        // Reverter o status em caso de erro
+        noticia.status = statusAnterior;
         console.error('Erro ao alterar status:', error);
-    } finally {
+        alert('Erro ao alterar status. Tente novamente.');
         atualizandoStatus.value = false;
     }
 };

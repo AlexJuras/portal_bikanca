@@ -26,6 +26,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('show')->where('noticia', '[0-9]+');
         Route::get('/{noticia}/edit', [NoticiaController::class, 'edit'])->name('edit')->where('noticia', '[0-9]+');
         Route::put('/{noticia}', [NoticiaController::class, 'update'])->name('update')->where('noticia', '[0-9]+');
+        Route::patch('/{noticia}', [NoticiaController::class, 'update'])->name('update')->where('noticia', '[0-9]+');
         Route::delete('/{noticia}', [NoticiaController::class, 'destroy'])->name('destroy')->where('noticia', '[0-9]+');
     });
     

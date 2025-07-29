@@ -388,12 +388,14 @@ onMounted(() => {
                         class="bg-white rounded-lg shadow-sm overflow-hidden mb-8"
                     >
                         <div class="relative">
-                            <img
-                                v-if="noticiaDestaque.imagem_capa"
-                                :src="noticiaDestaque.imagem_capa?.caminho"
-                                :alt="noticiaDestaque.titulo"
-                                class="w-full h-80 object-cover"
-                            />
+                            <Link :href="route('noticias.show', noticiaDestaque.slug)">
+                                <img
+                                    v-if="noticiaDestaque.imagem_capa"
+                                    :src="noticiaDestaque.imagem_capa?.caminho"
+                                    :alt="noticiaDestaque.titulo"
+                                    class="w-full h-80 object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                />
+                            </Link>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
                             <!-- Conteúdo sobreposto -->
@@ -410,9 +412,11 @@ onMounted(() => {
                                     </span>
                                 </div>
 
-                                <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
-                                    {{ noticiaDestaque.titulo }}
-                                </h2>
+                                <Link :href="route('noticias.show', noticiaDestaque.slug)">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight cursor-pointer hover:text-celeste transition-colors">
+                                        {{ noticiaDestaque.titulo }}
+                                    </h2>
+                                </Link>
 
                                 <p class="text-gray-200 text-sm mb-4 line-clamp-2">
                                     {{ noticiaDestaque.resumo }}
@@ -434,7 +438,7 @@ onMounted(() => {
                                     </div>
 
                                     <Link
-                                        :href="route('noticias.show', noticiaDestaque.id)"
+                                        :href="route('noticias.show', noticiaDestaque.slug)"
                                         class="bg-azul-oxford hover:bg-azul-noite text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
                                     >
                                         Ler Matéria
@@ -457,12 +461,14 @@ onMounted(() => {
                             :key="noticia.id"
                             class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
                         >
-                            <div class="relative">
-                                <img
-                                    :src="noticia.imagem_capa?.caminho"
-                                    :alt="noticia.titulo"
-                                    class="w-full h-48 object-cover"
-                                />
+                            <div class="relative overflow-hidden">
+                                <Link :href="route('noticias.show', noticia.slug)">
+                                    <img
+                                        :src="noticia.imagem_capa?.caminho"
+                                        :alt="noticia.titulo"
+                                        class="w-full h-48 object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                    />
+                                </Link>
                             </div>
 
                             <div class="p-6">
@@ -478,9 +484,11 @@ onMounted(() => {
                                     </span>
                                 </div>
 
-                                <h3 class="text-lg font-semibold text-azul-oxford mb-2 line-clamp-2">
-                                    {{ noticia.titulo }}
-                                </h3>
+                                <Link :href="route('noticias.show', noticia.slug)">
+                                    <h3 class="text-lg font-semibold text-azul-oxford mb-2 line-clamp-2 cursor-pointer hover:text-azul-lazuli transition-colors">
+                                        {{ noticia.titulo }}
+                                    </h3>
+                                </Link>
 
                                 <p class="text-gray-600 text-sm mb-4 line-clamp-3">
                                     {{ noticia.resumo }}
@@ -498,7 +506,7 @@ onMounted(() => {
 
                                     <div class="flex items-center space-x-4">
                                         <Link
-                                            :href="route('noticias.show', noticia.id)"
+                                            :href="route('noticias.show', noticia.slug)"
                                             class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium"
                                         >
                                             Leia mais

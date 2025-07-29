@@ -157,6 +157,13 @@ class NoticiaController extends Controller
 
     public function update(Request $request, Noticia $noticia)
     {
+        // Log para debug
+        \Log::info('Update request received', [
+            'method' => $request->method(),
+            'data' => $request->all(),
+            'noticia_id' => $noticia->id
+        ]);
+        
         // Se for apenas atualização de status (requisição PATCH)
         if ($request->isMethod('patch') && $request->has('status') && count($request->all()) == 1) {
             $request->validate([
@@ -167,10 +174,8 @@ class NoticiaController extends Controller
                 'status' => $request->status,
             ]);
 
-            return response()->json([
-                'message' => 'Status atualizado com sucesso!',
-                'status' => $noticia->status
-            ]);
+            // Retornar resposta Inertia com dados atualizados
+            return redirect()->back()->with('success', 'Status atualizado com sucesso!');
         }
 
         // Atualização completa da notícia

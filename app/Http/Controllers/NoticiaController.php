@@ -147,8 +147,9 @@ class NoticiaController extends Controller
 
     public function edit(Noticia $noticia)
     {
-        return Inertia::render('Noticias/Edit', [
-            'noticia' => $noticia->load('tags'),
+        return Inertia::render('Admin/Noticias/Edit', [
+            'noticia' => $noticia->load('tags', 'categoria', 'autor', 'imagemCapa'),
+            'categorias' => Categoria::all(),
             'autores' => Autor::all(),
             'tags' => Tag::all()
         ]);
@@ -176,27 +177,55 @@ class NoticiaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'slug' => 'nullable|string|unique:noticias,slug,' . $noticia->id,
+            'resumo' => 'required|string|max:500',
             'conteudo' => 'required|string',
             'status' => 'required|in:rascunho,publicada,arquivada,agendada',
             'autor_id' => 'required|exists:autores,id',
             'categoria_id' => 'required|exists:categorias,id',
+            'imagem_capa' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tags' => 'nullable|array',
             'layout' => 'nullable|string|max:50'
         ]);
 
         $slug = $request->slug ?: Str::slug($request->titulo);
 
+        // Processar upload de imagem de capa se fornecida
+        $imagemCapaId = $noticia->imagem_capa;
+        if ($request->hasFile('imagem_capa')) {
+            $midia = new Midia();
+            $midia->tipo = 'imagem';
+            $midia->formato = 'capa';
+            $midia->legenda = $request->titulo;
+            
+            $arquivo = $request->file('imagem_capa');
+            $nomeArquivo = $arquivo->store('midias', 'public');
+            $midia->caminho = asset('storage/' . $nomeArquivo);
+            $midia->save();
+            
+            $imagemCapaId = $midia->id;
+        }
+
         $noticia->update([
             'titulo' => $request->titulo,
             'slug' => $slug,
+            'resumo' => $request->resumo,
             'conteudo' => $request->conteudo,
             'status' => $request->status,
             'autor_id' => $request->autor_id,
             'categoria_id' => $request->categoria_id,
+            'imagem_capa' => $imagemCapaId,
             'layout' => $request->layout,
         ]);
 
-        $noticia->tags()->sync($request->tags ?? []);
+        // Processar tags
+        if ($request->has('tags') && is_array($request->tags)) {
+            $tagIds = [];
+            foreach ($request->tags as $tagNome) {
+                $tag = Tag::firstOrCreate(['nome' => $tagNome]);
+                $tagIds[] = $tag->id;
+            }
+            $noticia->tags()->sync($tagIds);
+        }
 
         return redirect()->route('admin.noticias.index')->with('success', 'Notícia atualizada com sucesso!');
     }

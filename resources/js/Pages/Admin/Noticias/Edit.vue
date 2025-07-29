@@ -7,6 +7,10 @@ import NoticiaEditor from "@/Components/Editor.vue";
 defineOptions({ layout: Admin });
 
 const props = defineProps({
+    noticia: {
+        type: Object,
+        required: true,
+    },
     categorias: {
         type: Array,
         required: true,
@@ -15,28 +19,32 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    tags: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 // Form data usando Inertia
 const form = useForm({
-    titulo: "",
-    slug: "",
-    resumo: "",
-    conteudo: "Digite o conteúdo da notícia aqui...",
-    status: "rascunho",
-    categoria_id: "",
-    publicada_em: "",
-    layout: "",
-    autor_id: "",
+    titulo: props.noticia.titulo || "",
+    slug: props.noticia.slug || "",
+    resumo: props.noticia.resumo || "",
+    conteudo: props.noticia.conteudo || "Digite o conteúdo da notícia aqui...",
+    status: props.noticia.status || "rascunho",
+    categoria_id: props.noticia.categoria_id || "",
+    publicada_em: props.noticia.publicada_em || "",
+    layout: props.noticia.layout || "",
+    autor_id: props.noticia.autor_id || "",
     imagem_capa: null,
     // gallery_images: [],
-    tags: [],
+    tags: props.noticia.tags ? props.noticia.tags.map(tag => tag.nome) : [],
 });
 
 // Estados locais
 const previewMode = ref(false);
 const tagInput = ref("");
-const featuredImagePreview = ref(null);
+const featuredImagePreview = ref(props.noticia.imagem_capa?.caminho || null);
 const galleryPreviews = ref([]);
 
 // Refs para inputs de arquivo
@@ -141,20 +149,20 @@ const addTagOnEnter = (event) => {
 // Funções de submissão
 const salvarRascunho = () => {
     form.status = "rascunho";
-    form.post("/noticias", {
+    form.put(route('admin.noticias.update', props.noticia.id), {
         forceFormData: true,
         onSuccess: () => {
-            router.visit("/noticias");
+            router.visit(route('admin.noticias.index'));
         },
     });
 };
 
 const publicarNoticia = () => {
     form.status = "publicada";
-    form.post("/noticias", {
+    form.put(route('admin.noticias.update', props.noticia.id), {
         forceFormData: true,
         onSuccess: () => {
-            router.visit("/noticias");
+            router.visit(route('admin.noticias.index'));
         },
     });
 };
@@ -176,7 +184,7 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
-    <Head title="Criar Nova Notícia" />
+    <Head title="Editar Notícia" />
 
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
@@ -184,7 +192,7 @@ const formatDate = (dateString) => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div class="flex items-center justify-between">
                     <h1 class="text-2xl font-bold text-azul-oxford">
-                        Criar Nova Notícia
+                        Editar Notícia: {{ form.titulo || 'Sem título' }}
                     </h1>
                     <div class="flex space-x-3">
                         <button
@@ -235,7 +243,7 @@ const formatDate = (dateString) => {
                             <span>{{
                                 form.processing
                                     ? "Salvando..."
-                                    : "Salvar Rascunho"
+                                    : "Salvar Alterações"
                             }}</span>
                         </button>
                         <button
@@ -257,7 +265,7 @@ const formatDate = (dateString) => {
                                 ></path>
                             </svg>
                             <span>{{
-                                form.processing ? "Publicando..." : "Publicar"
+                                form.processing ? "Atualizando..." : "Atualizar e Publicar"
                             }}</span>
                         </button>
                     </div>

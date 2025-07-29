@@ -11,7 +11,9 @@
                 :href="route('noticias.create')"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center"
             >
-                <i class="fas fa-plus mr-2"></i>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
                 Nova Notícia
             </Link>
         </div>
@@ -38,7 +40,9 @@
                         <div
                             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                         >
-                            <i class="fas fa-search text-gray-400"></i>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -48,7 +52,9 @@
                         @click="clearSearch"
                         class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                     >
-                        <i class="fas fa-times mr-2"></i>
+                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                         Limpar
                     </button>
                 </div>
@@ -126,7 +132,7 @@
                         >
                             <td class="px-4 py-4">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-12 w-12 mr-3">
+                                    <div class="flex-shrink-0 h-12 w-12  mr-3">
                                         <img
                                             :src="
                                                 noticia.imagemCapa?.caminho ||
@@ -190,7 +196,10 @@
                                         class="text-blue-600 hover:text-blue-800 transition-colors p-1"
                                         title="Visualizar"
                                     >
-                                        <i class="fas fa-eye"></i>
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
                                     </Link>
 
                                     <!-- Editar -->
@@ -201,7 +210,9 @@
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors p-1"
                                         title="Editar"
                                     >
-                                        <i class="fas fa-edit"></i>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
                                     </Link>
 
                                     <!-- Excluir -->
@@ -210,7 +221,9 @@
                                         class="text-red-600 hover:text-red-800 transition-colors p-1"
                                         title="Excluir"
                                     >
-                                        <i class="fas fa-trash"></i>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
                                     </button>
                                 </div>
                             </td>
@@ -272,7 +285,10 @@
                                         class="text-blue-600 hover:text-blue-800 transition-colors"
                                         title="Visualizar"
                                     >
-                                        <i class="fas fa-eye"></i>
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
                                     </Link>
                                     <Link
                                         :href="
@@ -281,14 +297,18 @@
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors"
                                         title="Editar"
                                     >
-                                        <i class="fas fa-edit"></i>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
                                     </Link>
                                     <button
                                         @click="confirmarExclusao(noticia)"
                                         class="text-red-600 hover:text-red-800 transition-colors"
                                         title="Excluir"
                                     >
-                                        <i class="fas fa-trash"></i>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -313,9 +333,9 @@
         >
             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                 <div class="flex items-center mb-4">
-                    <i
-                        class="fas fa-exclamation-triangle text-red-600 text-2xl mr-3"
-                    ></i>
+                    <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
                     <h3 class="text-lg font-semibold text-gray-900">
                         Confirmar Exclusão
                     </h3>

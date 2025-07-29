@@ -72,8 +72,8 @@ const shareFacebook = () => {
                         <!-- Imagem da Notícia -->
                         <div class="relative">
                             <img
-                                v-if="noticia.imagemCapa?.caminho"
-                                :src="noticia.imagemCapa.caminho"
+                                v-if="noticia.imagem_capa?.caminho"
+                                :src="noticia.imagem_capa.caminho"
                                 :alt="noticia.titulo"
                                 class="w-full h-96 object-cover"
                             />
@@ -207,8 +207,8 @@ const shareFacebook = () => {
                                 <Link :href="route('noticias.show', noticia.id)" class="block">
                                     <div class="relative mb-3">
                                         <img
-                                            v-if="noticia.imagemCapa?.caminho"
-                                            :src="noticia.imagemCapa.caminho"
+                                            v-if="noticia.imagem_capa?.caminho"
+                                            :src="noticia.imagem_capa.caminho"
                                             :alt="noticia.titulo"
                                             class="w-full h-40 object-cover rounded-lg group-hover:opacity-90 transition-opacity"
                                         />

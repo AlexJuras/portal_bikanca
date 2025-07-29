@@ -62,7 +62,7 @@ class AutorController extends Controller
     {
         // Carregar notícias do autor
         $noticias = $autor->noticias()
-            ->with(['categoria', 'tags', 'imagemCapa'])
+            ->with(['categoria', 'tags', 'imagem_capa'])
             ->where('status', 'publicada')
             ->latest('publicada_em')
             ->paginate(10);

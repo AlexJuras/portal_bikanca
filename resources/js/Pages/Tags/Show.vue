@@ -143,8 +143,8 @@
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div class="md:col-span-1">
                                             <img
-                                                v-if="noticia.imagemCapa?.caminho"
-                                                :src="noticia.imagemCapa.caminho"
+                                                v-if="noticia.imagem_capa?.caminho"
+                                                :src="noticia.imagem_capa.caminho"
                                                 :alt="noticia.titulo"
                                                 class="w-full h-48 md:h-32 object-cover rounded-lg group-hover:opacity-90 transition-opacity"
                                             />
@@ -341,6 +341,7 @@ const formatDate = (date) => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

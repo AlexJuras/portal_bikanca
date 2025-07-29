@@ -59,7 +59,7 @@ class TagController extends Controller
     {
         // Carregar notícias com esta tag
         $noticias = $tag->noticias()
-            ->with(['autor', 'categoria', 'imagemCapa'])
+            ->with(['autor', 'categoria', 'imagem_capa'])
             ->where('status', 'publicada')
             ->latest('publicada_em')
             ->paginate(10);

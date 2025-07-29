@@ -29,6 +29,18 @@ class Noticia extends Model
         'publicada_em' => 'datetime',
     ];
 
+    /**
+     * Configurar route model binding para usar slug nas rotas públicas
+     * e ID nas rotas admin
+     */
+    public function getRouteKeyName()
+    {
+        if (request()->is('admin/*')) {
+            return 'id';
+        }
+        return 'slug';
+    }
+
     protected static function boot()
     {
         parent::boot();

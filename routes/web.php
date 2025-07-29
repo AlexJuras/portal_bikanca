@@ -23,10 +23,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [NoticiaController::class, 'admin'])->name('index');
         Route::get('/create', [NoticiaController::class, 'create'])->name('create');
         Route::post('/', [NoticiaController::class, 'store'])->name('store');
-        Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('show');
-        Route::get('/{noticia}/edit', [NoticiaController::class, 'edit'])->name('edit');
-        Route::put('/{noticia}', [NoticiaController::class, 'update'])->name('update');
-        Route::delete('/{noticia}', [NoticiaController::class, 'destroy'])->name('destroy');
+        Route::get('/{noticia}', [NoticiaController::class, 'show'])->name('show')->where('noticia', '[0-9]+');
+        Route::get('/{noticia}/edit', [NoticiaController::class, 'edit'])->name('edit')->where('noticia', '[0-9]+');
+        Route::put('/{noticia}', [NoticiaController::class, 'update'])->name('update')->where('noticia', '[0-9]+');
+        Route::delete('/{noticia}', [NoticiaController::class, 'destroy'])->name('destroy')->where('noticia', '[0-9]+');
     });
     
     // Gerenciamento de Categorias (área restrita)

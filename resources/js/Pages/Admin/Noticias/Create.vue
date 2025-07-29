@@ -15,6 +15,10 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    tags: {
+        type: Array,
+        required: true,
+    },
 });
 
 // Form data usando Inertia
@@ -26,11 +30,11 @@ const form = useForm({
     status: "rascunho",
     categoria_id: "",
     publicada_em: "",
-    layout: "",
+    layout: "padrao", // Valor padrão para evitar undefined
     autor_id: "",
     imagem_capa: null,
     // gallery_images: [],
-    tags: [],
+    tag_ids: [],
 });
 
 // Estados locais
@@ -41,7 +45,28 @@ const galleryPreviews = ref([]);
 
 // Refs para inputs de arquivo
 const featuredImageInput = ref(null);
-const galleryImageInput = ref(null);
+// const galleryImageInput = ref(null);
+
+// Computed para campos pendentes
+const camposPendentes = computed(() => {
+    const pendentes = [];
+    if (!form.titulo || form.titulo.trim() === '') {
+        pendentes.push('Título');
+    }
+    if (!form.resumo || form.resumo.trim() === '') {
+        pendentes.push('Resumo');
+    }
+    if (!form.conteudo || form.conteudo.trim() === '' || form.conteudo === 'Digite o conteúdo da notícia aqui...') {
+        pendentes.push('Conteúdo');
+    }
+    if (!form.categoria_id) {
+        pendentes.push('Categoria');
+    }
+    if (!form.autor_id) {
+        pendentes.push('Autor');
+    }
+    return pendentes;
+});
 
 // Computed properties
 const tituloLength = computed(() => form.titulo.length);
@@ -75,25 +100,68 @@ const removeFeaturedImage = () => {
     }
 };
 
-const gerarSlug = () => {
-    if (form.titulo) {
-        form.slug = form.titulo
+const gerarSlug = async () => {
+    if (!form.titulo) return;
+    
+    try {
+        let baseSlug = form.titulo
             .toLowerCase()
-            .replace(/[^\w-]+/g, "-")
-            .replace(/-+/g, "-")
-            .trim();
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+            .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+            .replace(/\s+/g, '-') // Substitui espaços por hífens
+            .replace(/-+/g, '-') // Remove hífens duplicados
+            .trim()
+            .replace(/^-+|-+$/g, ''); // Remove hífens do início e fim
+        
+        if (!baseSlug) {
+            baseSlug = 'noticia';
+        }
+        
+        // Adiciona timestamp para garantir unicidade
+        const timestamp = new Date().getTime().toString().slice(-6);
+        form.slug = `${baseSlug}-${timestamp}`;
+        
+    } catch (error) {
+        console.error('Erro ao gerar slug:', error);
+        // Garante que sempre teremos uma slug válida
+        form.slug = `noticia-${new Date().getTime().toString().slice(-6)}`;
+    }
+};
+
+// Função para limpar erros de validação específicos
+const limparErroValidacao = (campo) => {
+    if (validationErrors.value[campo]) {
+        delete validationErrors.value[campo];
+        validationErrors.value = { ...validationErrors.value };
+    }
+    if (showValidationAlert.value && Object.keys(validationErrors.value).length === 0) {
+        showValidationAlert.value = false;
     }
 };
 
 // Watch for title changes
 watch(
     () => form.titulo,
-    (novoTitulo) => {
+    async (novoTitulo) => {
+        limparErroValidacao('titulo');
         if (!form.slug || form.slug === "") {
-            gerarSlug();
+            await gerarSlug();
         }
     }
 );
+
+// Watch para outros campos
+watch(() => form.resumo, () => limparErroValidacao('resumo'));
+watch(() => form.conteudo, () => limparErroValidacao('conteudo'));
+watch(() => form.categoria_id, () => limparErroValidacao('categoria_id'));
+watch(() => form.autor_id, () => limparErroValidacao('autor_id'));
+
+watch(tagInput, (newValue) => {
+    if (newValue !== "") {
+        addTag();
+    }
+});
 
 // const handleGalleryImageUpload = (event) => {
 //     const file = event.target.files[0];
@@ -120,15 +188,15 @@ watch(
 
 // Funções para tags
 const addTag = () => {
-    const tag = tagInput.value.trim();
-    if (tag && !form.tags.includes(tag)) {
-        form.tags.push(tag);
-        tagInput.value = "";
+    const selectedTag = props.tags.find((tag) => tag.id === tagInput.value);
+    if (selectedTag && !form.tag_ids.includes(selectedTag.id)) {
+        form.tag_ids.push(selectedTag.id);
+        tagInput.value = ""; // Limpar após adicionar
     }
 };
 
 const removeTag = (index) => {
-    form.tags.splice(index, 1);
+    form.tag_ids.splice(index, 1);
 };
 
 const addTagOnEnter = (event) => {
@@ -138,25 +206,87 @@ const addTagOnEnter = (event) => {
     }
 };
 
+// Estados para controle de validação
+const validationErrors = ref({});
+const showValidationAlert = ref(false);
+
+// Função para validar campos obrigatórios
+const validarCamposObrigatorios = () => {
+    const errors = {};
+    
+    if (!form.titulo || form.titulo.trim() === '') {
+        errors.titulo = 'O título é obrigatório';
+    }
+    
+    if (!form.resumo || form.resumo.trim() === '') {
+        errors.resumo = 'O resumo é obrigatório';
+    }
+    
+    if (!form.conteudo || form.conteudo.trim() === '' || form.conteudo === 'Digite o conteúdo da notícia aqui...') {
+        errors.conteudo = 'O conteúdo da notícia é obrigatório';
+    }
+    
+    if (!form.categoria_id) {
+        errors.categoria_id = 'A categoria é obrigatória';
+    }
+    
+    if (!form.autor_id) {
+        errors.autor_id = 'O autor é obrigatório';
+    }
+    
+    validationErrors.value = errors;
+    return Object.keys(errors).length === 0;
+};
+
+// Função para exibir alerta de campos obrigatórios
+const mostrarAlertaValidacao = () => {
+    showValidationAlert.value = true;
+    setTimeout(() => {
+        showValidationAlert.value = false;
+    }, 5000);
+};
+
 // Funções de submissão
+const processarSubmissao = async (status) => {
+    try {
+        // Validar campos obrigatórios
+        if (!validarCamposObrigatorios()) {
+            mostrarAlertaValidacao();
+            return;
+        }
+
+        // Garante que temos uma slug válida
+        if (!form.slug) {
+            await gerarSlug();
+        }
+
+        form.status = status;
+        await form.post(route("noticias.store"), {
+            forceFormData: true,
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                router.visit(route("noticias.index"));
+            },
+            onError: (errors) => {
+                console.error(`Erro ao ${status === 'rascunho' ? 'salvar rascunho' : 'publicar notícia'}:`, errors);
+                // Atualizar erros de validação se houver
+                if (errors) {
+                    validationErrors.value = { ...validationErrors.value, ...errors };
+                }
+            },
+        });
+    } catch (error) {
+        console.error('Erro ao processar submissão:', error);
+    }
+};
+
 const salvarRascunho = () => {
-    form.status = "rascunho";
-    form.post("/noticias", {
-        forceFormData: true,
-        onSuccess: () => {
-            router.visit("/noticias");
-        },
-    });
+    processarSubmissao("rascunho");
 };
 
 const publicarNoticia = () => {
-    form.status = "publicada";
-    form.post("/noticias", {
-        forceFormData: true,
-        onSuccess: () => {
-            router.visit("/noticias");
-        },
-    });
+    processarSubmissao("publicada");
 };
 
 // Função para preview
@@ -179,6 +309,30 @@ const formatDate = (dateString) => {
     <Head title="Criar Nova Notícia" />
 
     <div class="min-h-screen bg-gray-50">
+        <!-- Alerta de Validação -->
+        <div 
+            v-if="showValidationAlert" 
+            class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 animate-pulse"
+        >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z">
+                </path>
+            </svg>
+            <div>
+                <p class="font-medium">Campos obrigatórios não preenchidos!</p>
+                <p class="text-sm opacity-90">Verifique os campos marcados abaixo e preencha todos os dados obrigatórios.</p>
+            </div>
+            <button 
+                @click="showValidationAlert = false"
+                class="ml-4 text-white hover:text-gray-200"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
         <!-- Header -->
         <section class="bg-white shadow-sm border-b-2 border-azul-lazuli">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -218,6 +372,7 @@ const formatDate = (dateString) => {
                             @click="salvarRascunho"
                             :disabled="form.processing"
                             class="flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+                            :class="{ 'animate-pulse': Object.keys(validationErrors).length > 0 }"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -242,6 +397,7 @@ const formatDate = (dateString) => {
                             @click="publicarNoticia"
                             :disabled="form.processing"
                             class="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+                            :class="{ 'animate-pulse': Object.keys(validationErrors).length > 0 }"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -323,8 +479,9 @@ const formatDate = (dateString) => {
                         </div>
                     </div>
 
-                    <div class="prose prose-lg max-w-none">
-                        <p
+                    <div class="prose prose-lg max-w-none px-8">
+                        <div v-html="form.conteudo" class="mb-6"></div>
+                        <!-- <p
                             v-for="(paragraph, index) in form.conteudo
                                 .split('\n')
                                 .filter((p) => p.trim())"
@@ -332,7 +489,7 @@ const formatDate = (dateString) => {
                             class="mb-4 text-gray-700 leading-relaxed"
                         >
                             {{ paragraph }}
-                        </p>
+                        </p> -->
                     </div>
 
                     <div v-if="galleryPreviews.length > 0" class="mt-8">
@@ -351,7 +508,7 @@ const formatDate = (dateString) => {
                     </div>
 
                     <div
-                        v-if="form.tags.length > 0"
+                        v-if="form.tag_ids.length > 0"
                         class="mt-8 pt-6 border-t border-gray-200"
                     >
                         <h4 class="text-sm font-semibold text-azul-oxford mb-2">
@@ -359,11 +516,14 @@ const formatDate = (dateString) => {
                         </h4>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                v-for="tag in form.tags"
-                                :key="tag"
+                                v-for="tagId in form.tag_ids"
+                                :key="tagId"
                                 class="bg-gray-100 text-azul-oxford px-3 py-1 rounded-full text-sm"
                             >
-                                {{ tag }}
+                                {{
+                                    props.tags.find((tag) => tag.id === tagId)
+                                        ?.nome
+                                }}
                             </span>
                         </div>
                     </div>
@@ -389,14 +549,17 @@ const formatDate = (dateString) => {
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli text-lg"
                             placeholder="Digite o título da notícia..."
                             maxlength="200"
-                            :class="{ 'border-red-500': form.errors.titulo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.titulo || validationErrors.titulo,
+                                'border-green-500 bg-green-50': form.titulo && form.titulo.trim() !== ''
+                            }"
                         />
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.titulo"
-                                class="text-sm text-red-600"
+                                v-if="form.errors.titulo || validationErrors.titulo"
+                                class="text-sm text-red-600 font-medium"
                             >
-                                {{ form.errors.titulo }}
+                                {{ form.errors.titulo || validationErrors.titulo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ tituloLength }}/200 caracteres
@@ -417,14 +580,17 @@ const formatDate = (dateString) => {
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
                             placeholder="Escreva um resumo da notícia..."
                             maxlength="300"
-                            :class="{ 'border-red-500': form.errors.resumo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.resumo || validationErrors.resumo,
+                                'border-green-500 bg-green-50': form.resumo && form.resumo.trim() !== ''
+                            }"
                         ></textarea>
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.resumo"
-                                class="text-sm text-red-600"
+                                v-if="form.errors.resumo || validationErrors.resumo"
+                                class="text-sm text-red-600 font-medium"
                             >
-                                {{ form.errors.resumo }}
+                                {{ form.errors.resumo || validationErrors.resumo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ resumoLength }}/300 caracteres
@@ -444,14 +610,17 @@ const formatDate = (dateString) => {
                             v-model="form.conteudo"
                             placeholder="Escreva o conteúdo da notícia..."
                             class="min-h-[200px] w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.conteudo }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.conteudo || validationErrors.conteudo,
+                                'border-green-500 bg-green-50': form.conteudo && form.conteudo.trim() !== '' && form.conteudo !== 'Digite o conteúdo da notícia aqui...'
+                            }"
                         />
 
                         <p
-                            v-if="form.errors.conteudo"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.conteudo || validationErrors.conteudo"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.conteudo }}
+                            {{ form.errors.conteudo || validationErrors.conteudo }}
                         </p>
                     </div>
 
@@ -531,6 +700,59 @@ const formatDate = (dateString) => {
 
                 <!-- Sidebar -->
                 <div class="space-y-6">
+                    <!-- Campos Obrigatórios Pendentes -->
+                    <div 
+                        v-if="camposPendentes.length > 0" 
+                        class="bg-red-50 border border-red-200 rounded-lg shadow-sm p-6"
+                    >
+                        <h3 class="text-lg font-medium text-red-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
+                            </svg>
+                            Campos Obrigatórios
+                        </h3>
+                        <p class="text-sm text-red-700 mb-3">
+                            Os seguintes campos são obrigatórios para salvar a notícia:
+                        </p>
+                        <ul class="space-y-2">
+                            <li 
+                                v-for="campo in camposPendentes" 
+                                :key="campo"
+                                class="flex items-center text-sm text-red-700"
+                            >
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                {{ campo }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Campos Preenchidos -->
+                    <div 
+                        v-if="camposPendentes.length < 5" 
+                        class="bg-green-50 border border-green-200 rounded-lg shadow-sm p-6"
+                    >
+                        <h3 class="text-lg font-medium text-green-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Progresso
+                        </h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-green-700">{{ 5 - camposPendentes.length }} de 5 campos preenchidos</span>
+                            <span class="text-sm font-medium text-green-800">{{ Math.round((5 - camposPendentes.length) / 5 * 100) }}%</span>
+                        </div>
+                        <div class="w-full bg-green-200 rounded-full h-2">
+                            <div 
+                                class="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                                :style="{ width: `${(5 - camposPendentes.length) / 5 * 100}%` }"
+                            ></div>
+                        </div>
+                    </div>
+
                     <!-- Status -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-lg font-medium text-azul-oxford mb-4">
@@ -629,7 +851,10 @@ const formatDate = (dateString) => {
                         <select
                             v-model="form.categoria_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.categoria }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.categoria_id || validationErrors.categoria_id,
+                                'border-green-500 bg-green-50': form.categoria_id
+                            }"
                         >
                             <option value="">Selecione uma categoria</option>
                             <option
@@ -641,10 +866,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.categoria"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.categoria_id || validationErrors.categoria_id"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.categoria }}
+                            {{ form.errors.categoria_id || validationErrors.categoria_id }}
                         </p>
                     </div>
                     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -656,7 +881,10 @@ const formatDate = (dateString) => {
                         <select
                             v-model="form.autor_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.autor_id }"
+                            :class="{ 
+                                'border-red-500 bg-red-50': form.errors.autor_id || validationErrors.autor_id,
+                                'border-green-500 bg-green-50': form.autor_id
+                            }"
                         >
                             <option value="">Selecione um(a) autor(a)</option>
                             <option
@@ -668,10 +896,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.autor_id"
-                            class="text-sm text-red-600 mt-1"
+                            v-if="form.errors.autor_id || validationErrors.autor_id"
+                            class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.autor_id }}
+                            {{ form.errors.autor_id || validationErrors.autor_id }}
                         </p>
                     </div>
 
@@ -682,36 +910,41 @@ const formatDate = (dateString) => {
                         >
                             Tags
                         </label>
-                        <div class="flex space-x-2 mb-3">
-                            <input
-                                v-model="tagInput"
-                                type="text"
-                                @keypress="addTagOnEnter"
-                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                                placeholder="Digite uma tag"
-                            />
-                            <button
-                                type="button"
-                                @click="addTag"
-                                class="bg-azul-lazuli hover:bg-azul-oxford text-white px-3 py-2 rounded-lg transition-all duration-200"
+                        <select
+                            v-model="tagInput"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
+                        >
+                            <option value="">Selecione uma tag</option>
+                            <option
+                                v-for="tag in props.tags"
+                                :key="tag.id"
+                                :value="tag.id"
+                                :disabled="form.tag_ids.includes(tag.id)"
                             >
-                                Add
-                            </button>
-                        </div>
+                                {{ tag.nome }}
+                            </option>
+                        </select>
 
                         <div
-                            v-if="form.tags.length > 0"
+                            v-if="form.tag_ids.length > 0"
                             class="flex flex-wrap gap-2"
                         >
                             <span
-                                v-for="(tag, index) in form.tags"
-                                :key="index"
+                                v-for="tagId in form.tag_ids"
+                                :key="tagId"
                                 class="bg-celeste text-azul-oxford px-3 py-1 rounded-full text-sm flex items-center space-x-2"
                             >
-                                <span>{{ tag }}</span>
+                                <span>{{
+                                    props.tags.find((t) => t.id === tagId)?.nome
+                                }}</span>
                                 <button
                                     type="button"
-                                    @click="removeTag(index)"
+                                    @click="
+                                        () =>
+                                            removeTag(
+                                                form.tag_ids.indexOf(tagId)
+                                            )
+                                    "
                                     class="text-azul-oxford hover:text-azul-noite transition-colors"
                                 >
                                     <svg
@@ -725,7 +958,7 @@ const formatDate = (dateString) => {
                                             stroke-linejoin="round"
                                             stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12"
-                                        ></path>
+                                        />
                                     </svg>
                                 </button>
                             </span>

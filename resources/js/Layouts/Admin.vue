@@ -174,7 +174,7 @@
                                     <div class="mt-2 space-y-1">
                                         <!-- Notícias -->
                                         <Link
-                                            href="/admin/noticias"
+                                            :href="route('admin.noticias.index')"
                                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
                                             :class="
                                                 $page.url.startsWith(
@@ -200,9 +200,37 @@
                                             Notícias
                                         </Link>
 
+                                        <!-- Vídeos -->
+                                        <Link
+                                            :href="route('admin.videos.index')"
+                                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
+                                            :class="
+                                                $page.url.startsWith(
+                                                    '/admin/videos'
+                                                )
+                                                    ? 'bg-azul-lazuli text-white'
+                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-azul-oxford'
+                                            "
+                                        >
+                                            <svg
+                                                class="mr-3 h-6 w-6"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                            Vídeos
+                                        </Link>
+
                                         <!-- Categorias -->
                                         <Link
-                                            href="/admin/categorias"
+                                            :href="route('admin.categorias.index')"
                                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
                                             :class="
                                                 $page.url.startsWith(
@@ -266,7 +294,7 @@
                                     <div class="mt-2 space-y-1">
                                         <!-- Autores -->
                                         <Link
-                                            href="/admin/autores"
+                                            :href="route('admin.autores.index')"
                                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors"
                                             :class="
                                                 $page.url.startsWith('/admin/autores')

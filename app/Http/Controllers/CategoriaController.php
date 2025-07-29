@@ -17,9 +17,28 @@ class CategoriaController extends Controller
         ]);
     }
 
+    public function admin(Request $request)
+    {
+        $query = Categoria::withCount('noticias')
+            ->latest('updated_at');
+
+        // Aplicar filtro de pesquisa se fornecido
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('nome', 'like', "%{$search}%");
+        }
+
+        $categorias = $query->paginate(15);
+
+        return Inertia::render('Admin/Categorias/Index', [
+            'categorias' => $categorias,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
     public function create()
     {
-        return Inertia::render('Categorias/Create');
+        return Inertia::render('Admin/Categorias/Create');
     }
 
     public function store(Request $request)
@@ -32,12 +51,12 @@ class CategoriaController extends Controller
 
         Categoria::create($request->all());
 
-        return redirect()->route('categorias.index')->with('success', 'Categoria criada com sucesso!');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoria criada com sucesso!');
     }
 
     public function edit(Categoria $categoria)
     {
-        return Inertia::render('Categorias/Edit', [
+        return Inertia::render('Admin/Categorias/Edit', [
             'categoria' => $categoria
         ]);
     }
@@ -52,13 +71,13 @@ class CategoriaController extends Controller
 
         $categoria->update($request->all());
 
-        return redirect()->route('categorias.index')->with('success', 'Categoria atualizada com sucesso!');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoria atualizada com sucesso!');
     }
 
     public function destroy(Categoria $categoria)
     {
         $categoria->delete();
 
-        return redirect()->route('categorias.index')->with('success', 'Categoria removida com sucesso!');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoria removida com sucesso!');
     }
 }

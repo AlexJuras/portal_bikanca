@@ -30,6 +30,26 @@ class VideoController extends Controller
         ]);
     }
 
+    public function admin(Request $request)
+    {
+        $query = Midia::videos()
+            ->with(['categoria', 'autor'])
+            ->latest('updated_at');
+
+        // Aplicar filtro de pesquisa se fornecido
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('titulo', 'like', "%{$search}%");
+        }
+
+        $videos = $query->paginate(15);
+
+        return Inertia::render('Admin/Videos/Index', [
+            'videos' => $videos,
+            'filters' => $request->only(['search'])
+        ]);
+    }
+
     public function show(Midia $midia)
     {
         // Verificar se é um vídeo
@@ -63,7 +83,7 @@ class VideoController extends Controller
         $categorias = Categoria::orderBy('nome')->get();
         $autores = Autor::orderBy('nome')->get();
 
-        return Inertia::render('Videos/Create', [
+        return Inertia::render('Admin/Videos/Create', [
             'categorias' => $categorias,
             'autores' => $autores,
         ]);
@@ -92,7 +112,7 @@ class VideoController extends Controller
 
         Midia::create($validated);
 
-        return redirect()->route('videos.index')
+        return redirect()->route('admin.videos.index')
             ->with('success', 'Vídeo criado com sucesso!');
     }
 
@@ -106,7 +126,7 @@ class VideoController extends Controller
         $categorias = Categoria::orderBy('nome')->get();
         $autores = Autor::orderBy('nome')->get();
 
-        return Inertia::render('Videos/Edit', [
+        return Inertia::render('Admin/Videos/Edit', [
             'video' => $midia,
             'categorias' => $categorias,
             'autores' => $autores,
@@ -137,7 +157,7 @@ class VideoController extends Controller
 
         $midia->update($validated);
 
-        return redirect()->route('videos.show', $midia)
+        return redirect()->route('admin.videos.index')
             ->with('success', 'Vídeo atualizado com sucesso!');
     }
 
@@ -150,7 +170,7 @@ class VideoController extends Controller
 
         $midia->delete();
 
-        return redirect()->route('videos.index')
+        return redirect()->route('admin.videos.index')
             ->with('success', 'Vídeo excluído com sucesso!');
     }
 

@@ -1,20 +1,18 @@
 <template>
     <div class="container mx-auto p-4">
         <!-- Cabeçalho -->
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6"
-        >
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-                Gerenciar Notícias
+                Gerenciar Vídeos
             </h1>
-            <Link
-                :href="route('admin.noticias.create')"
+            <Link 
+                :href="route('admin.videos.create')" 
                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center"
             >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Nova Notícia
+                Novo Vídeo
             </Link>
         </div>
 
@@ -22,24 +20,19 @@
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1">
-                    <label
-                        for="search"
-                        class="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                        Pesquisar notícias
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+                        Pesquisar vídeos
                     </label>
                     <div class="relative">
                         <input
                             id="search"
                             v-model="search"
                             type="text"
-                            placeholder="Digite o título da notícia..."
+                            placeholder="Digite o título do vídeo..."
                             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                             @input="debouncedSearch"
-                        />
-                        <div
-                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                         >
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
@@ -65,134 +58,91 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="text-center">
-                    <h3 class="text-2xl font-bold text-blue-600">
-                        {{ totalNoticias }}
-                    </h3>
-                    <p class="text-gray-600">Total de Notícias</p>
+                    <h3 class="text-2xl font-bold text-blue-600">{{ totalVideos }}</h3>
+                    <p class="text-gray-600">Total de Vídeos</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-2xl font-bold text-green-600">
-                        {{ noticiasPublicadas }}
-                    </h3>
-                    <p class="text-gray-600">Publicadas</p>
+                    <h3 class="text-2xl font-bold text-green-600">{{ videosPublicados }}</h3>
+                    <p class="text-gray-600">Publicados</p>
                 </div>
                 <div class="text-center">
-                    <h3 class="text-2xl font-bold text-yellow-600">
-                        {{ noticiasRascunho }}
-                    </h3>
+                    <h3 class="text-2xl font-bold text-yellow-600">{{ videosRascunho }}</h3>
                     <p class="text-gray-600">Rascunhos</p>
                 </div>
             </div>
         </div>
 
-        <!-- Lista de Notícias -->
+        <!-- Lista de Vídeos -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Versão Desktop -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                                Notícia
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Vídeo
                             </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Autor
                             </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Categoria
                             </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status
                             </th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Data
                             </th>
-                            <th
-                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
-                            >
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                                 Ações
                             </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr
-                            v-for="noticia in noticias.data"
-                            :key="noticia.id"
-                            class="hover:bg-gray-50"
-                        >
+                        <tr v-for="video in videos.data" :key="video.id" class="hover:bg-gray-50">
                             <td class="px-4 py-4">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-12 w-12 mr-3">
-                                        <img
-                                            :src="
-                                                noticia.imagemCapa?.caminho ||
-                                                '/logo.png'
-                                            "
-                                            :alt="noticia.titulo"
+                                        <img 
+                                            :src="video.thumbnail || '/logo.png'" 
+                                            :alt="video.titulo"
                                             class="h-12 w-12 object-cover rounded-lg"
-                                        />
+                                        >
                                     </div>
                                     <div class="max-w-xs">
-                                        <h3
-                                            class="text-sm font-medium text-gray-900 line-clamp-2"
-                                        >
-                                            {{ noticia.titulo }}
+                                        <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
+                                            {{ video.titulo }}
                                         </h3>
-                                        <p
-                                            class="text-sm text-gray-500 line-clamp-1 mt-1"
-                                        >
-                                            {{ noticia.resumo }}
+                                        <p class="text-sm text-gray-500 line-clamp-1 mt-1">
+                                            {{ video.descricao }}
                                         </p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    {{ noticia.autor?.nome }}
-                                </div>
+                                <div class="text-sm text-gray-900">{{ video.autor?.nome }}</div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                    :class="
-                                        getCategoriaClass(
-                                            noticia.categoria?.nome
-                                        )
-                                    "
-                                >
-                                    {{ noticia.categoria?.nome }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                      :class="getCategoriaClass(video.categoria?.nome)">
+                                    {{ video.categoria?.nome }}
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                                    :class="getStatusClass(noticia.status)"
-                                >
-                                    {{ getStatusText(noticia.status) }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                      :class="getStatusClass(video.status)">
+                                    {{ getStatusText(video.status) }}
                                 </span>
                             </td>
-                            <td
-                                class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"
-                            >
-                                {{ formatDate(noticia.updated_at) }}
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ formatDate(video.updated_at) }}
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
                                     <!-- Visualizar -->
-                                    <Link
-                                        :href="
-                                            route('noticias.show', noticia.slug)
-                                        "
+                                    <Link 
+                                        :href="route('videos.show', video.id)" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors p-1"
                                         title="Visualizar"
                                     >
@@ -201,12 +151,10 @@
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </Link>
-
+                                    
                                     <!-- Editar -->
-                                    <Link
-                                        :href="
-                                            route('admin.noticias.edit', noticia.id)
-                                        "
+                                    <Link 
+                                        :href="route('admin.videos.edit', video.id)" 
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors p-1"
                                         title="Editar"
                                     >
@@ -214,10 +162,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </Link>
-
+                                    
                                     <!-- Excluir -->
-                                    <button
-                                        @click="confirmarExclusao(noticia)"
+                                    <button 
+                                        @click="confirmarExclusao(video)"
                                         class="text-red-600 hover:text-red-800 transition-colors p-1"
                                         title="Excluir"
                                     >
@@ -234,54 +182,37 @@
 
             <!-- Versão Mobile/Tablet -->
             <div class="lg:hidden">
-                <div
-                    v-for="noticia in noticias.data"
-                    :key="noticia.id"
-                    class="border-b border-gray-200 p-4"
-                >
+                <div v-for="video in videos.data" :key="video.id" class="border-b border-gray-200 p-4">
                     <div class="flex items-start space-x-3">
-                        <img
-                            :src="noticia.imagemCapa?.caminho || '/logo.png'"
-                            :alt="noticia.titulo"
+                        <img 
+                            :src="video.thumbnail || '/logo.png'" 
+                            :alt="video.titulo"
                             class="h-16 w-16 object-cover rounded-lg flex-shrink-0"
-                        />
+                        >
                         <div class="flex-1 min-w-0">
-                            <h3
-                                class="text-sm font-medium text-gray-900 line-clamp-2"
-                            >
-                                {{ noticia.titulo }}
+                            <h3 class="text-sm font-medium text-gray-900 line-clamp-2">
+                                {{ video.titulo }}
                             </h3>
                             <p class="text-sm text-gray-500 line-clamp-1 mt-1">
-                                {{ noticia.resumo }}
+                                {{ video.descricao }}
                             </p>
                             <div class="mt-2 flex flex-wrap gap-2">
-                                <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="
-                                        getCategoriaClass(
-                                            noticia.categoria?.nome
-                                        )
-                                    "
-                                >
-                                    {{ noticia.categoria?.nome }}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                      :class="getCategoriaClass(video.categoria?.nome)">
+                                    {{ video.categoria?.nome }}
                                 </span>
-                                <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="getStatusClass(noticia.status)"
-                                >
-                                    {{ getStatusText(noticia.status) }}
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                      :class="getStatusClass(video.status)">
+                                    {{ getStatusText(video.status) }}
                                 </span>
                             </div>
                             <div class="mt-2 flex justify-between items-center">
                                 <div class="text-xs text-gray-500">
-                                    {{ noticia.autor?.nome }} •
-                                    {{ formatDate(noticia.updated_at) }}
+                                    {{ video.autor?.nome }} • {{ formatDate(video.updated_at) }}
                                 </div>
                                 <div class="flex space-x-3">
-                                    <Link
-                                        :href="
-                                            route('noticias.show', noticia.slug)
-                                        "
+                                    <Link 
+                                        :href="route('videos.show', video.id)" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors"
                                         title="Visualizar"
                                     >
@@ -290,10 +221,8 @@
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </Link>
-                                    <Link
-                                        :href="
-                                            route('admin.noticias.edit', noticia.id)
-                                        "
+                                    <Link 
+                                        :href="route('admin.videos.edit', video.id)" 
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors"
                                         title="Editar"
                                     >
@@ -301,8 +230,8 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </Link>
-                                    <button
-                                        @click="confirmarExclusao(noticia)"
+                                    <button 
+                                        @click="confirmarExclusao(video)"
                                         class="text-red-600 hover:text-red-800 transition-colors"
                                         title="Excluir"
                                     >
@@ -318,49 +247,40 @@
             </div>
 
             <!-- Paginação -->
-            <div
-                v-if="noticias.links && noticias.links.length > 3"
-                class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6"
-            >
-                <Pagination :links="noticias.links" />
+            <div v-if="videos.links && videos.links.length > 3" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <Pagination :links="videos.links" />
             </div>
         </div>
 
         <!-- Modal de Confirmação de Exclusão -->
-        <div
-            v-if="showDeleteModal"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
+        <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                 <div class="flex items-center mb-4">
                     <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
-                    <h3 class="text-lg font-semibold text-gray-900">
-                        Confirmar Exclusão
-                    </h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Confirmar Exclusão</h3>
                 </div>
-
+                
                 <p class="text-gray-600 mb-6">
-                    Tem certeza que deseja excluir a notícia
-                    <strong>"{{ noticiaParaExcluir?.titulo }}"</strong>? Esta
-                    ação não pode ser desfeita.
+                    Tem certeza que deseja excluir o vídeo <strong>"{{ videoParaExcluir?.titulo }}"</strong>? 
+                    Esta ação não pode ser desfeita.
                 </p>
-
+                
                 <div class="flex justify-end space-x-3">
-                    <button
+                    <button 
                         @click="cancelarExclusao"
                         class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                     >
                         Cancelar
                     </button>
-                    <button
-                        @click="excluirNoticia"
+                    <button 
+                        @click="excluirVideo"
                         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                         :disabled="excluindo"
                     >
                         <span v-if="excluindo">Excluindo...</span>
-                        <span v-else>Excluir</span>
+                        <span v-else">Excluir</span>
                     </button>
                 </div>
             </div>
@@ -369,141 +289,125 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import { Link, router } from "@inertiajs/vue3";
-import Admin from "@/Layouts/Admin.vue";
-import Pagination from "@/Components/Pagination.vue";
-import { debounce } from "lodash";
+import { ref, computed } from 'vue'
+import { Link, router } from '@inertiajs/vue3'
+import Admin from '@/Layouts/Admin.vue'
+import Pagination from '@/Components/Pagination.vue'
+import { debounce } from 'lodash'
 
-defineOptions({ layout: Admin });
+defineOptions({ layout: Admin })
 
 const props = defineProps({
-    noticias: Object,
-    filters: Object,
-});
+    videos: Object,
+    filters: Object
+})
 
 // Estados da pesquisa
-const search = ref(props.filters?.search || "");
+const search = ref(props.filters?.search || '')
 
 // Estados do modal
-const showDeleteModal = ref(false);
-const noticiaParaExcluir = ref(null);
-const excluindo = ref(false);
+const showDeleteModal = ref(false)
+const videoParaExcluir = ref(null)
+const excluindo = ref(false)
 
 // Pesquisa com debounce
 const debouncedSearch = debounce(() => {
-    router.get(
-        route("admin.noticias"),
-        {
-            search: search.value,
-        },
-        {
-            preserveState: true,
-            replace: true,
-        }
-    );
-}, 500);
+    router.get(route('admin.videos.index'), { 
+        search: search.value 
+    }, { 
+        preserveState: true,
+        replace: true 
+    })
+}, 500)
 
 const clearSearch = () => {
-    search.value = "";
-    router.get(
-        route("admin.noticias"),
-        {},
-        {
-            preserveState: true,
-            replace: true,
-        }
-    );
-};
+    search.value = ''
+    router.get(route('admin.videos.index'), {}, { 
+        preserveState: true,
+        replace: true 
+    })
+}
 
 // Estatísticas computadas
-const totalNoticias = computed(
-    () => props.noticias.total || props.noticias.data.length
-);
-const noticiasPublicadas = computed(() => {
-    return props.noticias.data.filter(
-        (noticia) => noticia.status === "publicada"
-    ).length;
-});
-const noticiasRascunho = computed(() => {
-    return props.noticias.data.filter(
-        (noticia) => noticia.status === "rascunho"
-    ).length;
-});
+const totalVideos = computed(() => props.videos.total || props.videos.data.length)
+const videosPublicados = computed(() => {
+    return props.videos.data.filter(video => video.status === 'publicada').length
+})
+const videosRascunho = computed(() => {
+    return props.videos.data.filter(video => video.status === 'rascunho').length
+})
 
 // Funções de formatação
 const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-};
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    })
+}
 
 const getStatusText = (status) => {
     const statusMap = {
-        publicada: "Publicada",
-        rascunho: "Rascunho",
-        arquivada: "Arquivada",
-    };
-    return statusMap[status] || status;
-};
+        'publicada': 'Publicado',
+        'rascunho': 'Rascunho',
+        'arquivada': 'Arquivado'
+    }
+    return statusMap[status] || status
+}
 
 const getStatusClass = (status) => {
     const classMap = {
-        publicada: "bg-green-100 text-green-800",
-        rascunho: "bg-yellow-100 text-yellow-800",
-        arquivada: "bg-gray-100 text-gray-800",
-    };
-    return classMap[status] || "bg-gray-100 text-gray-800";
-};
+        'publicada': 'bg-green-100 text-green-800',
+        'rascunho': 'bg-yellow-100 text-yellow-800',
+        'arquivada': 'bg-gray-100 text-gray-800'
+    }
+    return classMap[status] || 'bg-gray-100 text-gray-800'
+}
 
 const getCategoriaClass = (categoria) => {
     // Cores alternadas para diferentes categorias
     const cores = [
-        "bg-blue-100 text-blue-800",
-        "bg-purple-100 text-purple-800",
-        "bg-pink-100 text-pink-800",
-        "bg-indigo-100 text-indigo-800",
-        "bg-teal-100 text-teal-800",
-    ];
-    const hash = categoria
-        ? categoria.split("").reduce((a, b) => a + b.charCodeAt(0), 0)
-        : 0;
-    return cores[hash % cores.length];
-};
+        'bg-blue-100 text-blue-800',
+        'bg-purple-100 text-purple-800',
+        'bg-pink-100 text-pink-800',
+        'bg-indigo-100 text-indigo-800',
+        'bg-teal-100 text-teal-800'
+    ]
+    const hash = categoria ? categoria.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : 0
+    return cores[hash % cores.length]
+}
 
 // Funções de exclusão
-const confirmarExclusao = (noticia) => {
-    noticiaParaExcluir.value = noticia;
-    showDeleteModal.value = true;
-};
+const confirmarExclusao = (video) => {
+    videoParaExcluir.value = video
+    showDeleteModal.value = true
+}
 
 const cancelarExclusao = () => {
-    showDeleteModal.value = false;
-    noticiaParaExcluir.value = null;
-};
+    showDeleteModal.value = false
+    videoParaExcluir.value = null
+}
 
-const excluirNoticia = () => {
-    if (!noticiaParaExcluir.value) return;
-
-    excluindo.value = true;
-
-    router.delete(route("admin.noticias.destroy", noticiaParaExcluir.value.id), {
+const excluirVideo = () => {
+    if (!videoParaExcluir.value) return
+    
+    excluindo.value = true
+    
+    router.delete(route('admin.videos.destroy', videoParaExcluir.value.id), {
         onSuccess: () => {
-            showDeleteModal.value = false;
-            noticiaParaExcluir.value = null;
+            showDeleteModal.value = false
+            videoParaExcluir.value = null
         },
         onError: (errors) => {
-            console.error("Erro ao excluir notícia:", errors);
+            console.error('Erro ao excluir vídeo:', errors)
         },
         onFinish: () => {
-            excluindo.value = false;
-        },
-    });
-};
+            excluindo.value = false
+        }
+    })
+}
 </script>
 
 <style scoped>

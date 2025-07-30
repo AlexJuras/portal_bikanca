@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\NoticiaController;
@@ -8,13 +9,18 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\VideoController;
 use Illuminate\Support\Facades\Route;
 
+// ====== ROTAS DE AUTENTICAÇÃO ======
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 // Páginas Estáticas
 Route::inertia('/', 'Inicio', ['user' => 'Bikanca']);
 Route::inertia('/sobre', 'Sobre', ['user' => 'Liam']);
 Route::inertia('/contato', 'Contato', ['contato' => '(86) 9 9493-7797']);
 
 // ====== PAINEL ADMINISTRATIVO ======
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(function () {
     // Dashboard principal
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     

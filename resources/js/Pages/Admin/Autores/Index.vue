@@ -44,21 +44,21 @@ const formatNumber = (number) => {
 
 // Funções de filtro e busca
 const buscarAutores = () => {
-    router.get("/autores", filtros, {
+    router.get(route('admin.autores.index'), filtros, {
         preserveState: true,
         replace: true,
     });
 };
 
 const filtrarAutores = () => {
-    router.get("/autores", filtros, {
+    router.get(route('admin.autores.index'), filtros, {
         preserveState: true,
         replace: true,
     });
 };
 
 const ordenarAutores = () => {
-    router.get("/autores", filtros, {
+    router.get(route('admin.autores.index'), filtros, {
         preserveState: true,
         replace: true,
     });
@@ -79,7 +79,7 @@ const excluirAutor = () => {
 
     excluindoAutor.value = true;
 
-    router.delete(`/autores/${autorParaExcluir.value.id}`, {
+    router.delete(route('admin.autores.destroy', autorParaExcluir.value.id), {
         onSuccess: () => {
             cancelarExclusao();
         },
@@ -175,7 +175,7 @@ const excluirAutor = () => {
                     </div>
                     <div class="mt-4 sm:mt-0">
                         <Link
-                            href="/autores/create"
+                            :href="route('admin.autores.create')"
                             class="bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center"
                         >
                             <svg
@@ -385,14 +385,27 @@ const excluirAutor = () => {
                             <!-- Informações do Autor -->
                             <div class="flex items-center space-x-4 flex-1">
                                 <div class="flex-shrink-0">
-                                    <img
-                                        :src="
-                                            autor.foto_perfil ||
-                                            '/images/user-placeholder.png'
-                                        "
-                                        :alt="autor.nome"
-                                        class="w-16 h-16 rounded-full border-2 border-gray-200"
-                                    />
+                                    <div class="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
+                                        <img
+                                            v-if="autor.foto"
+                                            :src="`/storage/${autor.foto}`"
+                                            :alt="autor.nome"
+                                            class="w-full h-full object-cover"
+                                            @error="$event.target.style.display = 'none'"
+                                        />
+                                        <svg
+                                            v-else
+                                            class="w-8 h-8 text-gray-400"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center space-x-2">
@@ -594,7 +607,7 @@ const excluirAutor = () => {
                     </p>
                     <Link
                         v-if="!filtros.busca && !filtros.status"
-                        href="/autores/create"
+                        :href="route('admin.autores.create')"
                         class="bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-flex items-center"
                     >
                         <svg

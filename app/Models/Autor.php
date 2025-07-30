@@ -10,6 +10,8 @@ class Autor extends Model
     /** @use HasFactory<\Database\Factories\AutorFactory> */
     use HasFactory;
 
+    protected $table = 'autors';
+
     protected $fillable = [
         'nome',
         'email',

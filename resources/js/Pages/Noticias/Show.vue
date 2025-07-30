@@ -30,20 +30,60 @@ const formatDate = (date) => {
 
 // Funções de compartilhamento
 const shareWhatsApp = () => {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Confira esta notícia: ${noticia.titulo}`);
-    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+    const url = window.location.href;
+    const titulo = props.noticia.titulo;
+    const categoria = props.noticia.categoria?.nome || '';
+    const resumo = props.noticia.resumo || '';
+    
+    let message = `📰 *${titulo}*`;
+    
+    if (categoria) {
+        message += `\n🏷️ ${categoria}`;
+    }
+    
+    if (resumo && resumo.length > 0) {
+        // Limitar o resumo para não ficar muito longo
+        const resumoLimitado = resumo.length > 100 ? resumo.substring(0, 100) + '...' : resumo;
+        message += `\n\n${resumoLimitado}`;
+    }
+    
+    message += `\n\n🔗 Leia mais: ${url}`;
+    message += `\n\n📱 Portal Bikanca`;
+    
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
 };
 
 const shareInstagram = () => {
     // Instagram não permite compartilhamento direto de links, então copiamos para clipboard
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link copiado! Cole no Instagram Stories ou post.');
+    const url = window.location.href;
+    const titulo = props.noticia.titulo;
+    const message = `${titulo}\n\n${url}`;
+    
+    navigator.clipboard.writeText(message).then(() => {
+        alert('Texto copiado! Cole no Instagram Stories ou post.');
+    }).catch(() => {
+        // Fallback para navegadores que não suportam clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = message;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Texto copiado! Cole no Instagram Stories ou post.');
+    });
 };
 
 const shareFacebook = () => {
     const url = encodeURIComponent(window.location.href);
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+};
+
+const shareTwitter = () => {
+    const url = encodeURIComponent(window.location.href);
+    const titulo = encodeURIComponent(props.noticia.titulo);
+    const hashtags = encodeURIComponent('PortalBikanca,Notícias');
+    window.open(`https://twitter.com/intent/tweet?text=${titulo}&url=${url}&hashtags=${hashtags}`, '_blank');
 };
 </script>
 
@@ -123,6 +163,15 @@ const shareFacebook = () => {
                                     >
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        @click="shareTwitter"
+                                        class="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+                                        title="Compartilhar no X (Twitter)"
+                                    >
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                         </svg>
                                     </button>
                                 </div>

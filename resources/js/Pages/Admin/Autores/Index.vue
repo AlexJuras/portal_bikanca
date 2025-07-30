@@ -13,15 +13,24 @@ const props = defineProps({
     },
     estatisticas: {
         type: Object,
-        required: true,
+        default: () => ({
+            total_noticias: 0,
+            total_visualizacoes: 0,
+        }),
+    },
+    filtros: {
+        type: Object,
+        default: () => ({
+            busca: '',
+            ordenacao: 'nome_asc',
+        }),
     },
 });
 
 // Estados reativos
 const filtros = reactive({
-    busca: "",
-    status: "",
-    ordenacao: "nome_asc",
+    busca: props.filtros.busca || "",
+    ordenacao: props.filtros.ordenacao || "nome_asc",
 });
 
 const autorParaExcluir = ref(null);
@@ -43,18 +52,21 @@ const formatNumber = (number) => {
 };
 
 // Funções de filtro e busca
-const buscarAutores = () => {
-    router.get(route('admin.autores.index'), filtros, {
-        preserveState: true,
-        replace: true,
-    });
-};
+let timeoutBusca = null;
 
-const filtrarAutores = () => {
-    router.get(route('admin.autores.index'), filtros, {
-        preserveState: true,
-        replace: true,
-    });
+const buscarAutores = () => {
+    // Cancelar busca anterior se existir
+    if (timeoutBusca) {
+        clearTimeout(timeoutBusca);
+    }
+    
+    // Aplicar debounce de 300ms
+    timeoutBusca = setTimeout(() => {
+        router.get(route('admin.autores.index'), filtros, {
+            preserveState: true,
+            replace: true,
+        });
+    }, 300);
 };
 
 const ordenarAutores = () => {
@@ -109,6 +121,7 @@ const excluirAutor = () => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -199,7 +212,7 @@ const excluirAutor = () => {
         <!-- Conteúdo Principal -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Estatísticas Gerais -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex items-center">
                         <div class="bg-blue-500 rounded-lg p-3">
@@ -218,33 +231,7 @@ const excluirAutor = () => {
                                 Total de Autores
                             </p>
                             <p class="text-2xl font-bold text-azul-oxford">
-                                <!-- {{ estatisticas.total_autores }} -->
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center">
-                        <div class="bg-green-500 rounded-lg p-3">
-                            <svg
-                                class="w-6 h-6 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">
-                                Autores Ativos
-                            </p>
-                            <p class="text-2xl font-bold text-green-600">
-                                <!-- {{ estatisticas.autores_ativos }} -->
+                                {{ autores.total || 0 }}
                             </p>
                         </div>
                     </div>
@@ -270,7 +257,7 @@ const excluirAutor = () => {
                                 Total de Notícias
                             </p>
                             <p class="text-2xl font-bold text-purple-600">
-                                <!-- {{ estatisticas.total_noticias }} -->
+                                {{ estatisticas.total_noticias || 0 }}
                             </p>
                         </div>
                     </div>
@@ -297,11 +284,7 @@ const excluirAutor = () => {
                                 Visualizações
                             </p>
                             <p class="text-2xl font-bold text-orange-600">
-                                {{
-                                    formatNumber(
-                                        // estatisticas.total_visualizacoes
-                                    )
-                                }}
+                                {{ formatNumber(estatisticas.total_visualizacoes || 0) }}
                             </p>
                         </div>
                     </div>
@@ -337,17 +320,6 @@ const excluirAutor = () => {
                                 />
                             </svg>
                         </div>
-
-                        <!-- Filtro por Status -->
-                        <select
-                            v-model="filtros.status"
-                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-transparent"
-                            @change="filtrarAutores"
-                        >
-                            <option value="">Todos os status</option>
-                            <option value="ativo">Ativos</option>
-                            <option value="inativo">Inativos</option>
-                        </select>
                     </div>
 
                     <!-- Ordenação -->
@@ -414,20 +386,6 @@ const excluirAutor = () => {
                                         >
                                             {{ autor.nome }}
                                         </h3>
-                                        <span
-                                            :class="[
-                                                'px-2 py-1 text-xs font-medium rounded-full',
-                                                autor.status === 'ativo'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800',
-                                            ]"
-                                        >
-                                            {{
-                                                autor.status === "ativo"
-                                                    ? "Ativo"
-                                                    : "Inativo"
-                                            }}
-                                        </span>
                                     </div>
                                     <p
                                         v-if="autor.email"
@@ -600,13 +558,13 @@ const excluirAutor = () => {
                     </svg>
                     <p class="text-gray-600 mb-4">
                         {{
-                            filtros.busca || filtros.status
+                            filtros.busca
                                 ? "Nenhum autor encontrado com os filtros aplicados."
                                 : "Nenhum autor cadastrado ainda."
                         }}
                     </p>
                     <Link
-                        v-if="!filtros.busca && !filtros.status"
+                        v-if="!filtros.busca"
                         :href="route('admin.autores.create')"
                         class="bg-azul-lazuli hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-flex items-center"
                     >

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Autor;
+use App\Models\Noticia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -10,12 +11,66 @@ use Inertia\Inertia;
 class AutorController extends Controller
 {
     
-    public function index()
+    public function index(Request $request)
     {
-        $autores = Autor::latest()->paginate(10);
+        $query = Autor::query();
+
+        // Aplicar filtro de busca
+        if ($request->filled('busca')) {
+            $busca = $request->get('busca');
+            $query->where(function ($q) use ($busca) {
+                $q->where('nome', 'like', "%{$busca}%")
+                  ->orWhere('email', 'like', "%{$busca}%")
+                  ->orWhere('bio', 'like', "%{$busca}%");
+            });
+        }
+
+        // Aplicar ordenação
+        $ordenacao = $request->get('ordenacao', 'nome_asc');
+        switch ($ordenacao) {
+            case 'nome_desc':
+                $query->orderBy('nome', 'desc');
+                break;
+            case 'data_desc':
+                $query->latest();
+                break;
+            case 'data_asc':
+                $query->oldest();
+                break;
+            case 'noticias_desc':
+                $query->withCount('noticias')->orderBy('noticias_count', 'desc');
+                break;
+            default: // nome_asc
+                $query->orderBy('nome', 'asc');
+                break;
+        }
+
+        $autores = $query->withCount('noticias')
+                         ->with(['noticias' => function($query) {
+                             $query->select('autor_id', 'visualizacoes');
+                         }])
+                         ->paginate(10)->withQueryString();
+
+        // Mapear noticias_count para total_noticias e calcular total_visualizacoes
+        $autores->getCollection()->transform(function ($autor) {
+            $autor->total_noticias = $autor->noticias_count;
+            $autor->total_visualizacoes = $autor->noticias->sum('visualizacoes');
+            return $autor;
+        });
+
+        // Calcular estatísticas gerais
+        $estatisticas = [
+            'total_noticias' => Noticia::count(),
+            'total_visualizacoes' => Noticia::sum('visualizacoes') ?? 0,
+        ];
 
         return Inertia::render('Admin/Autores/Index', [
-            'autores' => $autores
+            'autores' => $autores,
+            'estatisticas' => $estatisticas,
+            'filtros' => [
+                'busca' => $request->get('busca', ''),
+                'ordenacao' => $ordenacao,
+            ]
         ]);
     }
 

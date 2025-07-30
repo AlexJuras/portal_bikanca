@@ -31,6 +31,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            // Atualizar último login
+            Auth::user()->update(['last_login' => now()]);
+
             return redirect()->intended('/admin');
         }
 

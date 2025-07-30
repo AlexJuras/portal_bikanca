@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\NoticiaController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,12 @@ Route::inertia('/contato', 'Contato', ['contato' => '(86) 9 9493-7797']);
 Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(function () {
     // Dashboard principal
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Perfil do usuário
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/remove-photo', [ProfileController::class, 'removePhoto'])->name('profile.remove-photo');
     
     // Gerenciamento de Notícias (área restrita)
     Route::prefix('noticias')->name('noticias.')->group(function () {

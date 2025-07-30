@@ -19,28 +19,12 @@ class NoticiaController extends Controller
             ->publicadas()
             ->latest('publicada_em')
             ->paginate(10);
-        
-        // Forçar serialização do relacionamento imagem_capa
-        $noticias->getCollection()->transform(function($noticia) {
-            $array = $noticia->toArray();
-            if ($noticia->imagem_capa) {
-                $array['imagem_capa'] = $noticia->imagem_capa->toArray();
-            }
-            return $array;
-        });
 
         $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
             ->publicadas()
             ->orderBy('visualizacoes', 'desc')
             ->limit(5)
-            ->get()
-            ->map(function($noticia) {
-                $array = $noticia->toArray();
-                if ($noticia->imagem_capa) {
-                    $array['imagem_capa'] = $noticia->imagem_capa->toArray();
-                }
-                return $array;
-            });
+            ->get();
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,
@@ -256,29 +240,13 @@ class NoticiaController extends Controller
             ->where('categoria_id', $categoriaObj->id)
             ->latest('publicada_em')
             ->paginate(10);
-        
-        // Forçar serialização do relacionamento imagem_capa
-        $noticias->getCollection()->transform(function($noticia) {
-            $array = $noticia->toArray();
-            if ($noticia->imagem_capa) {
-                $array['imagem_capa'] = $noticia->imagem_capa->toArray();
-            }
-            return $array;
-        });
 
         $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
             ->publicadas()
             ->where('categoria_id', $categoriaObj->id)
             ->orderBy('visualizacoes', 'desc')
             ->limit(5)
-            ->get()
-            ->map(function($noticia) {
-                $array = $noticia->toArray();
-                if ($noticia->imagem_capa) {
-                    $array['imagem_capa'] = $noticia->imagem_capa->toArray();
-                }
-                return $array;
-            });
+            ->get();
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,
@@ -295,28 +263,17 @@ class NoticiaController extends Controller
         }
 
         $noticiaComRelacionamentos = $noticia->load(['autor', 'categoria', 'tags', 'imagem_capa']);
-        
-        // Forçar a serialização do relacionamento imagem_capa
-        $noticiaArray = $noticiaComRelacionamentos->toArray();
-        if ($noticiaComRelacionamentos->imagem_capa) {
-            $noticiaArray['imagem_capa'] = $noticiaComRelacionamentos->imagem_capa->toArray();
-        }
+
+        $noticiasRelacionadas = Noticia::with(['autor', 'categoria', 'imagem_capa'])
+            ->publicadas()
+            ->where('categoria_id', $noticia->categoria_id)
+            ->where('id', '!=', $noticia->id)
+            ->take(3)
+            ->get();
 
         return Inertia::render('Noticias/Show', [
-            'noticia' => $noticiaArray,
-            'noticiasRelacionadas' => Noticia::with(['autor', 'categoria', 'imagem_capa'])
-                ->publicadas()
-                ->where('categoria_id', $noticia->categoria_id)
-                ->where('id', '!=', $noticia->id)
-                ->take(3)
-                ->get()
-                ->map(function($n) {
-                    $array = $n->toArray();
-                    if ($n->imagem_capa) {
-                        $array['imagem_capa'] = $n->imagem_capa->toArray();
-                    }
-                    return $array;
-                })
+            'noticia' => $noticiaComRelacionamentos,
+            'noticiasRelacionadas' => $noticiasRelacionadas
         ]);
     }
 }

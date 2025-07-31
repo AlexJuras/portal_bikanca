@@ -260,17 +260,30 @@ const processarSubmissao = async (status) => {
             await gerarSlug();
         }
 
-        form.status = status;
-        await form.post(route("admin.noticias.store"), {
-            forceFormData: true,
-            preserveScroll: true,
-            preserveState: true,
+        // Criar FormData manualmente para garantir envio correto
+        const formData = new FormData();
+        Object.keys(form.data()).forEach(key => {
+            if (form.data()[key] !== null && form.data()[key] !== undefined) {
+                if (key === 'tag_ids' && Array.isArray(form.data()[key])) {
+                    form.data()[key].forEach((tagId, index) => {
+                        formData.append(`tag_ids[${index}]`, tagId);
+                    });
+                } else {
+                    formData.append(key, form.data()[key]);
+                }
+            }
+        });
+        formData.append('status', status);
+
+        router.post(route("admin.noticias.store"), formData, {
+            onStart: () => form.processing = true,
+            onFinish: () => form.processing = false,
             onSuccess: () => {
                 router.visit(route("admin.noticias.index"));
             },
             onError: (errors) => {
                 console.error(`Erro ao ${status === 'rascunho' ? 'salvar rascunho' : 'publicar notícia'}:`, errors);
-                // Atualizar erros de validação se houver
+                form.errors = errors;
                 if (errors) {
                     validationErrors.value = { ...validationErrors.value, ...errors };
                 }
@@ -303,6 +316,38 @@ const formatDate = (dateString) => {
         year: "numeric",
     });
 };
+
+// Função para traduzir mensagens de erro
+const traduzirErro = (mensagem) => {
+    const traducoes = {
+        'The titulo field is required.': 'O campo título é obrigatório.',
+        'The resumo field is required.': 'O campo resumo é obrigatório.',
+        'The conteudo field is required.': 'O campo conteúdo é obrigatório.',
+        'The categoria_id field is required.': 'O campo categoria é obrigatório.',
+        'The autor_id field is required.': 'O campo autor é obrigatório.',
+        'The slug field is required.': 'O campo slug é obrigatório.',
+        'The imagem_capa field must be an image.': 'A imagem de capa deve ser uma imagem válida.',
+        'The imagem_capa field must not be greater than 2048 kilobytes.': 'A imagem de capa não pode ser maior que 2MB.',
+        'validation.required': 'Este campo é obrigatório.',
+        'validation.string': 'Este campo deve ser um texto.',
+        'validation.max.string': 'Este campo não pode ter mais que :max caracteres.',
+        'validation.image': 'Este arquivo deve ser uma imagem.',
+        'validation.mimes': 'Este arquivo deve ser do tipo: :values.',
+        'validation.uploaded': 'Falha no upload do arquivo.',
+        'validation.max.file': 'O arquivo não pode ser maior que :max KB.',
+    };
+    
+    return traducoes[mensagem] || mensagem;
+};
+
+// Computed para erros traduzidos
+const errosTraduzidos = computed(() => {
+    const erros = {};
+    Object.keys(form.errors).forEach(campo => {
+        erros[campo] = traduzirErro(form.errors[campo]);
+    });
+    return erros;
+});
 </script>
 
 <template>
@@ -549,18 +594,19 @@ const formatDate = (dateString) => {
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli text-lg"
                             placeholder="Digite o título da notícia..."
                             maxlength="200"
-                            :class="{ 
-                                'border-red-500 bg-red-50': form.errors.titulo || validationErrors.titulo,
-                                'border-green-500 bg-green-50': form.titulo && form.titulo.trim() !== ''
+                            :class="{
+                                'border-red-500 bg-red-50': errosTraduzidos.titulo || validationErrors.titulo,
+                                'focus:border-red-500 focus:ring-red-500': errosTraduzidos.titulo || validationErrors.titulo
                             }"
                         />
                         <div class="flex justify-between items-center mt-1">
-                            <p
-                                v-if="form.errors.titulo || validationErrors.titulo"
-                                class="text-sm text-red-600 font-medium"
+                            <div
+                                class="text-red-600 text-sm"
+                                v-if="errosTraduzidos.titulo || validationErrors.titulo"
                             >
-                                {{ form.errors.titulo || validationErrors.titulo }}
-                            </p>
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                {{ errosTraduzidos.titulo || validationErrors.titulo }}
+                            </div>
                             <p class="text-sm text-cinza">
                                 {{ tituloLength }}/200 caracteres
                             </p>
@@ -581,16 +627,16 @@ const formatDate = (dateString) => {
                             placeholder="Escreva um resumo da notícia..."
                             maxlength="300"
                             :class="{ 
-                                'border-red-500 bg-red-50': form.errors.resumo || validationErrors.resumo,
+                                'border-red-500 bg-red-50': errosTraduzidos.resumo || validationErrors.resumo,
                                 'border-green-500 bg-green-50': form.resumo && form.resumo.trim() !== ''
                             }"
                         ></textarea>
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.resumo || validationErrors.resumo"
+                                v-if="errosTraduzidos.resumo || validationErrors.resumo"
                                 class="text-sm text-red-600 font-medium"
                             >
-                                {{ form.errors.resumo || validationErrors.resumo }}
+                                {{ errosTraduzidos.resumo || validationErrors.resumo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ resumoLength }}/300 caracteres
@@ -611,16 +657,16 @@ const formatDate = (dateString) => {
                             placeholder="Escreva o conteúdo da notícia..."
                             class="min-h-[200px] w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
                             :class="{ 
-                                'border-red-500 bg-red-50': form.errors.conteudo || validationErrors.conteudo,
+                                'border-red-500 bg-red-50': errosTraduzidos.conteudo || validationErrors.conteudo,
                                 'border-green-500 bg-green-50': form.conteudo && form.conteudo.trim() !== '' && form.conteudo !== 'Digite o conteúdo da notícia aqui...'
                             }"
                         />
 
                         <p
-                            v-if="form.errors.conteudo || validationErrors.conteudo"
+                            v-if="errosTraduzidos.conteudo || validationErrors.conteudo"
                             class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.conteudo || validationErrors.conteudo }}
+                            {{ errosTraduzidos.conteudo || validationErrors.conteudo }}
                         </p>
                     </div>
 
@@ -834,10 +880,10 @@ const formatDate = (dateString) => {
                             class="hidden"
                         />
                         <p
-                            v-if="form.errors.imagem_capa"
+                            v-if="errosTraduzidos.imagem_capa"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.imagem_capa }}
+                            {{ errosTraduzidos.imagem_capa }}
                         </p>
                     </div>
 
@@ -852,7 +898,7 @@ const formatDate = (dateString) => {
                             v-model="form.categoria_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
                             :class="{ 
-                                'border-red-500 bg-red-50': form.errors.categoria_id || validationErrors.categoria_id,
+                                'border-red-500 bg-red-50': errosTraduzidos.categoria_id || validationErrors.categoria_id,
                                 'border-green-500 bg-green-50': form.categoria_id
                             }"
                         >
@@ -866,10 +912,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.categoria_id || validationErrors.categoria_id"
+                            v-if="errosTraduzidos.categoria_id || validationErrors.categoria_id"
                             class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.categoria_id || validationErrors.categoria_id }}
+                            {{ errosTraduzidos.categoria_id || validationErrors.categoria_id }}
                         </p>
                     </div>
                     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -882,7 +928,7 @@ const formatDate = (dateString) => {
                             v-model="form.autor_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
                             :class="{ 
-                                'border-red-500 bg-red-50': form.errors.autor_id || validationErrors.autor_id,
+                                'border-red-500 bg-red-50': errosTraduzidos.autor_id || validationErrors.autor_id,
                                 'border-green-500 bg-green-50': form.autor_id
                             }"
                         >
@@ -896,10 +942,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.autor_id || validationErrors.autor_id"
+                            v-if="errosTraduzidos.autor_id || validationErrors.autor_id"
                             class="text-sm text-red-600 font-medium mt-1"
                         >
-                            {{ form.errors.autor_id || validationErrors.autor_id }}
+                            {{ errosTraduzidos.autor_id || validationErrors.autor_id }}
                         </p>
                     </div>
 

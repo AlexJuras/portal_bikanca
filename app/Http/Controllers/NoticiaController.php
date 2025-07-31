@@ -184,7 +184,7 @@ class NoticiaController extends Controller
             'resumo' => 'required|string|max:500',
             'conteudo' => 'required|string',
             'status' => 'required|in:rascunho,publicada,arquivada,agendada',
-            'autor_id' => 'required|exists:autores,id',
+            'autor_id' => 'required|exists:autors,id',
             'categoria_id' => 'required|exists:categorias,id',
             'imagem_capa' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'tags' => 'nullable|array',

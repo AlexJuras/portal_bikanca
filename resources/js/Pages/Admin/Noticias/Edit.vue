@@ -30,12 +30,11 @@ const form = useForm({
     titulo: props.noticia.titulo || "",
     slug: props.noticia.slug || "",
     resumo: props.noticia.resumo || "",
-    conteudo: props.noticia.conteudo || "Digite o conteúdo da notícia aqui...",
-    status: props.noticia.status || "rascunho",
-    categoria_id: props.noticia.categoria_id || "",
+    conteudo: props.noticia.conteudo || "",
+    categoria_id: props.noticia.categoria_id || props.noticia.categoria?.id || "",
     publicada_em: props.noticia.publicada_em || "",
     layout: props.noticia.layout || "",
-    autor_id: props.noticia.autor_id || "",
+    autor_id: props.noticia.autor_id || props.noticia.autor?.id || "",
     imagem_capa: null,
     // gallery_images: [],
     tags: props.noticia.tags ? props.noticia.tags.map(tag => tag.nome) : [],
@@ -59,6 +58,22 @@ const autorSelecionado = computed(() => {
         props.autores.find((autor) => autor.id === form.autor_id)?.nome ||
         "Autor desconhecido"
     );
+});
+
+// Computed para verificar se os campos obrigatórios estão preenchidos
+const camposObrigatoriosPreenchidos = computed(() => {
+    return {
+        titulo: !!form.titulo && form.titulo.trim().length > 0,
+        resumo: !!form.resumo && form.resumo.trim().length > 0,
+        conteudo: !!form.conteudo && form.conteudo.trim().length > 0,
+        categoria_id: !!form.categoria_id,
+        autor_id: !!form.autor_id,
+        todosPreenchidos: !!(form.titulo && form.titulo.trim() && 
+                             form.resumo && form.resumo.trim() && 
+                             form.conteudo && form.conteudo.trim() && 
+                             form.categoria_id && 
+                             form.autor_id)
+    };
 });
 
 // Funções para manipular imagens
@@ -101,6 +116,28 @@ watch(
             gerarSlug();
         }
     }
+);
+
+// Watch for props changes to update form data
+watch(
+    () => props.noticia,
+    (newNoticia) => {
+        if (newNoticia) {
+            form.titulo = newNoticia.titulo || "";
+            form.slug = newNoticia.slug || "";
+            form.resumo = newNoticia.resumo || "";
+            form.conteudo = newNoticia.conteudo || "";
+            form.categoria_id = newNoticia.categoria_id || newNoticia.categoria?.id || "";
+            form.publicada_em = newNoticia.publicada_em || "";
+            form.layout = newNoticia.layout || "";
+            form.autor_id = newNoticia.autor_id || newNoticia.autor?.id || "";
+            form.tags = newNoticia.tags ? newNoticia.tags.map(tag => tag.nome) : [];
+            
+            // Update image preview
+            featuredImagePreview.value = newNoticia.imagem_capa?.caminho || null;
+        }
+    },
+    { immediate: true, deep: true }
 );
 
 // const handleGalleryImageUpload = (event) => {
@@ -148,22 +185,66 @@ const addTagOnEnter = (event) => {
 
 // Funções de submissão
 const salvarRascunho = () => {
-    form.status = "rascunho";
-    form.put(route('admin.noticias.update', props.noticia.id), {
-        forceFormData: true,
+    console.log('Salvando rascunho com dados:', form.data());
+    
+    // Adicionar status aos dados do formulário
+    const formData = new FormData();
+    Object.keys(form.data()).forEach(key => {
+        if (form.data()[key] !== null && form.data()[key] !== undefined) {
+            if (key === 'tags' && Array.isArray(form.data()[key])) {
+                form.data()[key].forEach((tag, index) => {
+                    formData.append(`tags[${index}]`, tag);
+                });
+            } else {
+                formData.append(key, form.data()[key]);
+            }
+        }
+    });
+    formData.append('status', 'rascunho');
+    formData.append('_method', 'PUT');
+
+    router.post(route('admin.noticias.update', props.noticia.id), formData, {
+        onStart: () => form.processing = true,
+        onFinish: () => form.processing = false,
         onSuccess: () => {
             router.visit(route('admin.noticias.index'));
         },
+        onError: (errors) => {
+            console.error('Erro ao salvar rascunho:', errors);
+            form.errors = errors;
+        }
     });
 };
 
 const publicarNoticia = () => {
-    form.status = "publicada";
-    form.put(route('admin.noticias.update', props.noticia.id), {
-        forceFormData: true,
+    console.log('Publicando notícia com dados:', form.data());
+    
+    // Adicionar status aos dados do formulário
+    const formData = new FormData();
+    Object.keys(form.data()).forEach(key => {
+        if (form.data()[key] !== null && form.data()[key] !== undefined) {
+            if (key === 'tags' && Array.isArray(form.data()[key])) {
+                form.data()[key].forEach((tag, index) => {
+                    formData.append(`tags[${index}]`, tag);
+                });
+            } else {
+                formData.append(key, form.data()[key]);
+            }
+        }
+    });
+    formData.append('status', 'publicada');
+    formData.append('_method', 'PUT');
+
+    router.post(route('admin.noticias.update', props.noticia.id), formData, {
+        onStart: () => form.processing = true,
+        onFinish: () => form.processing = false,
         onSuccess: () => {
             router.visit(route('admin.noticias.index'));
         },
+        onError: (errors) => {
+            console.error('Erro ao publicar notícia:', errors);
+            form.errors = errors;
+        }
     });
 };
 
@@ -181,6 +262,38 @@ const formatDate = (dateString) => {
         year: "numeric",
     });
 };
+
+// Função para traduzir mensagens de erro
+const traduzirErro = (mensagem) => {
+    const traducoes = {
+        'The titulo field is required.': 'O campo título é obrigatório.',
+        'The resumo field is required.': 'O campo resumo é obrigatório.',
+        'The conteudo field is required.': 'O campo conteúdo é obrigatório.',
+        'The categoria_id field is required.': 'O campo categoria é obrigatório.',
+        'The autor_id field is required.': 'O campo autor é obrigatório.',
+        'The slug field is required.': 'O campo slug é obrigatório.',
+        'The imagem_capa field must be an image.': 'A imagem de capa deve ser uma imagem válida.',
+        'The imagem_capa field must not be greater than 2048 kilobytes.': 'A imagem de capa não pode ser maior que 2MB.',
+        'validation.required': 'Este campo é obrigatório.',
+        'validation.string': 'Este campo deve ser um texto.',
+        'validation.max.string': 'Este campo não pode ter mais que :max caracteres.',
+        'validation.image': 'Este arquivo deve ser uma imagem.',
+        'validation.mimes': 'Este arquivo deve ser do tipo: :values.',
+        'validation.uploaded': 'Falha no upload do arquivo.',
+        'validation.max.file': 'O arquivo não pode ser maior que :max KB.',
+    };
+    
+    return traducoes[mensagem] || mensagem;
+};
+
+// Computed para erros traduzidos
+const errosTraduzidos = computed(() => {
+    const erros = {};
+    Object.keys(form.errors).forEach(campo => {
+        erros[campo] = traduzirErro(form.errors[campo]);
+    });
+    return erros;
+});
 </script>
 
 <template>
@@ -248,8 +361,9 @@ const formatDate = (dateString) => {
                         </button>
                         <button
                             @click="publicarNoticia"
-                            :disabled="form.processing"
-                            class="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+                            :disabled="form.processing || !camposObrigatoriosPreenchidos.todosPreenchidos"
+                            class="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            :title="!camposObrigatoriosPreenchidos.todosPreenchidos ? 'Preencha todos os campos obrigatórios' : ''"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -289,10 +403,10 @@ const formatDate = (dateString) => {
                 <div class="p-8">
                     <div class="flex items-center space-x-4 mb-4">
                         <span
-                            v-if="form.categoria"
+                            v-if="form.categoria_id"
                             class="bg-azul-lazuli text-white px-3 py-1 rounded-full text-sm font-medium"
                         >
-                            {{ form.categoria }}
+                            {{ props.categorias.find(c => c.id == form.categoria_id)?.nome || 'Categoria' }}
                         </span>
                         <span
                             v-if="form.publicada_em"
@@ -401,10 +515,10 @@ const formatDate = (dateString) => {
                         />
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.titulo"
+                                v-if="errosTraduzidos.titulo"
                                 class="text-sm text-red-600"
                             >
-                                {{ form.errors.titulo }}
+                                {{ errosTraduzidos.titulo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ tituloLength }}/200 caracteres
@@ -429,10 +543,10 @@ const formatDate = (dateString) => {
                         ></textarea>
                         <div class="flex justify-between items-center mt-1">
                             <p
-                                v-if="form.errors.resumo"
+                                v-if="errosTraduzidos.resumo"
                                 class="text-sm text-red-600"
                             >
-                                {{ form.errors.resumo }}
+                                {{ errosTraduzidos.resumo }}
                             </p>
                             <p class="text-sm text-cinza">
                                 {{ resumoLength }}/300 caracteres
@@ -456,10 +570,10 @@ const formatDate = (dateString) => {
                         />
 
                         <p
-                            v-if="form.errors.conteudo"
+                            v-if="errosTraduzidos.conteudo"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.conteudo }}
+                            {{ errosTraduzidos.conteudo }}
                         </p>
                     </div>
 
@@ -539,20 +653,66 @@ const formatDate = (dateString) => {
 
                 <!-- Sidebar -->
                 <div class="space-y-6">
+                    <!-- Status dos Campos Obrigatórios -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-azul-oxford mb-4">
+                            Status dos Campos
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between">
+                                <span>Título</span>
+                                <span :class="camposObrigatoriosPreenchidos.titulo ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.titulo ? '✓' : '✗' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Resumo</span>
+                                <span :class="camposObrigatoriosPreenchidos.resumo ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.resumo ? '✓' : '✗' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Conteúdo</span>
+                                <span :class="camposObrigatoriosPreenchidos.conteudo ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.conteudo ? '✓' : '✗' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Categoria</span>
+                                <span :class="camposObrigatoriosPreenchidos.categoria_id ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.categoria_id ? '✓' : '✗' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Autor</span>
+                                <span :class="camposObrigatoriosPreenchidos.autor_id ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.autor_id ? '✓' : '✗' }}
+                                </span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="flex items-center justify-between font-medium">
+                                <span>Pronto para publicar</span>
+                                <span :class="camposObrigatoriosPreenchidos.todosPreenchidos ? 'text-green-600' : 'text-red-600'">
+                                    {{ camposObrigatoriosPreenchidos.todosPreenchidos ? '✓ Sim' : '✗ Não' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Status -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-lg font-medium text-azul-oxford mb-4">
-                            Status
+                            Status Atual
                         </h3>
-                        <select
-                            v-model="form.status"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                        >
-                            <option value="rascunho">Rascunho</option>
-                            <option value="publicada">Publicada</option>
-                            <option value="arquivada">Arquivada</option>
-                            <option value="agendada">Agendada</option>
-                        </select>
+                        <div class="flex items-center space-x-2">
+                            <div :class="props.noticia.status === 'publicada' ? 'w-3 h-3 bg-green-500 rounded-full' : 'w-3 h-3 bg-yellow-500 rounded-full'"></div>
+                            <span class="text-sm font-medium" :class="props.noticia.status === 'publicada' ? 'text-green-700' : 'text-yellow-700'">
+                                {{ props.noticia.status === 'publicada' ? 'Publicada' : 'Rascunho' }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Use os botões "Salvar Alterações" ou "Atualizar e Publicar" para alterar o status.
+                        </p>
                     </div>
 
                     <!-- Imagem Principal -->
@@ -620,10 +780,10 @@ const formatDate = (dateString) => {
                             class="hidden"
                         />
                         <p
-                            v-if="form.errors.imagem_capa"
+                            v-if="errosTraduzidos.imagem_capa"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.imagem_capa }}
+                            {{ errosTraduzidos.imagem_capa }}
                         </p>
                     </div>
 
@@ -637,7 +797,7 @@ const formatDate = (dateString) => {
                         <select
                             v-model="form.categoria_id"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                            :class="{ 'border-red-500': form.errors.categoria }"
+                            :class="{ 'border-red-500': form.errors.categoria_id }"
                         >
                             <option value="">Selecione uma categoria</option>
                             <option
@@ -649,10 +809,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.categoria"
+                            v-if="errosTraduzidos.categoria_id"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.categoria }}
+                            {{ errosTraduzidos.categoria_id }}
                         </p>
                     </div>
                     <div class="bg-white rounded-lg shadow-sm p-6">
@@ -676,10 +836,10 @@ const formatDate = (dateString) => {
                             </option>
                         </select>
                         <p
-                            v-if="form.errors.autor_id"
+                            v-if="errosTraduzidos.autor_id"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.autor_id }}
+                            {{ errosTraduzidos.autor_id }}
                         </p>
                     </div>
 

@@ -6,7 +6,21 @@ defineOptions({ layout: Principal });
 const props = defineProps({
     video: { type: Object, required: true },
     videosRelacionados: { type: Array, default: () => [] },
-}); // Função para formatar duração
+});
+
+// Função para lidar com erros do player
+const handlePlayerError = () => {
+    console.error('Erro ao carregar o player do YouTube');
+};
+
+// Função para abrir vídeo diretamente no YouTube
+const openYouTubeDirectly = () => {
+    if (props.video.url_externa) {
+        window.open(props.video.url_externa, '_blank');
+    }
+};
+
+// Função para formatar duração
 const formatarDuracao = (duracao) => {
     if (!duracao) return "N/A";
     return duracao;
@@ -69,23 +83,48 @@ const formatarData = (data) => {
                     <div
                         class="bg-white rounded-lg shadow-sm overflow-hidden mb-6"
                     >
-                        <div class="relative aspect-video bg-black">
+                                                <div class="relative aspect-video bg-black">
+                            <!-- Player do YouTube -->
                             <iframe
                                 v-if="video.embed_url"
                                 :src="video.embed_url"
                                 class="w-full h-full"
                                 frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowfullscreen
+                                referrerpolicy="strict-origin-when-cross-origin"
                                 title="Player de Vídeo"
+                                @error="handlePlayerError"
                             ></iframe>
+                            
+                            <!-- Thumbnail com Play Button (fallback) -->
+                            <div v-else class="relative w-full h-full cursor-pointer group" @click="openYouTubeDirectly">
+                                <img 
+                                    :src="video.thumbnail_url"
+                                    :alt="video.titulo"
+                                    class="w-full h-full object-cover"
+                                    @error="$event.target.src = '/images/video-placeholder.svg'"
+                                />
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-colors">
+                                    <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                        <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded">
+                                    ▶️ Clique para assistir no YouTube
+                                </div>
+                            </div>
+                            
+                            <!-- Mensagem de erro -->
                             <div
-                                v-else
-                                class="w-full h-full flex items-center justify-center text-white"
+                                v-if="!video.embed_url && !video.youtube_id"
+                                class="w-full h-full flex items-center justify-center text-white bg-gray-800"
                             >
                                 <div class="text-center">
-                                    <div class="text-4xl mb-2">🎥</div>
-                                    <p>Vídeo não disponível</p>
+                                    <div class="text-4xl mb-4">⚠️</div>
+                                    <p>Vídeo não disponível para reprodução</p>
                                 </div>
                             </div>
                         </div>

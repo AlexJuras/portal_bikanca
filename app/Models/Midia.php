@@ -106,7 +106,18 @@ class Midia extends Model
     public function getEmbedUrlAttribute()
     {
         if ($this->isVideo() && $this->youtube_id) {
-            return "https://www.youtube.com/embed/{$this->youtube_id}?rel=0";
+            // Parâmetros para melhor compatibilidade
+            $params = [
+                'rel=0',           // Não mostrar vídeos relacionados de outros canais
+                'modestbranding=1', // Remover logo do YouTube
+                'fs=1',            // Permitir fullscreen
+                'cc_load_policy=0', // Não carregar legendas por padrão
+                'iv_load_policy=3', // Não mostrar anotações
+                'autoplay=0',      // Não reproduzir automaticamente
+            ];
+            
+            $paramString = implode('&', $params);
+            return "https://www.youtube.com/embed/{$this->youtube_id}?{$paramString}";
         }
         
         return null;

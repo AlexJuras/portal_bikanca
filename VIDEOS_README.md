@@ -85,8 +85,14 @@ Route::prefix('videos')->name('videos.')->group(function () {
 
 ### Extração Automática de Dados do YouTube
 - **ID do YouTube**: Extraído automaticamente da URL
-- **Thumbnail**: Gerada automaticamente se não fornecida
-- **URL de Embed**: Criada automaticamente para o player
+- **Thumbnail**: Gerada automaticamente se não fornecida (usando `hqdefault.jpg`)
+- **URL de Embed**: Criada automaticamente para o player com parâmetros otimizados
+
+### ⚠️ Limitações do YouTube
+- **Restrições de Embedding**: Alguns vídeos não permitem reprodução em sites externos
+- **Políticas de Conteúdo**: Vídeos protegidos por direitos autorais podem ser bloqueados
+- **HTTPS Requerido**: O YouTube requer HTTPS para embedding em produção
+- **Fallback Automático**: Sistema redireciona para YouTube quando embedding falha
 
 ### Validações
 - URL deve ser válida do YouTube
@@ -97,6 +103,8 @@ Route::prefix('videos')->name('videos.')->group(function () {
 ### Recursos Especiais
 - **Preview de Vídeo**: Visualização prévia na criação
 - **Contador de Visualizações**: Incrementado automaticamente
+- **Fallback para YouTube**: Botão para abrir no YouTube quando embed falha
+- **Tratamento de Erros**: Placeholder SVG quando thumbnails não carregam
 - **Responsive Design**: Interface adaptada para todos os dispositivos
 - **SEO Friendly**: URLs amigáveis e meta dados
 
@@ -191,6 +199,29 @@ Route::prefix('videos')->name('videos.')->group(function () {
 2. **Criar Vídeo**: Use qualquer URL do YouTube
 3. **Área Pública**: Visite `/videos` para ver o resultado
 4. **Visualizar**: Clique em um vídeo para ver a página individual
+
+### 🛠️ Teste de YouTube Embedding
+- **Página de Debug**: Acesse `/test-youtube.html` para testar embedding diretamente
+- **Vídeos Recomendados**: Use vídeos educativos ou de domínio público para evitar restrições
+- **HTTPS em Produção**: Configure SSL/TLS para produção (requerido pelo YouTube)
+
+### ⚠️ Troubleshooting
+
+**Thumbnails não aparecem:**
+- Verifique conectividade com `img.youtube.com`
+- Confirme se o vídeo existe no YouTube
+- Placeholder SVG será usado automaticamente como fallback
+
+**Vídeos não reproduzem:**
+- Alguns vídeos têm restrições de embedding
+- Verifique se o site está em HTTPS (produção)
+- Use o botão "Assistir no YouTube" como alternativa
+- Teste com vídeos públicos/educativos primeiro
+
+**Console Errors:**
+- Erros de CORS são normais em desenvolvimento
+- Mixed content (HTTP/HTTPS) causa problemas
+- Verifique o console do navegador para detalhes
 
 ---
 

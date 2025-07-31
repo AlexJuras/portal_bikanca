@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Videos Route</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Testing Videos Route</h1>
+    <div id="result"></div>
+    
+    <script>
+        // Test the videos endpoint
+        axios.get('/videos')
+            .then(function (response) {
+                document.getElementById('result').innerHTML = '<p style="color: green;">✅ Videos page loaded successfully!</p>';
+                console.log('Success:', response);
+            })
+            .catch(function (error) {
+                document.getElementById('result').innerHTML = '<p style="color: red;">❌ Error: ' + error.message + '</p>';
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste YouTube Embed</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .video-container { margin: 20px 0; }
+        .video-frame { width: 560px; height: 315px; border: 1px solid #ccc; }
+        .info { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Embedding do YouTube</h1>
+    
+    <div class="info">
+        <h3>Teste 1: Vídeo Público (Big Buck Bunny)</h3>
+        <p><strong>URL:</strong> https://www.youtube.com/watch?v=YE7VzlLtp-4</p>
+        <p><strong>Embed:</strong> https://www.youtube.com/embed/YE7VzlLtp-4</p>
+    </div>
+    
+    <div class="video-container">
+        <iframe
+            class="video-frame"
+            src="https://www.youtube.com/embed/YE7VzlLtp-4?rel=0&modestbranding=1&fs=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin">
+        </iframe>
+    </div>
+    
+    <div class="info">
+        <h3>Teste 2: Thumbnail</h3>
+        <p><strong>URL:</strong> https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg</p>
+    </div>
+    
+    <div class="video-container">
+        <img src="https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg" alt="Thumbnail" style="max-width: 320px;">
+    </div>
+    
+    <div class="info">
+        <h3>Teste 3: Vídeo com Possíveis Restrições</h3>
+        <p><strong>URL:</strong> https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
+        <p><strong>Embed:</strong> https://www.youtube.com/embed/dQw4w9WgXcQ</p>
+    </div>
+    
+    <div class="video-container">
+        <iframe
+            class="video-frame"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&fs=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin">
+        </iframe>
+    </div>
+    
+    <script>
+        // Log de erros para debug
+        window.addEventListener('error', function(e) {
+            console.error('Erro detectado:', e.error);
+        });
+        
+        // Testar se thumbnails carregam
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function() {
+                console.error('Erro ao carregar imagem:', this.src);
+            };
+            img.onload = function() {
+                console.log('Imagem carregada:', this.src);
+            };
+        });
+    </script>
+</body>
+</html>

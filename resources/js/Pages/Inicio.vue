@@ -134,6 +134,15 @@ const copiarLink = async (noticia) => {
     }
 };
 
+// Função para extrair ID do YouTube da URL
+const getYoutubeId = (url) => {
+    if (!url) return null
+    
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+    const match = url.match(regex)
+    return match ? match[1] : null
+}
+
 // Controle do dropdown
 const dropdownAberto = ref({});
 
@@ -424,10 +433,11 @@ onUnmounted(() => {
                         <VideoPlayer :video="video">
                             <div class="relative aspect-video bg-gray-200">
                                 <img 
-                                    :src="video.thumbnail || '/logo.png'"
+                                    :src="video.thumbnail || `https://img.youtube.com/vi/${getYoutubeId(video.url_externa)}/hqdefault.jpg`"
                                     :alt="video.titulo"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     loading="lazy"
+                                    @error="$event.target.src = '/logo.png'"
                                 />
                                 <!-- Play Button -->
                                 <div class="absolute inset-0 flex items-center justify-center">

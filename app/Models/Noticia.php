@@ -82,6 +82,11 @@ class Noticia extends Model
         return $this->belongsTo(Midia::class, 'imagem_capa');
     }
 
+    public function imagem_capa(): BelongsTo
+    {
+        return $this->belongsTo(Midia::class, 'imagem_capa');
+    }
+
     /**
      * Verifica se a notícia está publicada
      */

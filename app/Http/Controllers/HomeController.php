@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function index()
     {
         // Buscar notícias em destaque (marcadas para aparecer na home)
-        $noticiasDestaque = Noticia::with(['categoria', 'autor', 'capa'])
+        $noticiasDestaque = Noticia::with(['categoria', 'autor', 'imagem_capa'])
             ->where('status', 'publicada')
             ->where('destaque_home', true)
             ->orderBy('publicada_em', 'desc')
@@ -23,7 +23,7 @@ class HomeController extends Controller
         $noticiasCarrossel = $noticiasDestaque->take(5);
 
         // Buscar notícias mais lidas (baseado em visualizações)
-        $noticiasMaisLidas = Noticia::with(['categoria', 'autor', 'capa'])
+        $noticiasMaisLidas = Noticia::with(['categoria', 'autor', 'imagem_capa'])
             ->where('status', 'publicada')
             ->orderBy('visualizacoes', 'desc')
             ->take(8) // Aumentado de 5 para 8
@@ -34,7 +34,7 @@ class HomeController extends Controller
                 $query->where('status', 'publicada');
             })
             ->with(['noticias' => function ($query) {
-                $query->with(['autor', 'capa'])
+                $query->with(['autor', 'imagem_capa'])
                     ->where('status', 'publicada')
                     ->orderBy('publicada_em', 'desc')
                     ->take(5); // 5 notícias por categoria

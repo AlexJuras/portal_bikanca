@@ -140,7 +140,7 @@
                                     
                                     <!-- Editar -->
                                     <Link 
-                                        :href="route('admin.categorias.edit', categoria.id)" 
+                                        :href="route('admin.categorias.edit', categoria.slug)" 
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors p-1"
                                         title="Editar"
                                     >
@@ -203,7 +203,7 @@
                                         </svg>
                                     </Link>
                                     <Link 
-                                        :href="route('admin.categorias.edit', categoria.id)" 
+                                        :href="route('admin.categorias.edit', categoria.slug)" 
                                         class="text-yellow-600 hover:text-yellow-800 transition-colors"
                                         title="Editar"
                                     >
@@ -345,7 +345,7 @@ const excluirCategoria = () => {
     
     excluindo.value = true
     
-    router.delete(route('admin.categorias.destroy', categoriaParaExcluir.value.id), {
+    router.delete(route('admin.categorias.destroy', categoriaParaExcluir.value.slug), {
         onSuccess: () => {
             showDeleteModal.value = false
             categoriaParaExcluir.value = null

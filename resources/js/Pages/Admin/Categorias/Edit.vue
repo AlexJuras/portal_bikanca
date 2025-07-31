@@ -36,7 +36,7 @@ const generateSlug = () => {
 
 // Submeter formulário
 const submit = () => {
-    form.put(route('admin.categorias.update', props.categoria.id));
+    form.put(route('admin.categorias.update', props.categoria.slug));
 };
 </script>
 

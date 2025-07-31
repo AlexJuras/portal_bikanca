@@ -16,6 +16,14 @@ class Categoria extends Model
         'descricao',
     ];
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function noticias()
     {
         return $this->hasMany(Noticia::class, 'categoria_id');

@@ -54,6 +54,19 @@ class CategoriaController extends Controller
         return redirect()->route('admin.categorias.index')->with('success', 'Categoria criada com sucesso!');
     }
 
+    public function show(Categoria $categoria)
+    {
+        $categoria->load(['noticias' => function($query) {
+            $query->with(['autor', 'imagem_capa'])
+                  ->latest()
+                  ->take(10);
+        }]);
+
+        return Inertia::render('Admin/Categorias/Show', [
+            'categoria' => $categoria
+        ]);
+    }
+
     public function edit(Categoria $categoria)
     {
         return Inertia::render('Admin/Categorias/Edit', [

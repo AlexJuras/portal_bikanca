@@ -120,7 +120,7 @@ onUnmounted(() => {
                             <!-- Imagem de fundo -->
                             <div 
                                 class="absolute inset-0 bg-cover bg-center"
-                                :style="{ backgroundImage: `url(${noticia.capa?.caminho || '/logo.png'})` }"
+                                :style="{ backgroundImage: `url(${noticia.imagem_capa?.caminho || '/logo.png'})` }"
                             ></div>
                             
                             <!-- Overlay gradient -->
@@ -247,7 +247,7 @@ onUnmounted(() => {
                                     <!-- Imagem -->
                                     <div class="relative aspect-video bg-gray-200">
                                         <img 
-                                            :src="noticia.capa?.caminho || '/logo.png'"
+                                            :src="noticia.imagem_capa?.caminho || '/logo.png'"
                                             :alt="noticia.titulo"
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             loading="lazy"
@@ -324,7 +324,7 @@ onUnmounted(() => {
                                 <Link :href="`/noticias/${categoria.noticias[0].slug || categoria.noticias[0].id}`">
                                     <div class="relative aspect-video bg-gray-200 rounded-lg overflow-hidden mb-3">
                                         <img 
-                                            :src="categoria.noticias[0].capa?.caminho || '/logo.png'"
+                                            :src="categoria.noticias[0].imagem_capa?.caminho || '/logo.png'"
                                             :alt="categoria.noticias[0].titulo"
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             loading="lazy"
@@ -359,8 +359,8 @@ onUnmounted(() => {
                                     </Link>
                                     <div class="flex-shrink-0">
                                         <img 
-                                            v-if="noticia.capa?.caminho"
-                                            :src="noticia.capa.caminho"
+                                            v-if="noticia.imagem_capa?.caminho"
+                                            :src="noticia.imagem_capa.caminho"
                                             :alt="noticia.titulo"
                                             class="w-16 h-12 object-cover rounded group-hover:scale-105 transition-transform duration-300"
                                             loading="lazy"
@@ -455,8 +455,8 @@ onUnmounted(() => {
                                     </div>
                                     <div class="flex-shrink-0">
                                         <img 
-                                            v-if="noticia.capa?.caminho"
-                                            :src="noticia.capa.caminho"
+                                            v-if="noticia.imagem_capa?.caminho"
+                                            :src="noticia.imagem_capa.caminho"
                                             :alt="noticia.titulo"
                                             class="w-16 h-12 object-cover rounded group-hover:scale-105 transition-transform duration-300"
                                             loading="lazy"

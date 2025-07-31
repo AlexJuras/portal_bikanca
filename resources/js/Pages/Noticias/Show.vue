@@ -253,7 +253,7 @@ const shareTwitter = () => {
                                 :key="noticia.id"
                                 class="group"
                             >
-                                <Link :href="route('noticias.show', noticia.id)" class="block">
+                                <Link :href="route('noticias.show', noticia.slug || noticia.id)" class="block">
                                     <div class="relative mb-3">
                                         <img
                                             v-if="noticia.imagem_capa?.caminho"

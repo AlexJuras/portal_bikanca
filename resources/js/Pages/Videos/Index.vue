@@ -68,7 +68,6 @@ const getYoutubeId = (url) => {
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-azul-oxford flex items-center gap-3">
-                            🎥 
                             <span v-if="categoria">{{ categoria.nome }}</span>
                             <span v-else>Vídeos</span>
                         </h1>

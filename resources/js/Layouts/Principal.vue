@@ -90,15 +90,6 @@ onMounted(() => {
                         <div class="text-white">
                             <span>{{ dataAtual }}</span>
                         </div>
-                        <div>
-                            <Link 
-                                href="/admin"
-                                class="text-white hover:text-celeste text-xs px-2 py-1 rounded transition-colors"
-                                title="Painel Administrativo"
-                            >
-                                Admin
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -312,26 +303,18 @@ onMounted(() => {
                         class="flex flex-col md:flex-row justify-between items-center text-sm text-cinza"
                     >
                         <p>
-                            &copy; 2024 Portal Bikanca. Todos os direitos
+                            &copy; 2025 Portal Bikanca. Todos os direitos
                             reservados.
                         </p>
-                        <div class="flex space-x-4 mt-2 md:mt-0">
-                            <Link
-                                href="/termos"
-                                class="hover:text-white transition-colors"
-                                >Termos de Uso</Link
-                            >
-                            <Link
-                                href="/privacidade"
-                                class="hover:text-white transition-colors"
-                                >Política de Privacidade</Link
-                            >
-                            <Link
-                                href="/cookies"
-                                class="hover:text-white transition-colors"
-                                >Cookies</Link
-                            >
-                        </div>
+                        <Link 
+                            href="/admin"
+                            class="text-cinza hover:text-celeste transition-colors duration-500 text-sm ml-4"
+                            title="Painel Administrativo"
+                        >
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </Link>
                     </div>
                 </div>
             </div>

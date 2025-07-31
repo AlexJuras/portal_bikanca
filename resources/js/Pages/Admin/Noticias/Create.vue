@@ -799,22 +799,6 @@ const errosTraduzidos = computed(() => {
                         </div>
                     </div>
 
-                    <!-- Status -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-medium text-azul-oxford mb-4">
-                            Status
-                        </h3>
-                        <select
-                            v-model="form.status"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-azul-lazuli focus:border-azul-lazuli"
-                        >
-                            <option value="rascunho">Rascunho</option>
-                            <option value="publicada">Publicada</option>
-                            <option value="arquivada">Arquivada</option>
-                            <option value="agendada">Agendada</option>
-                        </select>
-                    </div>
-
                     <!-- Imagem Principal -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-lg font-medium text-azul-oxford mb-4">

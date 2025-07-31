@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import Principal from '@/Layouts/Principal.vue'
+import VideoPlayer from '@/Components/VideoPlayer.vue'
 
 defineOptions({ layout: Principal });
 
@@ -419,8 +420,8 @@ onUnmounted(() => {
                         :key="`video-${video.id}`"
                         class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group"
                     >
-                        <Link :href="`/videos/${video.slug || video.id}`" class="block">
-                            <!-- Thumbnail do Vídeo -->
+                        <!-- Player de vídeo -->
+                        <VideoPlayer :video="video">
                             <div class="relative aspect-video bg-gray-200">
                                 <img 
                                     :src="video.thumbnail || '/logo.png'"
@@ -448,24 +449,24 @@ onUnmounted(() => {
                                     </span>
                                 </div>
                             </div>
+                        </VideoPlayer>
+                        
+                        <!-- Conteúdo -->
+                        <div class="p-4">
+                            <h3 class="font-bold text-azul-oxford line-clamp-2 mb-2">
+                                {{ video.titulo }}
+                            </h3>
                             
-                            <!-- Conteúdo -->
-                            <div class="p-4">
-                                <h3 class="font-bold text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors mb-2">
-                                    {{ video.titulo }}
-                                </h3>
-                                
-                                <p class="text-gray-600 text-sm line-clamp-2 mb-3">
-                                    {{ video.descricao }}
-                                </p>
-                                
-                                <!-- Meta -->
-                                <div class="flex items-center justify-between text-xs text-gray-500">
-                                    <span>{{ video.autor?.nome }}</span>
-                                    <span>{{ formatarData(video.publicada_em) }}</span>
-                                </div>
+                            <p class="text-gray-600 text-sm line-clamp-2 mb-3">
+                                {{ video.descricao }}
+                            </p>
+                            
+                            <!-- Meta -->
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <span>{{ video.autor?.nome }}</span>
+                                <span>{{ formatarData(video.publicada_em) }}</span>
                             </div>
-                        </Link>
+                        </div>
                     </article>
                 </div>
                 

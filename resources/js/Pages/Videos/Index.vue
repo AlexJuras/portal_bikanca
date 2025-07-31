@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import Principal from "@/Layouts/Principal.vue";
 import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
+import VideoPlayer from "@/Components/VideoPlayer.vue";
 
 defineOptions({ layout: Principal });
 
@@ -39,6 +40,15 @@ const formatarVisualizacoes = (views) => {
     if (views >= 1000) return `${(views / 1000).toFixed(1)}k`;
     return views?.toString() || '0';
 };
+
+// Extrair ID do YouTube da URL
+const getYoutubeId = (url) => {
+    if (!url) return null
+    
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+    const match = url.match(regex)
+    return match ? match[1] : null
+}
 </script>
 
 <template>
@@ -89,11 +99,11 @@ const formatarVisualizacoes = (views) => {
                             :key="video.id"
                             class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                         >
-                            <Link :href="route('videos.show', video.id)" class="block group">
-                                <!-- Thumbnail -->
+                            <!-- Player de vídeo -->
+                            <VideoPlayer :video="video">
                                 <div class="relative aspect-video bg-gray-100">
                                     <img 
-                                        :src="video.thumbnail_url || `https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`" 
+                                        :src="video.thumbnail || `https://img.youtube.com/vi/${getYoutubeId(video.url_externa)}/hqdefault.jpg`" 
                                         :alt="video.titulo"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         loading="lazy"
@@ -115,26 +125,26 @@ const formatarVisualizacoes = (views) => {
                                         {{ formatarDuracao(video.duracao) }}
                                     </div>
                                 </div>
+                            </VideoPlayer>
 
-                                <!-- Conteúdo -->
-                                <div class="p-4">
-                                    <h3 class="font-semibold text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors">
-                                        {{ video.titulo }}
-                                    </h3>
-                                    
-                                    <p class="text-gray-600 text-sm mt-2 line-clamp-2">
-                                        {{ video.descricao }}
-                                    </p>
-                                    
-                                    <!-- Meta informações -->
-                                    <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
-                                        <span class="flex items-center gap-1">
-                                            👁️ {{ formatarVisualizacoes(video.visualizacoes) }}
-                                        </span>
-                                        <span>{{ video.categoria?.nome }}</span>
-                                    </div>
+                            <!-- Conteúdo -->
+                            <div class="p-4">
+                                <h3 class="font-semibold text-azul-oxford line-clamp-2 transition-colors">
+                                    {{ video.titulo }}
+                                </h3>
+                                
+                                <p class="text-gray-600 text-sm mt-2 line-clamp-2">
+                                    {{ video.descricao }}
+                                </p>
+                                
+                                <!-- Meta informações -->
+                                <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
+                                    <span class="flex items-center gap-1">
+                                        👁️ {{ formatarVisualizacoes(video.visualizacoes) }}
+                                    </span>
+                                    <span>{{ video.categoria?.nome }}</span>
                                 </div>
-                            </Link>
+                            </div>
                         </article>
                     </div>
 
@@ -172,33 +182,35 @@ const formatarVisualizacoes = (views) => {
                                 :key="video.id"
                                 class="group"
                             >
-                                <Link :href="route('videos.show', video.id)" class="flex gap-3">
-                                    <div class="relative w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                                        <img 
-                                            :src="video.thumbnail_url" 
-                                            :alt="video.titulo"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                            loading="lazy"
-                                            @error="$event.target.src = '/images/video-placeholder.svg'"
-                                        />
-                                        <div class="absolute inset-0 flex items-center justify-center">
-                                            <div class="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
-                                                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                                                </svg>
+                                <VideoPlayer :video="video">
+                                    <div class="flex gap-3 cursor-pointer">
+                                        <div class="relative w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                                            <img 
+                                                :src="video.thumbnail || getYoutubeId(video.url_externa) ? `https://img.youtube.com/vi/${getYoutubeId(video.url_externa)}/hqdefault.jpg` : '/images/video-placeholder.svg'" 
+                                                :alt="video.titulo"
+                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                loading="lazy"
+                                                @error="$event.target.src = '/images/video-placeholder.svg'"
+                                            />
+                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                <div class="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
+                                                    <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
+                                        
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-medium text-azul-oxford group-hover:text-azul-noite transition-colors line-clamp-2 text-sm">
+                                                {{ video.titulo }}
+                                            </h4>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                {{ formatarVisualizacoes(video.visualizacoes) }} visualizações
+                                            </p>
+                                        </div>
                                     </div>
-                                    
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="font-medium text-azul-oxford group-hover:text-azul-noite transition-colors line-clamp-2 text-sm">
-                                            {{ video.titulo }}
-                                        </h4>
-                                        <p class="text-xs text-gray-500 mt-1">
-                                            {{ formatarVisualizacoes(video.visualizacoes) }} visualizações
-                                        </p>
-                                    </div>
-                                </Link>
+                                </VideoPlayer>
                             </article>
                         </div>
                     </div>

@@ -218,4 +218,20 @@ class VideoController extends Controller
         preg_match($pattern, $url, $matches);
         return $matches[1] ?? null;
     }
+
+    /**
+     * Incrementa o número de visualizações de um vídeo
+     */
+    public function incrementView(Midia $midia)
+    {
+        // Verificar se é um vídeo
+        if (!$midia->videos()->exists()) {
+            return response()->json(['error' => 'Not a video'], 400);
+        }
+
+        // Incrementar visualizações
+        $midia->increment('visualizacoes');
+
+        return response()->json(['success' => true, 'views' => $midia->visualizacoes]);
+    }
 }

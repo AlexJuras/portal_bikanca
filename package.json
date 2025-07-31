@@ -32,6 +32,7 @@
         "@vueuse/core": "^13.5.0",
         "add": "^2.0.6",
         "lodash": "^4.17.21",
-        "vue-material-design-icons": "^5.3.1"
+        "vue-material-design-icons": "^5.3.1",
+        "vue3-video-player": "^1.0.0"
     }
 }

@@ -19,6 +19,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ====== PÁGINA INICIAL ======
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// ====== API ROUTES ======
+Route::post('/api/videos/{midia}/view', [VideoController::class, 'incrementView'])->name('videos.increment-view');
+
 // ====== PAINEL ADMINISTRATIVO ======
 Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(function () {
     // Dashboard principal

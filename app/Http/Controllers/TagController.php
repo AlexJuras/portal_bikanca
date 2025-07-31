@@ -26,15 +26,6 @@ class TagController extends Controller
         ]);
     }
 
-    public function index()
-    {
-        $tags = Tag::latest()->paginate(10);
-
-        return Inertia::render('Tags/Index', [
-            'tags' => $tags
-        ]);
-    }
-
     public function create()
     {
         return Inertia::render('Admin/Tags/Create');

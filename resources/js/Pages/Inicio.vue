@@ -5,6 +5,9 @@ import Principal from '@/Layouts/Principal.vue'
 
 defineOptions({ layout: Principal });
 
+// Imagem padrão para usuários
+const userImage = '/images/user-placeholder.png';
+
 const props = defineProps({
     noticiasDestaque: { type: Array, default: () => [] },
     noticiasCarrossel: { type: Array, default: () => [] },
@@ -217,6 +220,12 @@ onUnmounted(() => {
                                     
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-3">
+                                            <img
+                                                :src="noticia.autor?.foto ? `/storage/${noticia.autor.foto}` : userImage"
+                                                :alt="noticia.autor?.nome"
+                                                class="w-10 h-10 rounded-full object-cover border-2 border-white/30"
+                                                @error="$event.target.src = userImage"
+                                            />
                                             <div class="text-sm">
                                                 <p class="font-medium">{{ noticia.autor?.nome }}</p>
                                                 <p class="opacity-75">Jornalista</p>

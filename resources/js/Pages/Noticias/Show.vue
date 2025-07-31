@@ -210,9 +210,10 @@ const shareTwitter = () => {
                             <div class="bg-gray-50 rounded-lg p-6">
                                 <div class="flex items-center space-x-4">
                                     <img
-                                        :src="userImage"
+                                        :src="noticia.autor?.foto ? `/storage/${noticia.autor.foto}` : userImage"
                                         :alt="noticia.autor?.nome"
-                                        class="w-16 h-16 rounded-full"
+                                        class="w-16 h-16 rounded-full object-cover"
+                                        @error="$event.target.src = userImage"
                                     />
                                     <div>
                                         <p class="font-semibold text-azul-oxford text-lg">

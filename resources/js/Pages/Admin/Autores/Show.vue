@@ -36,9 +36,10 @@
                     <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
                         <div class="flex-shrink-0">
                             <img
-                                :src="autor.foto_perfil || '/images/user-placeholder.png'"
+                                :src="autor.foto ? `/storage/${autor.foto}` : '/images/user-placeholder.png'"
                                 :alt="autor.nome"
-                                class="w-32 h-32 rounded-full border-4 border-white/20"
+                                class="w-32 h-32 rounded-full border-4 border-white/20 object-cover"
+                                @error="$event.target.src = '/images/user-placeholder.png'"
                             />
                         </div>
                         <div class="flex-1 text-center md:text-left">

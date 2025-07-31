@@ -425,9 +425,10 @@ onMounted(() => {
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2">
                                         <img
-                                            :src="userImage"
+                                            :src="noticiaDestaque.autor?.foto ? `/storage/${noticiaDestaque.autor.foto}` : userImage"
                                             :alt="noticiaDestaque.autor?.nome"
-                                            class="w-8 h-8 rounded-full border-2 border-white"
+                                            class="w-8 h-8 rounded-full border-2 border-white object-cover"
+                                            @error="$event.target.src = userImage"
                                         />
                                         <div>
                                             <p class="text-white text-sm font-medium">
@@ -497,9 +498,10 @@ onMounted(() => {
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2">
                                         <img
-                                            :src="userImage"
+                                            :src="noticia.autor?.foto ? `/storage/${noticia.autor.foto}` : userImage"
                                             :alt="noticia.autor?.nome"
-                                            class="w-6 h-6 rounded-full"
+                                            class="w-6 h-6 rounded-full object-cover"
+                                            @error="$event.target.src = userImage"
                                         />
                                         <span class="text-sm text-cinza">{{ noticia.autor?.nome }}</span>
                                     </div>

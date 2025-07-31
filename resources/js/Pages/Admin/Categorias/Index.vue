@@ -128,7 +128,7 @@
                                 <div class="flex justify-center space-x-2">
                                     <!-- Visualizar -->
                                     <Link 
-                                        :href="route('categorias.show', categoria.slug)" 
+                                        :href="route('admin.categorias.show', categoria.slug)" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors p-1"
                                         title="Visualizar"
                                     >
@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="flex space-x-3">
                                     <Link 
-                                        :href="route('categorias.show', categoria.slug)" 
+                                        :href="route('admin.categorias.show', categoria.slug)" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors"
                                         title="Visualizar"
                                     >

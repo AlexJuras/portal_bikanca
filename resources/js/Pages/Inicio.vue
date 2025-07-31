@@ -8,11 +8,9 @@ defineOptions({ layout: Principal });
 const props = defineProps({
     noticiasDestaque: { type: Array, default: () => [] },
     noticiasCarrossel: { type: Array, default: () => [] },
-    noticiasPolitica: { type: Array, default: () => [] },
-    noticiasEconomia: { type: Array, default: () => [] },
-    noticiasEsporte: { type: Array, default: () => [] },
     noticiasMaisLidas: { type: Array, default: () => [] },
     categorias: { type: Array, default: () => [] },
+    noticiasPorCategoria: { type: Object, default: () => ({}) },
 });
 
 // Carrossel
@@ -56,6 +54,42 @@ const formatarVisualizacoes = (views) => {
     if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
     if (views >= 1000) return `${(views / 1000).toFixed(1)}k`;
     return views?.toString() || '0';
+};
+
+// Função para obter ícone baseado no nome da categoria
+const obterIconeCategoria = (nomeCategoria) => {
+    const nome = nomeCategoria?.toLowerCase() || '';
+    const icones = {
+        'política': '🏛️',
+        'politica': '🏛️',
+        'economia': '💰',
+        'esporte': '⚽',
+        'esportes': '⚽',
+        'tecnologia': '💻',
+        'saúde': '🏥',
+        'saude': '🏥',
+        'educação': '📚',
+        'educacao': '📚',
+        'cultura': '🎭',
+        'meio ambiente': '🌱',
+        'internacional': '🌍',
+        'nacional': '🇧🇷',
+        'entretenimento': '🎬',
+        'ciência': '🔬',
+        'ciencia': '🔬',
+        'turismo': '✈️',
+        'segurança': '🛡️',
+        'seguranca': '🛡️',
+    };
+    
+    // Procura por palavras-chave no nome da categoria
+    for (const [palavra, icone] of Object.entries(icones)) {
+        if (nome.includes(palavra)) {
+            return icone;
+        }
+    }
+    
+    return '📰'; // Ícone padrão
 };
 
 onMounted(() => {
@@ -120,8 +154,6 @@ onUnmounted(() => {
                                         <span>{{ noticia.autor?.nome }}</span>
                                         <span>•</span>
                                         <span>{{ formatarData(noticia.publicada_em) }}</span>
-                                        <span>•</span>
-                                        <span>{{ formatarVisualizacoes(noticia.visualizacoes) }} visualizações</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,9 +237,9 @@ onUnmounted(() => {
                             </Link>
                         </div>
                         
-                        <div v-if="noticiasDestaque.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div v-if="noticiasDestaque.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <article 
-                                v-for="noticia in noticiasDestaque.slice(0, 4)" 
+                                v-for="noticia in noticiasDestaque.slice(0, 6)" 
                                 :key="`destaque-${noticia.id}`"
                                 class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                             >
@@ -263,87 +295,86 @@ onUnmounted(() => {
                         </div>
                     </section>
 
-                    <!-- Seções por Categoria -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        
-                        <!-- Política -->
-                        <section v-if="noticiasPolitica.length > 0">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xl font-bold text-azul-oxford flex items-center">
-                                    🏛️ Política
+                    <!-- Seções Dinâmicas por Categoria -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <section 
+                            v-for="categoria in categorias.slice(0, 6)" 
+                            :key="`categoria-${categoria.id}`"
+                            v-show="categoria.noticias && categoria.noticias.length > 0"
+                            class="bg-white rounded-lg shadow-sm p-6"
+                        >
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-xl font-bold text-azul-oxford flex items-center gap-2">
+                                    <span>{{ obterIconeCategoria(categoria.nome) }}</span>
+                                    <span>{{ categoria.nome }}</span>
                                 </h3>
                                 <Link 
-                                    href="/noticias/categoria/politica"
-                                    class="text-azul-celeste hover:text-azul-oxford transition-colors text-sm"
+                                    :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
+                                    class="text-azul-celeste hover:text-azul-oxford transition-colors text-sm font-medium"
                                 >
                                     Ver mais →
                                 </Link>
                             </div>
                             
-                            <div class="space-y-4">
-                                <article 
-                                    v-for="noticia in noticiasPolitica.slice(0, 3)" 
-                                    :key="`politica-${noticia.id}`"
-                                    class="flex gap-3 hover:bg-gray-50 p-2 rounded transition-colors"
-                                >
-                                    <Link :href="`/noticias/${noticia.slug || noticia.id}`" class="flex-1">
-                                        <h4 class="font-semibold text-sm text-azul-oxford line-clamp-2 hover:text-azul-noite transition-colors">
-                                            {{ noticia.titulo }}
-                                        </h4>
-                                        <div class="text-xs text-gray-500 mt-1">
-                                            {{ formatarData(noticia.publicada_em) }}
+                            <!-- Primeira notícia em destaque -->
+                            <article 
+                                v-if="categoria.noticias[0]"
+                                class="mb-6 group"
+                            >
+                                <Link :href="`/noticias/${categoria.noticias[0].slug || categoria.noticias[0].id}`">
+                                    <div class="relative aspect-video bg-gray-200 rounded-lg overflow-hidden mb-3">
+                                        <img 
+                                            :src="categoria.noticias[0].capa?.caminho || '/logo.png'"
+                                            :alt="categoria.noticias[0].titulo"
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            loading="lazy"
+                                        />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-3 left-3 right-3">
+                                            <h4 class="text-white font-bold text-lg line-clamp-2 group-hover:text-celeste transition-colors">
+                                                {{ categoria.noticias[0].titulo }}
+                                            </h4>
+                                            <div class="text-white/80 text-sm mt-1">
+                                                {{ formatarData(categoria.noticias[0].publicada_em) }}
+                                            </div>
                                         </div>
-                                    </Link>
-                                    <img 
-                                        v-if="noticia.capa?.caminho"
-                                        :src="noticia.capa.caminho"
-                                        :alt="noticia.titulo"
-                                        class="w-16 h-12 object-cover rounded"
-                                        loading="lazy"
-                                    />
-                                </article>
-                            </div>
-                        </section>
-
-                        <!-- Economia -->
-                        <section v-if="noticiasEconomia.length > 0">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xl font-bold text-azul-oxford flex items-center">
-                                    💰 Economia
-                                </h3>
-                                <Link 
-                                    href="/noticias/categoria/economia"
-                                    class="text-azul-celeste hover:text-azul-oxford transition-colors text-sm"
-                                >
-                                    Ver mais →
+                                    </div>
                                 </Link>
-                            </div>
+                            </article>
                             
-                            <div class="space-y-4">
+                            <!-- Outras notícias da categoria -->
+                            <div class="space-y-3">
                                 <article 
-                                    v-for="noticia in noticiasEconomia.slice(0, 3)" 
-                                    :key="`economia-${noticia.id}`"
-                                    class="flex gap-3 hover:bg-gray-50 p-2 rounded transition-colors"
+                                    v-for="noticia in categoria.noticias.slice(1, 4)" 
+                                    :key="`categoria-${categoria.id}-noticia-${noticia.id}`"
+                                    class="flex gap-3 hover:bg-gray-50 p-2 rounded transition-colors group"
                                 >
                                     <Link :href="`/noticias/${noticia.slug || noticia.id}`" class="flex-1">
-                                        <h4 class="font-semibold text-sm text-azul-oxford line-clamp-2 hover:text-azul-noite transition-colors">
+                                        <h5 class="font-semibold text-sm text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors">
                                             {{ noticia.titulo }}
-                                        </h4>
+                                        </h5>
                                         <div class="text-xs text-gray-500 mt-1">
                                             {{ formatarData(noticia.publicada_em) }}
                                         </div>
                                     </Link>
-                                    <img 
-                                        v-if="noticia.capa?.caminho"
-                                        :src="noticia.capa.caminho"
-                                        :alt="noticia.titulo"
-                                        class="w-16 h-12 object-cover rounded"
-                                        loading="lazy"
-                                    />
+                                    <div class="flex-shrink-0">
+                                        <img 
+                                            v-if="noticia.capa?.caminho"
+                                            :src="noticia.capa.caminho"
+                                            :alt="noticia.titulo"
+                                            class="w-16 h-12 object-cover rounded group-hover:scale-105 transition-transform duration-300"
+                                            loading="lazy"
+                                        />
+                                        <div 
+                                            v-else
+                                            class="w-16 h-12 bg-gray-200 rounded flex items-center justify-center"
+                                        >
+                                            <span class="text-gray-400 text-xs">{{ obterIconeCategoria(categoria.nome) }}</span>
+                                        </div>
+                                    </div>
                                 </article>
                             </div>
                         </section>
-
                     </div>
                 </div>
 
@@ -378,10 +409,8 @@ onUnmounted(() => {
                                         <h4 class="font-semibold text-sm text-azul-oxford line-clamp-2 hover:text-azul-noite transition-colors">
                                             {{ noticia.titulo }}
                                         </h4>
-                                        <div class="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                                            <span>{{ formatarVisualizacoes(noticia.visualizacoes) }} views</span>
-                                            <span>•</span>
-                                            <span>{{ formatarData(noticia.publicada_em) }}</span>
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            {{ formatarData(noticia.publicada_em) }}
                                         </div>
                                     </Link>
                                 </div>
@@ -389,14 +418,20 @@ onUnmounted(() => {
                         </div>
                     </section>
 
-                    <!-- Esporte -->
-                    <section v-if="noticiasEsporte.length > 0" class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <!-- Categorias Adicionais na Sidebar -->
+                    <section 
+                        v-for="categoria in categorias.slice(6, 8)" 
+                        :key="`sidebar-categoria-${categoria.id}`"
+                        v-show="categoria.noticias && categoria.noticias.length > 0"
+                        class="bg-white rounded-lg shadow-sm p-6 mb-6"
+                    >
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold text-azul-oxford flex items-center">
-                                ⚽ Esporte
+                            <h3 class="text-xl font-bold text-azul-oxford flex items-center gap-2">
+                                <span>{{ obterIconeCategoria(categoria.nome) }}</span>
+                                <span>{{ categoria.nome }}</span>
                             </h3>
                             <Link 
-                                href="/noticias/categoria/esporte"
+                                :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
                                 class="text-azul-celeste hover:text-azul-oxford transition-colors text-sm"
                             >
                                 Ver mais →
@@ -405,16 +440,33 @@ onUnmounted(() => {
                         
                         <div class="space-y-4">
                             <article 
-                                v-for="noticia in noticiasEsporte.slice(0, 4)" 
-                                :key="`esporte-${noticia.id}`"
-                                class="hover:bg-gray-50 p-2 rounded transition-colors"
+                                v-for="noticia in categoria.noticias.slice(0, 4)" 
+                                :key="`sidebar-${categoria.id}-noticia-${noticia.id}`"
+                                class="hover:bg-gray-50 p-2 rounded transition-colors group"
                             >
-                                <Link :href="`/noticias/${noticia.slug || noticia.id}`">
-                                    <h4 class="font-semibold text-sm text-azul-oxford line-clamp-2 hover:text-azul-noite transition-colors mb-1">
-                                        {{ noticia.titulo }}
-                                    </h4>
-                                    <div class="text-xs text-gray-500">
-                                        {{ formatarData(noticia.publicada_em) }}
+                                <Link :href="`/noticias/${noticia.slug || noticia.id}`" class="flex gap-3">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-sm text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors mb-1">
+                                            {{ noticia.titulo }}
+                                        </h4>
+                                        <div class="text-xs text-gray-500">
+                                            {{ formatarData(noticia.publicada_em) }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <img 
+                                            v-if="noticia.capa?.caminho"
+                                            :src="noticia.capa.caminho"
+                                            :alt="noticia.titulo"
+                                            class="w-16 h-12 object-cover rounded group-hover:scale-105 transition-transform duration-300"
+                                            loading="lazy"
+                                        />
+                                        <div 
+                                            v-else
+                                            class="w-16 h-12 bg-gray-200 rounded flex items-center justify-center"
+                                        >
+                                            <span class="text-gray-400">{{ obterIconeCategoria(categoria.nome) }}</span>
+                                        </div>
                                     </div>
                                 </Link>
                             </article>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 
 defineProps({
@@ -51,8 +51,19 @@ const handleOutsideClick = (event) => {
     }
 };
 
+// Função para toggle do menu mobile com debug
+const toggleMobileMenu = () => {
+    console.log('Menu mobile clicado. Estado atual:', mostraMenuMobile.value);
+    mostraMenuMobile.value = !mostraMenuMobile.value;
+    console.log('Novo estado:', mostraMenuMobile.value);
+};
+
 onMounted(() => {
     document.addEventListener("click", handleOutsideClick);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleOutsideClick);
 });
 </script>
 
@@ -193,13 +204,17 @@ onMounted(() => {
                     </nav>
 
                     <!-- Mobile menu button -->
-                    <div class="md:hidden">
+                    <div class="md:hidden mobile-menu-container">
                         <button
-                            @click="mostraMenuMobile = !mostraMenuMobile"
-                            class="text-white hover:text-celeste"
+                            @click="toggleMobileMenu"
+                            class="text-white hover:text-celeste p-2 focus:outline-none focus:ring-2 focus:ring-celeste relative z-10"
+                            type="button"
+                            aria-label="Abrir menu"
                         >
+                            <!-- Ícone Hambúrguer -->
                             <svg
-                                class="h-6 w-6"
+                                v-show="!mostraMenuMobile"
+                                class="h-6 w-6 transition-transform duration-200"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -211,13 +226,33 @@ onMounted(() => {
                                     d="M4 6h16M4 12h16M4 18h16"
                                 ></path>
                             </svg>
+                            
+                            <!-- Ícone X -->
+                            <svg
+                                v-show="mostraMenuMobile"
+                                class="h-6 w-6 transition-transform duration-200"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                ></path>
+                            </svg>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Mobile Navigation -->
-            <div v-show="mostraMenuMobile" class="md:hidden bg-azul-noite">
+            <div 
+                v-show="mostraMenuMobile" 
+                class="md:hidden bg-azul-noite mobile-menu-container transition-all duration-300 ease-in-out"
+                style="transform-origin: top"
+            >
                 <div class="px-2 pt-2 pb-3 space-y-1">
                     <!-- Link para todas as notícias -->
                     <Link

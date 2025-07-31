@@ -16,58 +16,44 @@ class HomeController extends Controller
             ->where('status', 'publicada')
             ->where('destaque_home', true)
             ->orderBy('publicada_em', 'desc')
-            ->take(6)
+            ->take(8) // Aumentado de 6 para 8
             ->get();
 
-        // Buscar notícias mais recentes para o carrossel (primeiras 4 em destaque)
-        $noticiasCarrossel = $noticiasDestaque->take(4);
-
-        // Buscar notícias recentes por categoria para as seções laterais
-        $noticiasPolitica = Noticia::with(['categoria', 'autor', 'capa'])
-            ->whereHas('categoria', function ($query) {
-                $query->where('nome', 'like', '%Política%');
-            })
-            ->where('status', 'publicada')
-            ->orderBy('publicada_em', 'desc')
-            ->take(4)
-            ->get();
-
-        $noticiasEconomia = Noticia::with(['categoria', 'autor', 'capa'])
-            ->whereHas('categoria', function ($query) {
-                $query->where('nome', 'like', '%Economia%');
-            })
-            ->where('status', 'publicada')
-            ->orderBy('publicada_em', 'desc')
-            ->take(4)
-            ->get();
-
-        $noticiasEsporte = Noticia::with(['categoria', 'autor', 'capa'])
-            ->whereHas('categoria', function ($query) {
-                $query->where('nome', 'like', '%Esporte%');
-            })
-            ->where('status', 'publicada')
-            ->orderBy('publicada_em', 'desc')
-            ->take(4)
-            ->get();
+        // Buscar notícias mais recentes para o carrossel (primeiras 5 em destaque)
+        $noticiasCarrossel = $noticiasDestaque->take(5);
 
         // Buscar notícias mais lidas (baseado em visualizações)
         $noticiasMaisLidas = Noticia::with(['categoria', 'autor', 'capa'])
             ->where('status', 'publicada')
             ->orderBy('visualizacoes', 'desc')
-            ->take(5)
+            ->take(8) // Aumentado de 5 para 8
             ->get();
 
-        // Buscar todas as categorias para exibição
-        $categorias = Categoria::orderBy('nome')->get();
+        // Buscar todas as categorias que têm notícias publicadas
+        $categorias = Categoria::whereHas('noticias', function ($query) {
+                $query->where('status', 'publicada');
+            })
+            ->with(['noticias' => function ($query) {
+                $query->with(['autor', 'capa'])
+                    ->where('status', 'publicada')
+                    ->orderBy('publicada_em', 'desc')
+                    ->take(5); // 5 notícias por categoria
+            }])
+            ->orderBy('nome')
+            ->get();
+
+        // Criar um array com notícias por categoria para facilitar o acesso no frontend
+        $noticiasPorCategoria = [];
+        foreach ($categorias as $categoria) {
+            $noticiasPorCategoria[strtolower($categoria->nome)] = $categoria->noticias;
+        }
 
         return Inertia::render('Inicio', [
             'noticiasDestaque' => $noticiasDestaque,
             'noticiasCarrossel' => $noticiasCarrossel,
-            'noticiasPolitica' => $noticiasPolitica,
-            'noticiasEconomia' => $noticiasEconomia,
-            'noticiasEsporte' => $noticiasEsporte,
             'noticiasMaisLidas' => $noticiasMaisLidas,
             'categorias' => $categorias,
+            'noticiasPorCategoria' => $noticiasPorCategoria,
         ]);
     }
 }

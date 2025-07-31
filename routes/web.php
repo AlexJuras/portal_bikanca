@@ -67,7 +67,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(functi
     
     // Gerenciamento de Tags (área restrita)
     Route::prefix('tags')->name('tags.')->group(function () {
-        Route::get('/', [TagController::class, 'index'])->name('index');
+        Route::get('/', [TagController::class, 'admin'])->name('index');
         Route::get('/create', [TagController::class, 'create'])->name('create');
         Route::post('/', [TagController::class, 'store'])->name('store');
         Route::get('/{tag}', [TagController::class, 'show'])->name('show');

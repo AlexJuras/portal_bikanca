@@ -117,6 +117,27 @@ class Midia extends Model
             ];
             
             $paramString = implode('&', $params);
+            
+            // Usar youtube-nocookie.com para melhor compatibilidade em alguns casos
+            return "https://www.youtube-nocookie.com/embed/{$this->youtube_id}?{$paramString}";
+        }
+        
+        return null;
+    }
+
+    public function getEmbedUrlStandardAttribute()
+    {
+        if ($this->isVideo() && $this->youtube_id) {
+            $params = [
+                'rel=0',
+                'modestbranding=1',
+                'fs=1',
+                'cc_load_policy=0',
+                'iv_load_policy=3',
+                'autoplay=0',
+            ];
+            
+            $paramString = implode('&', $params);
             return "https://www.youtube.com/embed/{$this->youtube_id}?{$paramString}";
         }
         

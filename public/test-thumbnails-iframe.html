@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test YouTube Thumbnails</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-container { margin: 20px 0; border: 1px solid #ccc; padding: 15px; }
+        .thumbnail { max-width: 320px; height: 180px; object-fit: cover; }
+        .iframe-container { width: 560px; height: 315px; margin: 20px 0; }
+        iframe { width: 100%; height: 100%; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Thumbnails e iFrames do YouTube</h1>
+    
+    <div class="test-container">
+        <h2>1. Teste de Thumbnail (hqdefault)</h2>
+        <img 
+            src="https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg" 
+            alt="Thumbnail YE7VzlLtp-4" 
+            class="thumbnail"
+            onload="console.log('✅ Thumbnail carregou:', this.src)"
+            onerror="console.log('❌ Erro na thumbnail:', this.src); this.style.border='2px solid red'"
+        />
+        <p>URL: https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg</p>
+    </div>
+
+    <div class="test-container">
+        <h2>2. Teste de Thumbnail (maxresdefault)</h2>
+        <img 
+            src="https://img.youtube.com/vi/YE7VzlLtp-4/maxresdefault.jpg" 
+            alt="Thumbnail YE7VzlLtp-4 Max" 
+            class="thumbnail"
+            onload="console.log('✅ Thumbnail MAX carregou:', this.src)"
+            onerror="console.log('❌ Erro na thumbnail MAX:', this.src); this.style.border='2px solid red'"
+        />
+        <p>URL: https://img.youtube.com/vi/YE7VzlLtp-4/maxresdefault.jpg</p>
+    </div>
+
+    <div class="test-container">
+        <h2>3. Teste de iFrame (Embed)</h2>
+        <div class="iframe-container">
+            <iframe
+                src="https://www.youtube.com/embed/YE7VzlLtp-4?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autoplay=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+                onload="console.log('✅ iFrame carregou')"
+                onerror="console.log('❌ Erro no iFrame')"
+            ></iframe>
+        </div>
+        <p>URL: https://www.youtube.com/embed/YE7VzlLtp-4?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autoplay=0</p>
+    </div>
+
+    <div class="test-container">
+        <h2>4. Teste Direto do YouTube</h2>
+        <a href="https://www.youtube.com/watch?v=YE7VzlLtp-4" target="_blank">
+            🔗 Abrir no YouTube (YE7VzlLtp-4)
+        </a>
+    </div>
+
+    <div class="test-container">
+        <h2>5. Informações de Debug</h2>
+        <div id="debug-info"></div>
+    </div>
+
+    <script>
+        // Log de debug
+        console.log('🔍 Iniciando testes...');
+        
+        // Teste de conectividade
+        fetch('https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg')
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Conectividade com YouTube OK');
+                    document.getElementById('debug-info').innerHTML += '<p class="success">✅ Conectividade com YouTube OK</p>';
+                } else {
+                    console.log('❌ Erro de conectividade:', response.status);
+                    document.getElementById('debug-info').innerHTML += '<p class="error">❌ Erro de conectividade: ' + response.status + '</p>';
+                }
+            })
+            .catch(error => {
+                console.log('❌ Erro de rede:', error);
+                document.getElementById('debug-info').innerHTML += '<p class="error">❌ Erro de rede: ' + error.message + '</p>';
+            });
+
+        // Informações do navegador
+        document.getElementById('debug-info').innerHTML += '<p><strong>User Agent:</strong> ' + navigator.userAgent + '</p>';
+        document.getElementById('debug-info').innerHTML += '<p><strong>Cookies habilitados:</strong> ' + navigator.cookieEnabled + '</p>';
+    </script>
+</body>
+</html>

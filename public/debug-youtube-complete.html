@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Completo YouTube iframe</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-section { 
+            background: white; 
+            margin: 20px 0; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .video-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 560px; 
+            height: 315px; 
+            margin: 10px 0;
+            background: #000;
+        }
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none;
+        }
+        .thumbnail { 
+            max-width: 320px; 
+            height: 180px; 
+            object-fit: cover; 
+            border: 2px solid #ccc;
+        }
+        .error { color: red; font-weight: bold; }
+        .success { color: green; font-weight: bold; }
+        .log { 
+            background: #f0f0f0; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button { 
+            background: #007cba; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #005a87; }
+    </style>
+</head>
+<body>
+    <h1>🎥 Teste Completo YouTube iframe + Thumbnails</h1>
+    
+    <div class="test-section">
+        <h2>📊 Status dos Testes</h2>
+        <div id="status-log" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🖼️ Teste 1: Thumbnails YouTube</h2>
+        <h3>HQ Default (Recomendado)</h3>
+        <img 
+            id="thumb-hq"
+            src="https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg" 
+            alt="Thumbnail HQ" 
+            class="thumbnail"
+        />
+        
+        <h3>Max Resolution</h3>
+        <img 
+            id="thumb-max"
+            src="https://img.youtube.com/vi/YE7VzlLtp-4/maxresdefault.jpg" 
+            alt="Thumbnail Max" 
+            class="thumbnail"
+        />
+        
+        <h3>Standard Default</h3>
+        <img 
+            id="thumb-std"
+            src="https://img.youtube.com/vi/YE7VzlLtp-4/sddefault.jpg" 
+            alt="Thumbnail Standard" 
+            class="thumbnail"
+        />
+    </div>
+
+    <div class="test-section">
+        <h2>📺 Teste 2: iFrame YouTube Embed</h2>
+        
+        <h3>Configuração Atual (Laravel)</h3>
+        <div class="video-container">
+            <iframe
+                id="iframe-current"
+                src="https://www.youtube.com/embed/YE7VzlLtp-4?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autoplay=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+                title="Player YouTube Atual"
+            ></iframe>
+        </div>
+        
+        <h3>Configuração Básica (Mínima)</h3>
+        <div class="video-container">
+            <iframe
+                id="iframe-basic"
+                src="https://www.youtube.com/embed/YE7VzlLtp-4"
+                frameborder="0"
+                allowfullscreen
+                title="Player YouTube Básico"
+            ></iframe>
+        </div>
+        
+        <h3>Configuração Nocookie (Privacidade)</h3>
+        <div class="video-container">
+            <iframe
+                id="iframe-nocookie"
+                src="https://www.youtube-nocookie.com/embed/YE7VzlLtp-4"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                title="Player YouTube No-Cookie"
+            ></iframe>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Teste 3: Controles e Funcionalidades</h2>
+        <button onclick="testVideoLoad()">🔄 Testar Carregamento</button>
+        <button onclick="testThumbnails()">🖼️ Testar Thumbnails</button>
+        <button onclick="clearLog()">🗑️ Limpar Log</button>
+        <button onclick="openYouTube()">🔗 Abrir no YouTube</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🌐 Teste 4: Informações do Sistema</h2>
+        <div id="system-info"></div>
+    </div>
+
+    <script>
+        let logContainer = document.getElementById('status-log');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        function testVideoLoad() {
+            log('🔄 Iniciando teste de carregamento de vídeos...');
+            
+            const iframes = ['iframe-current', 'iframe-basic', 'iframe-nocookie'];
+            
+            iframes.forEach(id => {
+                const iframe = document.getElementById(id);
+                if (iframe) {
+                    iframe.onload = () => log(`✅ ${id} carregou com sucesso`);
+                    iframe.onerror = () => log(`❌ ${id} falhou ao carregar`);
+                    
+                    // Force reload
+                    const src = iframe.src;
+                    iframe.src = '';
+                    setTimeout(() => iframe.src = src, 100);
+                }
+            });
+        }
+
+        function testThumbnails() {
+            log('🖼️ Testando thumbnails...');
+            
+            const thumbs = [
+                { id: 'thumb-hq', url: 'https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg', name: 'HQ Default' },
+                { id: 'thumb-max', url: 'https://img.youtube.com/vi/YE7VzlLtp-4/maxresdefault.jpg', name: 'Max Resolution' },
+                { id: 'thumb-std', url: 'https://img.youtube.com/vi/YE7VzlLtp-4/sddefault.jpg', name: 'Standard Default' }
+            ];
+            
+            thumbs.forEach(thumb => {
+                const img = document.getElementById(thumb.id);
+                if (img) {
+                    img.onload = () => log(`✅ Thumbnail ${thumb.name} carregou`);
+                    img.onerror = () => log(`❌ Thumbnail ${thumb.name} falhou`);
+                    
+                    // Test loading
+                    fetch(thumb.url)
+                        .then(response => {
+                            if (response.ok) {
+                                log(`✅ Fetch ${thumb.name}: ${response.status} ${response.statusText}`);
+                            } else {
+                                log(`❌ Fetch ${thumb.name}: ${response.status} ${response.statusText}`);
+                            }
+                        })
+                        .catch(error => {
+                            log(`❌ Fetch ${thumb.name} erro: ${error.message}`);
+                        });
+                }
+            });
+        }
+
+        function openYouTube() {
+            window.open('https://www.youtube.com/watch?v=YE7VzlLtp-4', '_blank');
+        }
+
+        // Auto-start tests
+        window.addEventListener('load', function() {
+            log('🚀 Página carregada, iniciando testes automáticos...');
+            
+            // System info
+            const systemInfo = document.getElementById('system-info');
+            systemInfo.innerHTML = `
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                <p><strong>Cookies:</strong> ${navigator.cookieEnabled ? 'Habilitados' : 'Desabilitados'}</p>
+                <p><strong>Online:</strong> ${navigator.onLine ? 'Sim' : 'Não'}</p>
+                <p><strong>URL Atual:</strong> ${window.location.href}</p>
+                <p><strong>Protocolo:</strong> ${window.location.protocol}</p>
+            `;
+            
+            // Test thumbnails automatically
+            setTimeout(testThumbnails, 1000);
+            setTimeout(testVideoLoad, 2000);
+        });
+
+        // Set up event listeners for thumbnails
+        document.getElementById('thumb-hq').onload = () => log('✅ Thumbnail HQ carregou automaticamente');
+        document.getElementById('thumb-hq').onerror = () => log('❌ Thumbnail HQ falhou automaticamente');
+        
+        document.getElementById('thumb-max').onload = () => log('✅ Thumbnail MAX carregou automaticamente');
+        document.getElementById('thumb-max').onerror = () => log('❌ Thumbnail MAX falhou automaticamente');
+        
+        document.getElementById('thumb-std').onload = () => log('✅ Thumbnail STD carregou automaticamente');
+        document.getElementById('thumb-std').onerror = () => log('❌ Thumbnail STD falhou automaticamente');
+
+        // Set up event listeners for iframes
+        document.getElementById('iframe-current').onload = () => log('✅ iFrame Atual carregou automaticamente');
+        document.getElementById('iframe-current').onerror = () => log('❌ iFrame Atual falhou automaticamente');
+        
+        document.getElementById('iframe-basic').onload = () => log('✅ iFrame Básico carregou automaticamente');
+        document.getElementById('iframe-basic').onerror = () => log('❌ iFrame Básico falhou automaticamente');
+        
+        document.getElementById('iframe-nocookie').onload = () => log('✅ iFrame No-Cookie carregou automaticamente');
+        document.getElementById('iframe-nocookie').onerror = () => log('❌ iFrame No-Cookie falhou automaticamente');
+    </script>
+</body>
+</html>

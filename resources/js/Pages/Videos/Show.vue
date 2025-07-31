@@ -8,10 +8,70 @@ const props = defineProps({
     videosRelacionados: { type: Array, default: () => [] },
 });
 
+// Estado reativo para controle de erros e tentativas
+const playerError = ref(false);
+const thumbnailError = ref(false);
+const tryStandardEmbed = ref(false);
+
 // Função para lidar com erros do player
-const handlePlayerError = () => {
-    console.error('Erro ao carregar o player do YouTube');
+const handlePlayerError = (event) => {
+    console.error('Erro ao carregar o player do YouTube (nocookie):', event);
+    
+    if (!tryStandardEmbed.value) {
+        console.log('Tentando versão padrão do YouTube...');
+        tryStandardEmbed.value = true;
+    } else {
+        console.log('Ambas as versões falharam, mostrando fallback');
+        playerError.value = true;
+    }
 };
+
+// Função para lidar com erros do player padrão
+const handleStandardPlayerError = (event) => {
+    console.error('Erro ao carregar o player do YouTube (padrão):', event);
+    playerError.value = true;
+};
+
+// Função para lidar com erros de thumbnail
+const handleThumbnailError = (event) => {
+    console.error('Erro ao carregar thumbnail:', event);
+    thumbnailError.value = true;
+    // Fallback para placeholder
+    event.target.src = '/images/video-placeholder.svg';
+};
+
+// URLs de embed computadas
+const embedUrlNoCookie = computed(() => {
+    if (props.video?.youtube_id) {
+        const params = [
+            'rel=0',
+            'modestbranding=1',
+            'fs=1',
+            'cc_load_policy=0',
+            'iv_load_policy=3',
+            'autoplay=0',
+        ];
+        const paramString = params.join('&');
+        return `https://www.youtube-nocookie.com/embed/${props.video.youtube_id}?${paramString}`;
+    }
+    return null;
+});
+
+const embedUrlStandard = computed(() => {
+    if (props.video?.youtube_id) {
+        const params = [
+            'rel=0',
+            'modestbranding=1',
+            'fs=1',
+            'cc_load_policy=0',
+            'iv_load_policy=3',
+            'autoplay=0',
+        ];
+        const paramString = params.join('&');
+        return `https://www.youtube.com/embed/${props.video.youtube_id}?${paramString}`;
+    }
+    return null;
+});
 
 // Função para abrir vídeo diretamente no YouTube
 const openYouTubeDirectly = () => {
@@ -83,27 +143,47 @@ const formatarData = (data) => {
                     <div
                         class="bg-white rounded-lg shadow-sm overflow-hidden mb-6"
                     >
-                                                <div class="relative aspect-video bg-black">
-                            <!-- Player do YouTube -->
+                        <div class="relative aspect-video bg-black rounded-lg overflow-hidden">
+                            <!-- Player do YouTube (No-Cookie) -->
                             <iframe
-                                v-if="video.embed_url"
-                                :src="video.embed_url"
+                                v-if="embedUrlNoCookie && !playerError && !tryStandardEmbed"
+                                :src="embedUrlNoCookie"
                                 class="w-full h-full"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowfullscreen
                                 referrerpolicy="strict-origin-when-cross-origin"
-                                title="Player de Vídeo"
+                                title="Player de Vídeo (No-Cookie)"
                                 @error="handlePlayerError"
+                                @load="console.log('✅ iFrame No-Cookie carregou com sucesso')"
                             ></iframe>
                             
-                            <!-- Thumbnail com Play Button (fallback) -->
-                            <div v-else class="relative w-full h-full cursor-pointer group" @click="openYouTubeDirectly">
+                            <!-- Player do YouTube (Padrão) - Fallback -->
+                            <iframe
+                                v-else-if="embedUrlStandard && !playerError && tryStandardEmbed"
+                                :src="embedUrlStandard"
+                                class="w-full h-full"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                title="Player de Vídeo (Padrão)"
+                                @error="handleStandardPlayerError"
+                                @load="console.log('✅ iFrame Padrão carregou com sucesso')"
+                            ></iframe>
+                            
+                            <!-- Thumbnail com Play Button (fallback ou erro) -->
+                            <div 
+                                v-else-if="video.thumbnail_url || video.youtube_id" 
+                                class="relative w-full h-full cursor-pointer group" 
+                                @click="openYouTubeDirectly"
+                            >
                                 <img 
-                                    :src="video.thumbnail_url"
+                                    :src="video.thumbnail_url || `https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`"
                                     :alt="video.titulo"
                                     class="w-full h-full object-cover"
-                                    @error="$event.target.src = '/images/video-placeholder.svg'"
+                                    @error="handleThumbnailError"
+                                    @load="console.log('✅ Thumbnail carregou:', $event.target.src)"
                                 />
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-colors">
                                     <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
@@ -112,8 +192,8 @@ const formatarData = (data) => {
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded">
-                                    ▶️ Clique para assistir no YouTube
+                                <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
+                                    {{ playerError ? '⚠️ Player bloqueado - ' : '' }}▶️ Clique para assistir no YouTube
                                 </div>
                             </div>
                             

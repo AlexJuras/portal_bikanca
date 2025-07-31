@@ -21,6 +21,12 @@ const props = defineProps({
     },
 });
 
+// Função para lidar com erros de thumbnail
+const handleThumbnailError = (event) => {
+    console.error('Erro ao carregar thumbnail na listagem:', event);
+    event.target.src = '/images/video-placeholder.svg';
+};
+
 // Função para formatar duração
 const formatarDuracao = (duracao) => {
     if (!duracao) return "N/A";
@@ -87,11 +93,12 @@ const formatarVisualizacoes = (views) => {
                                 <!-- Thumbnail -->
                                 <div class="relative aspect-video bg-gray-100">
                                     <img 
-                                        :src="video.thumbnail_url" 
+                                        :src="video.thumbnail_url || `https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`" 
                                         :alt="video.titulo"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         loading="lazy"
-                                        @error="$event.target.src = '/images/video-placeholder.svg'"
+                                        @error="handleThumbnailError"
+                                        @load="console.log('✅ Thumbnail Index carregou:', $event.target.src)"
                                     />
                                     
                                     <!-- Play Button -->

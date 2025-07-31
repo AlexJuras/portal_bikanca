@@ -132,6 +132,11 @@
                                 Data
                             </th>
                             <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                                Homepage
+                            </th>
+                            <th
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32"
                             >
                                 Ações
@@ -245,6 +250,27 @@
                                 class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"
                             >
                                 {{ formatDate(noticia.updated_at) }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        class="sr-only peer"
+                                        :checked="noticia.destaque_home"
+                                        @change="toggleDestaque(noticia)"
+                                        :disabled="atualizandoDestaque === noticia.id"
+                                    >
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <span v-if="atualizandoDestaque === noticia.id" class="ml-2 text-xs text-gray-500">
+                                        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </span>
+                                    <span v-else class="ml-2 text-xs text-gray-600">
+                                        {{ noticia.destaque_home ? 'Sim' : 'Não' }}
+                                    </span>
+                                </label>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex justify-center space-x-2">
@@ -500,6 +526,7 @@ const noticiaParaExcluir = ref(null);
 const excluindo = ref(false);
 const activeDropdown = ref(null);
 const atualizandoStatus = ref(false);
+const atualizandoDestaque = ref(null);
 
 // Opções de status
 const statusOptions = [
@@ -583,6 +610,43 @@ const alterarStatus = async (noticia, novoStatus) => {
         console.error('Erro ao alterar status:', error);
         alert('Erro ao alterar status. Tente novamente.');
         atualizandoStatus.value = false;
+    }
+};
+
+// Toggle destaque homepage
+const toggleDestaque = async (noticia) => {
+    if (atualizandoDestaque.value === noticia.id) {
+        return;
+    }
+
+    atualizandoDestaque.value = noticia.id;
+    
+    // Atualizar o estado localmente para feedback imediato
+    const destaqueAnterior = noticia.destaque_home;
+    noticia.destaque_home = !noticia.destaque_home;
+    
+    try {
+        await router.patch(route('admin.noticias.update', noticia.id), {
+            destaque_home: noticia.destaque_home
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            onError: (errors) => {
+                // Reverter o estado em caso de erro
+                noticia.destaque_home = destaqueAnterior;
+                console.error('Erro ao alterar destaque da homepage:', errors);
+                alert('Erro ao alterar destaque da homepage. Tente novamente.');
+            },
+            onFinish: () => {
+                atualizandoDestaque.value = null;
+            }
+        });
+    } catch (error) {
+        // Reverter o estado em caso de erro
+        noticia.destaque_home = destaqueAnterior;
+        console.error('Erro ao alterar destaque da homepage:', error);
+        alert('Erro ao alterar destaque da homepage. Tente novamente.');
+        atualizandoDestaque.value = null;
     }
 };
 

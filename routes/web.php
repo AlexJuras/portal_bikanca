@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoticiaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TagController;
@@ -16,7 +17,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ====== PÁGINA INICIAL ======
-Route::inertia('/', 'Inicio', ['user' => 'Bikanca']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // ====== PAINEL ADMINISTRATIVO ======
 Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(function () {

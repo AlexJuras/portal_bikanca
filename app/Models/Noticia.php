@@ -18,6 +18,7 @@ class Noticia extends Model
         'resumo',
         'conteudo',
         'status',
+        'destaque_home',
         'visualizacoes',
         'layout',
         'autor_id',
@@ -27,6 +28,7 @@ class Noticia extends Model
 
     protected $casts = [
         'publicada_em' => 'datetime',
+        'destaque_home' => 'boolean',
     ];
 
     /**

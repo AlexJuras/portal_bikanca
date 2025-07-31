@@ -164,6 +164,19 @@ class NoticiaController extends Controller
             return redirect()->back()->with('success', 'Status atualizado com sucesso!');
         }
 
+        // Se for apenas atualização de destaque da homepage (requisição PATCH)
+        if ($request->isMethod('patch') && $request->has('destaque_home') && count($request->all()) == 1) {
+            $request->validate([
+                'destaque_home' => 'required|boolean',
+            ]);
+
+            $noticia->update([
+                'destaque_home' => $request->destaque_home,
+            ]);
+
+            return redirect()->back()->with('success', 'Destaque da homepage atualizado com sucesso!');
+        }
+
         // Atualização completa da notícia
         $request->validate([
             'titulo' => 'required|string|max:255',

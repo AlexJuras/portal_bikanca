@@ -1,0 +1,6 @@
+<svg width="300" height="225" viewBox="0 0 300 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="300" height="225" fill="#f3f4f6"/>
+<circle cx="150" cy="112.5" r="30" fill="#9ca3af"/>
+<path d="M142.5 97.5L172.5 112.5L142.5 127.5V97.5Z" fill="white"/>
+<text x="150" y="165" text-anchor="middle" fill="#6b7280" font-family="Arial, sans-serif" font-size="14">Vídeo</text>
+</svg>

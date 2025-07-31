@@ -96,10 +96,11 @@ class Midia extends Model
         }
         
         if ($this->isVideo() && $this->youtube_id) {
-            return "https://img.youtube.com/vi/{$this->youtube_id}/maxresdefault.jpg";
+            // Usar hqdefault.jpg que é mais confiável que maxresdefault.jpg
+            return "https://img.youtube.com/vi/{$this->youtube_id}/hqdefault.jpg";
         }
         
-        return '/images/video-placeholder.png';
+        return '/images/video-placeholder.svg';
     }
 
     public function getEmbedUrlAttribute()

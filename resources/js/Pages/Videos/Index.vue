@@ -66,13 +66,8 @@ const formatarVisualizacoes = (views) => {
                         </p>
                     </div>
                     
-                    <!-- Botão Admin -->
-                    <Link 
-                        :href="route('videos.create')" 
-                        class="bg-azul-oxford hover:bg-azul-noite text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-                    >
-                        ➕ Adicionar Vídeo
-                    </Link>
+                    <!-- Botão Admin (removido da área pública) -->
+                    <!-- O botão de criar vídeos deve estar apenas na área admin -->
                 </div>
             </div>
         </section>
@@ -96,6 +91,7 @@ const formatarVisualizacoes = (views) => {
                                         :alt="video.titulo"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         loading="lazy"
+                                        @error="$event.target.src = '/images/video-placeholder.svg'"
                                     />
                                     
                                     <!-- Play Button -->
@@ -176,6 +172,7 @@ const formatarVisualizacoes = (views) => {
                                             :alt="video.titulo"
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                             loading="lazy"
+                                            @error="$event.target.src = '/images/video-placeholder.svg'"
                                         />
                                         <div class="absolute inset-0 flex items-center justify-center">
                                             <div class="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
@@ -210,5 +207,6 @@ const formatarVisualizacoes = (views) => {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-clamp: 2;
 }
 </style>

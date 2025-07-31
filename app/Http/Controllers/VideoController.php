@@ -99,6 +99,7 @@ class VideoController extends Controller
             'autor_id' => 'required|exists:autors,id',
             'duracao' => 'nullable|string',
             'status' => 'required|in:rascunho,publicada',
+            'thumbnail' => 'nullable|url',
         ]);
 
         // Definir tipo como vídeo
@@ -108,6 +109,14 @@ class VideoController extends Controller
         // Definir data de publicação se status for publicada
         if ($validated['status'] === 'publicada') {
             $validated['publicada_em'] = now();
+        }
+
+        // Se não foi fornecida uma thumbnail personalizada, usar a padrão do YouTube
+        if (empty($validated['thumbnail'])) {
+            $youtubeId = $this->extractYoutubeId($validated['url_externa']);
+            if ($youtubeId) {
+                $validated['thumbnail'] = "https://img.youtube.com/vi/{$youtubeId}/maxresdefault.jpg";
+            }
         }
 
         Midia::create($validated);
@@ -148,11 +157,20 @@ class VideoController extends Controller
             'autor_id' => 'required|exists:autors,id',
             'duracao' => 'nullable|string',
             'status' => 'required|in:rascunho,publicada',
+            'thumbnail' => 'nullable|url',
         ]);
 
         // Definir data de publicação se status mudou para publicada
         if ($validated['status'] === 'publicada' && $midia->status !== 'publicada') {
             $validated['publicada_em'] = now();
+        }
+
+        // Se a URL do vídeo mudou e não há thumbnail personalizada, usar a padrão do YouTube
+        if ($validated['url_externa'] !== $midia->url_externa && empty($validated['thumbnail'])) {
+            $youtubeId = $this->extractYoutubeId($validated['url_externa']);
+            if ($youtubeId) {
+                $validated['thumbnail'] = "https://img.youtube.com/vi/{$youtubeId}/maxresdefault.jpg";
+            }
         }
 
         $midia->update($validated);
@@ -189,5 +207,15 @@ class VideoController extends Controller
             'videos' => $videos,
             'categoria' => $categoria,
         ]);
+    }
+
+    /**
+     * Extrai o ID do vídeo YouTube da URL
+     */
+    private function extractYoutubeId($url)
+    {
+        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/';
+        preg_match($pattern, $url, $matches);
+        return $matches[1] ?? null;
     }
 }

@@ -53,24 +53,11 @@ const formatarData = (data) => {
                     <span class="mx-2">></span>
                     <span class="text-azul-oxford">{{ video.titulo }}</span>
                 </nav>
-                <!-- Botões de ação -->
-                <div class="flex gap-2 mb-4">
-                    <Link
-                        :href="route('videos.edit', video.id)"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                    >
-                        ✏️ Editar
-                    </Link>
-                    <Link
-                        :href="route('videos.destroy', video.id)"
-                        method="delete"
-                        as="button"
-                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
-                        onclick="return confirm('Tem certeza que deseja excluir este vídeo?')"
-                    >
-                        🗑️ Excluir
-                    </Link>
-                </div>
+                
+                <!-- Título do Vídeo -->
+                <h1 class="text-3xl font-bold text-azul-oxford mb-4">
+                    {{ video.titulo }}
+                </h1>
             </div>
         </section>
         <!-- Conteúdo Principal -->

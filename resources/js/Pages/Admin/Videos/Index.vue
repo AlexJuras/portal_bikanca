@@ -99,9 +99,10 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-12 w-12 mr-3">
                                         <img 
-                                            :src="video.thumbnail || '/logo.png'" 
+                                            :src="video.thumbnail_url || '/images/video-placeholder.svg'" 
                                             :alt="video.titulo"
                                             class="h-12 w-12 object-cover rounded-lg"
+                                            @error="$event.target.src = '/images/video-placeholder.svg'"
                                         >
                                     </div>
                                     <div class="max-w-xs">
@@ -179,9 +180,10 @@
                 <div v-for="video in videos.data" :key="video.id" class="border-b border-gray-200 p-4">
                     <div class="flex items-start space-x-3">
                         <img 
-                            :src="video.thumbnail || '/logo.png'" 
+                            :src="video.thumbnail_url || '/images/video-placeholder.svg'" 
                             :alt="video.titulo"
                             class="h-16 w-16 object-cover rounded-lg flex-shrink-0"
+                            @error="$event.target.src = '/images/video-placeholder.svg'"
                         >
                         <div class="flex-1 min-w-0">
                             <h3 class="text-sm font-medium text-gray-900 line-clamp-2">

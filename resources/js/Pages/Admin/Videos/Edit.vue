@@ -25,6 +25,7 @@ const form = useForm({
     titulo: props.video.titulo,
     descricao: props.video.descricao,
     url_externa: props.video.url_externa,
+    thumbnail: props.video.thumbnail || '',
     categoria_id: props.video.categoria_id,
     autor_id: props.video.autor_id,
     duracao: props.video.duracao,
@@ -179,6 +180,26 @@ onMounted(() => {
                         ></textarea>
                         <div v-if="form.errors.descricao" class="text-red-600 text-sm mt-1">
                             {{ form.errors.descricao }}
+                        </div>
+                    </div>
+
+                    <!-- Thumbnail Personalizada -->
+                    <div>
+                        <label for="thumbnail" class="block text-sm font-medium text-gray-700 mb-2">
+                            Thumbnail Personalizada (Opcional)
+                        </label>
+                        <input 
+                            id="thumbnail"
+                            v-model="form.thumbnail"
+                            type="url"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-azul-oxford focus:border-azul-oxford"
+                            placeholder="https://exemplo.com/thumbnail.jpg"
+                        />
+                        <p class="text-gray-500 text-sm mt-1">
+                            Se não fornecida, será usada a thumbnail padrão do YouTube
+                        </p>
+                        <div v-if="form.errors.thumbnail" class="text-red-600 text-sm mt-1">
+                            {{ form.errors.thumbnail }}
                         </div>
                     </div>
 

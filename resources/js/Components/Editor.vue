@@ -1,6 +1,6 @@
 <script setup>
 import { useEditor, EditorContent } from "@tiptap/vue-3";
-import { ref } from "vue";
+import { ref, useAttrs } from "vue";
 import Placeholder from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -29,6 +29,11 @@ import AlignRightIcon from "vue-material-design-icons/FormatAlignRight.vue";
 import AlignJustifyIcon from "vue-material-design-icons/FormatAlignJustify.vue";
 import HighlightIcon from "vue-material-design-icons/Marker.vue";
 
+// Desabilitar herança automática de atributos
+defineOptions({
+    inheritAttrs: false
+});
+
 const props = defineProps({
     modelValue: {
         type: String,
@@ -44,6 +49,7 @@ const props = defineProps({
     },
 });
 
+const attrs = useAttrs();
 const emit = defineEmits(["update:modelValue"]);
 
 // Estados para modais
@@ -57,7 +63,10 @@ const linkText = ref('');
 const editor = useEditor({
     content: props.modelValue,
     extensions: [
-        StarterKit,
+        StarterKit.configure({
+            // Desabilitar link do StarterKit se estiver incluído
+            link: false,
+        }),
         Underline,
         Image.configure({
             inline: true,
@@ -153,7 +162,7 @@ const handleImageUpload = (event) => {
 </script>
 
 <template>
-    <div class="border rounded-lg">
+    <div v-bind="attrs" class="border rounded-lg">
         <section
             v-if="editor"
             class="buttons flex text-azul-oxford items-center flex-wrap gap-2 border-b border-gray-200 p-4 bg-gray-50"

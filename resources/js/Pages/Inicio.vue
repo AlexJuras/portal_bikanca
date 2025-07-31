@@ -179,6 +179,13 @@ onUnmounted(() => {
                             class="absolute inset-0 transition-opacity duration-500"
                             :class="{ 'opacity-100': index === currentSlide, 'opacity-0': index !== currentSlide }"
                         >
+                            <!-- Link para toda a área do slide -->
+                            <Link 
+                                :href="`/noticias/${noticia.slug || noticia.id}`" 
+                                class="absolute inset-0 z-10 cursor-pointer"
+                                :title="`Ler: ${noticia.titulo}`"
+                            ></Link>
+                            
                             <!-- Imagem de fundo -->
                             <div 
                                 class="absolute inset-0 bg-cover bg-center"
@@ -189,7 +196,7 @@ onUnmounted(() => {
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             
                             <!-- Conteúdo -->
-                            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white z-20 pointer-events-none">
                                 <div class="max-w-4xl">
                                     <div class="flex items-center space-x-4 mb-4">
                                         <span class="bg-azul-celeste px-3 py-1 rounded-full text-sm font-medium">
@@ -200,11 +207,9 @@ onUnmounted(() => {
                                         </span>
                                     </div>
                                     
-                                    <Link :href="`/noticias/${noticia.slug || noticia.id}`">
-                                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight hover:text-celeste transition-colors cursor-pointer">
-                                            {{ noticia.titulo }}
-                                        </h2>
-                                    </Link>
+                                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight hover:text-celeste transition-colors">
+                                        {{ noticia.titulo }}
+                                    </h2>
                                     
                                     <p class="text-lg md:text-xl text-gray-200 mb-6 line-clamp-2">
                                         {{ noticia.resumo }}
@@ -217,13 +222,6 @@ onUnmounted(() => {
                                                 <p class="opacity-75">Jornalista</p>
                                             </div>
                                         </div>
-                                        
-                                        <Link 
-                                            :href="`/noticias/${noticia.slug || noticia.id}`"
-                                            class="bg-azul-oxford hover:bg-azul-noite px-6 py-3 rounded-lg font-medium text-white transition-all transform hover:scale-105"
-                                        >
-                                            Ler Matéria
-                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +229,7 @@ onUnmounted(() => {
                     </div>
                     
                     <!-- Controles do Carrossel -->
-                    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30">
                         <button 
                             v-for="(noticia, index) in noticiasCarrossel" 
                             :key="`dot-${noticia.id}`"
@@ -244,7 +242,7 @@ onUnmounted(() => {
                     <!-- Botões Prev/Next -->
                     <button 
                         @click="prevSlide"
-                        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all"
+                        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-30"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -253,7 +251,7 @@ onUnmounted(() => {
                     
                     <button 
                         @click="nextSlide"
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all"
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition-all z-30"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -396,7 +394,6 @@ onUnmounted(() => {
             <section class="mb-12">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-3xl font-bold text-azul-oxford flex items-center gap-2">
-                        <span>🎥</span>
                         <span>Vídeos em Destaque</span>
                     </h2>
                     <Link 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Noticia;
 use App\Models\Categoria;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,6 +30,14 @@ class HomeController extends Controller
             ->take(8) // Aumentado de 5 para 8
             ->get();
 
+        // Buscar os 3 vídeos mais recentes registrados no portal
+        $videosDestaque = Video::with(['categoria', 'autor'])
+            ->videos() // Filtrar apenas registros do tipo 'video'
+            ->where('status', 'publicada')
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
         // Buscar todas as categorias que têm notícias publicadas
         $categorias = Categoria::whereHas('noticias', function ($query) {
                 $query->where('status', 'publicada');
@@ -52,6 +61,7 @@ class HomeController extends Controller
             'noticiasDestaque' => $noticiasDestaque,
             'noticiasCarrossel' => $noticiasCarrossel,
             'noticiasMaisLidas' => $noticiasMaisLidas,
+            'videosDestaque' => $videosDestaque,
             'categorias' => $categorias,
             'noticiasPorCategoria' => $noticiasPorCategoria,
         ]);

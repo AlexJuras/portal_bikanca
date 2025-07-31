@@ -585,66 +585,6 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <!-- Filtro Rápido por Categoria -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
-                            <span class="text-2xl mr-2">📂</span>
-                            Categorias
-                        </h3>
-                        <div class="space-y-3">
-                            <button
-                                @click="filterByCategory('all')"
-                                :class="[
-                                    'flex items-center justify-between w-full p-3 rounded-lg transition-colors text-left',
-                                    categoriaSelecionada === 'all'
-                                        ? 'bg-azul-oxford text-white'
-                                        : 'hover:bg-gray-50',
-                                ]"
-                            >
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 rounded-full bg-azul-lazuli"></div>
-                                    <span class="font-medium">Todas</span>
-                                </div>
-                                <span
-                                    :class="[
-                                        'text-sm px-2 py-1 rounded-full',
-                                        categoriaSelecionada === 'all'
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-gray-100 text-gray-700'
-                                    ]"
-                                >
-                                    {{ props.noticias.data.length }}
-                                </span>
-                            </button>
-                            <button
-                                v-for="categoria in categorias"
-                                :key="categoria.id"
-                                @click="filterByCategory(categoria.id)"
-                                :class="[
-                                    'flex items-center justify-between w-full p-3 rounded-lg transition-colors text-left',
-                                    categoriaSelecionada === categoria.id
-                                        ? 'bg-azul-oxford text-white'
-                                        : 'hover:bg-gray-50',
-                                ]"
-                            >
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-3 h-3 rounded-full bg-azul-lazuli"></div>
-                                    <span class="font-medium">{{ categoria.nome }}</span>
-                                </div>
-                                <span
-                                    :class="[
-                                        'text-sm px-2 py-1 rounded-full',
-                                        categoriaSelecionada === categoria.id
-                                            ? 'bg-white/20 text-white'
-                                            : 'bg-gray-100 text-gray-700'
-                                    ]"
-                                >
-                                    {{ categoria.count || 0 }}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Espaço para Propaganda - Sidebar Rodapé -->
                     <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                         <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>

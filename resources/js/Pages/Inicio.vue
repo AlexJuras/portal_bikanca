@@ -86,7 +86,7 @@ onUnmounted(() => {
                             <!-- Imagem de fundo -->
                             <div 
                                 class="absolute inset-0 bg-cover bg-center"
-                                :style="{ backgroundImage: `url(${noticia.imagem_capa || '/images/news-placeholder.jpg'})` }"
+                                :style="{ backgroundImage: `url(${noticia.capa?.caminho || '/logo.png'})` }"
                             ></div>
                             
                             <!-- Overlay gradient -->
@@ -215,7 +215,7 @@ onUnmounted(() => {
                                     <!-- Imagem -->
                                     <div class="relative aspect-video bg-gray-200">
                                         <img 
-                                            :src="noticia.imagem_capa || '/images/news-placeholder.jpg'"
+                                            :src="noticia.capa?.caminho || '/logo.png'"
                                             :alt="noticia.titulo"
                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             loading="lazy"
@@ -295,8 +295,8 @@ onUnmounted(() => {
                                         </div>
                                     </Link>
                                     <img 
-                                        v-if="noticia.imagem_capa"
-                                        :src="noticia.imagem_capa"
+                                        v-if="noticia.capa?.caminho"
+                                        :src="noticia.capa.caminho"
                                         :alt="noticia.titulo"
                                         class="w-16 h-12 object-cover rounded"
                                         loading="lazy"
@@ -334,8 +334,8 @@ onUnmounted(() => {
                                         </div>
                                     </Link>
                                     <img 
-                                        v-if="noticia.imagem_capa"
-                                        :src="noticia.imagem_capa"
+                                        v-if="noticia.capa?.caminho"
+                                        :src="noticia.capa.caminho"
                                         :alt="noticia.titulo"
                                         class="w-16 h-12 object-cover rounded"
                                         loading="lazy"

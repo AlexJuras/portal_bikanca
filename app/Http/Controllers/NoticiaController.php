@@ -15,12 +15,12 @@ class NoticiaController extends Controller
 {
     public function index()
     {
-        $noticias = Noticia::with('autor', 'categoria', 'tags', 'imagem_capa')
+        $noticias = Noticia::with('autor', 'categoria', 'tags', 'capa')
             ->publicadas()
             ->latest('publicada_em')
             ->paginate(10);
 
-        $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
+        $maisLidas = Noticia::with('autor', 'categoria', 'capa')
             ->publicadas()
             ->orderBy('visualizacoes', 'desc')
             ->limit(5)
@@ -34,7 +34,7 @@ class NoticiaController extends Controller
 
     public function admin(Request $request)
     {
-        $query = Noticia::with(['autor', 'categoria', 'imagem_capa'])
+        $query = Noticia::with(['autor', 'categoria', 'capa'])
             ->latest('updated_at');
 
         // Aplicar filtro de pesquisa se fornecido

@@ -77,7 +77,7 @@ class Noticia extends Model
         return $this->belongsToMany(Tag::class, 'noticia_tag');
     }
 
-    public function imagem_capa(): BelongsTo
+    public function capa(): BelongsTo
     {
         return $this->belongsTo(Midia::class, 'imagem_capa');
     }

@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function index()
     {
         // Buscar notícias em destaque (marcadas para aparecer na home)
-        $noticiasDestaque = Noticia::with(['categoria', 'autor'])
+        $noticiasDestaque = Noticia::with(['categoria', 'autor', 'capa'])
             ->where('status', 'publicada')
             ->where('destaque_home', true)
             ->orderBy('publicada_em', 'desc')
@@ -23,7 +23,7 @@ class HomeController extends Controller
         $noticiasCarrossel = $noticiasDestaque->take(4);
 
         // Buscar notícias recentes por categoria para as seções laterais
-        $noticiasPolitica = Noticia::with(['categoria', 'autor'])
+        $noticiasPolitica = Noticia::with(['categoria', 'autor', 'capa'])
             ->whereHas('categoria', function ($query) {
                 $query->where('nome', 'like', '%Política%');
             })
@@ -32,7 +32,7 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $noticiasEconomia = Noticia::with(['categoria', 'autor'])
+        $noticiasEconomia = Noticia::with(['categoria', 'autor', 'capa'])
             ->whereHas('categoria', function ($query) {
                 $query->where('nome', 'like', '%Economia%');
             })
@@ -41,7 +41,7 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $noticiasEsporte = Noticia::with(['categoria', 'autor'])
+        $noticiasEsporte = Noticia::with(['categoria', 'autor', 'capa'])
             ->whereHas('categoria', function ($query) {
                 $query->where('nome', 'like', '%Esporte%');
             })
@@ -51,7 +51,7 @@ class HomeController extends Controller
             ->get();
 
         // Buscar notícias mais lidas (baseado em visualizações)
-        $noticiasMaisLidas = Noticia::with(['categoria', 'autor'])
+        $noticiasMaisLidas = Noticia::with(['categoria', 'autor', 'capa'])
             ->where('status', 'publicada')
             ->orderBy('visualizacoes', 'desc')
             ->take(5)

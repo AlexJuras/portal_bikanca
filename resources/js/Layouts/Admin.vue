@@ -154,6 +154,21 @@
                                     </svg>
                                     Autores
                                 </Link>
+
+                                <!-- Usuários -->
+                                <Link
+                                    :href="route('admin.users.index')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/users')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                    </svg>
+                                    Usuários
+                                </Link>
                             </div>
                         </div>
 
@@ -282,25 +297,27 @@
         </header>
 
         <!-- Breadcrumb -->
-        <div class="bg-white border-b border-gray-200">
+        <div class="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between py-3">
+                <div class="flex items-center justify-between py-4">
                     <nav class="flex" aria-label="Breadcrumb">
-                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-2">
                             <li class="inline-flex items-center">
-                                <Link href="/admin" class="text-gray-500 hover:text-azul-lazuli transition-colors">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L9 5.414V17a1 1 0 102 0V5.414l5.293 5.293a1 1 0 001.414-1.414l-7-7z"/>
-                                    </svg>
-                                    Admin
+                                <Link href="/admin" class="group flex items-center text-gray-600 hover:text-azul-oxford transition-colors">
+                                    <div class="flex items-center justify-center w-8 h-8 bg-azul-oxford text-white rounded-lg mr-3 group-hover:bg-azul-noite transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="font-semibold">Painel Admin</span>
                                 </Link>
                             </li>
                             <li v-if="currentPageName !== 'Dashboard'">
                                 <div class="flex items-center">
-                                    <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-5 h-5 text-gray-300 mx-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                                     </svg>
-                                    <span class="ml-1 font-medium text-azul-oxford">{{ currentPageName }}</span>
+                                    <span class="text-lg font-semibold text-azul-oxford">{{ currentPageName }}</span>
                                 </div>
                             </li>
                         </ol>

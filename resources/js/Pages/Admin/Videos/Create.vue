@@ -1,9 +1,9 @@
 <script setup>
 import { ref, reactive } from "vue";
-import Principal from "@/Layouts/Principal.vue";
+import Admin from "@/Layouts/Admin.vue";
 import { Link, useForm } from "@inertiajs/vue3";
 
-defineOptions({ layout: Principal });
+defineOptions({ layout: Admin });
 
 const props = defineProps({
     categorias: {

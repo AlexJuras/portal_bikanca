@@ -69,22 +69,6 @@ const submit = () => {
         <!-- Cabeçalho da Página -->
         <section class="bg-white shadow-sm border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Breadcrumb -->
-                <nav class="text-sm text-gray-600 mb-4">
-                    <Link
-                        href="/"
-                        class="hover:text-azul-oxford transition-colors"
-                        >Home</Link
-                    >
-                    <span class="mx-2">></span>
-                    <Link
-                        href="/videos"
-                        class="hover:text-azul-oxford transition-colors"
-                        >Vídeos</Link
-                    >
-                    <span class="mx-2">></span>
-                    <span class="text-azul-oxford">Adicionar Vídeo</span>
-                </nav>
                 <!-- Título -->
                 <div>
                     <h1

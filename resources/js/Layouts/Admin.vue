@@ -302,6 +302,7 @@
                 <div class="flex items-center justify-between py-4">
                     <nav class="flex" aria-label="Breadcrumb">
                         <ol class="inline-flex items-center space-x-1 md:space-x-2">
+                            <!-- Home -->
                             <li class="inline-flex items-center">
                                 <Link href="/admin" class="group flex items-center text-gray-600 hover:text-azul-oxford transition-colors">
                                     <div class="flex items-center justify-center w-8 h-8 bg-azul-oxford text-white rounded-lg mr-3 group-hover:bg-azul-noite transition-colors">
@@ -312,12 +313,36 @@
                                     <span class="font-semibold">Painel Admin</span>
                                 </Link>
                             </li>
-                            <li v-if="currentPageName !== 'Dashboard'">
+                            
+                            <!-- Seção Principal -->
+                            <li v-if="getBreadcrumbSection() && currentPageName !== 'Dashboard'">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 text-gray-300 mx-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                                     </svg>
-                                    <span class="text-lg font-semibold text-azul-oxford">{{ currentPageName }}</span>
+                                    <Link 
+                                        v-if="getBreadcrumbSection().url && !isOnSectionIndex()"
+                                        :href="getBreadcrumbSection().url" 
+                                        class="text-gray-600 hover:text-azul-oxford transition-colors font-medium"
+                                    >
+                                        {{ getBreadcrumbSection().name }}
+                                    </Link>
+                                    <span 
+                                        v-else
+                                        class="text-gray-600 font-medium"
+                                    >
+                                        {{ getBreadcrumbSection().name }}
+                                    </span>
+                                </div>
+                            </li>
+                            
+                            <!-- Página Específica -->
+                            <li v-if="!isOnSectionIndex() && currentPageName !== 'Dashboard'">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-300 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-lg font-semibold text-azul-oxford">{{ getSpecificPageName() }}</span>
                                 </div>
                             </li>
                         </ol>
@@ -325,6 +350,17 @@
                     
                     <!-- Ações da Página Atual -->
                     <div class="flex items-center space-x-2">
+                        <Link 
+                            v-if="currentPageName === 'Usuários'" 
+                            :href="route('admin.users.create')"
+                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-azul-lazuli hover:bg-blue-700 transition-colors"
+                        >
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Novo Usuário
+                        </Link>
+                        
                         <Link 
                             v-if="currentPageName === 'Notícias'" 
                             :href="route('admin.noticias.create')"
@@ -574,16 +610,130 @@ const logout = () => {
 // Determinar o nome da página atual
 const currentPageName = computed(() => {
     const url = page.url;
+    const routeName = page.props?.route?.current || '';
     
     if (url === '/admin') return 'Dashboard';
-    if (url.startsWith('/admin/noticias')) return 'Notícias';
-    if (url.startsWith('/admin/videos')) return 'Vídeos';
-    if (url.startsWith('/admin/categorias')) return 'Categorias';
-    if (url.startsWith('/admin/tags')) return 'Tags';
-    if (url.startsWith('/admin/autores')) return 'Autores';
+    
+    // Usuários
+    if (url.startsWith('/admin/users')) {
+        if (url === '/admin/users') return 'Usuários';
+        if (url.includes('/create')) return 'Criar Usuário';
+        if (url.includes('/edit')) return 'Editar Usuário';
+        if (url.match(/\/admin\/users\/\d+$/)) return 'Detalhes do Usuário';
+        return 'Usuários';
+    }
+    
+    // Notícias
+    if (url.startsWith('/admin/noticias')) {
+        if (url === '/admin/noticias') return 'Notícias';
+        if (url.includes('/create')) return 'Criar Notícia';
+        if (url.includes('/edit')) return 'Editar Notícia';
+        if (url.match(/\/admin\/noticias\/\d+$/)) return 'Visualizar Notícia';
+        return 'Notícias';
+    }
+    
+    // Vídeos
+    if (url.startsWith('/admin/videos')) {
+        if (url === '/admin/videos') return 'Vídeos';
+        if (url.includes('/create')) return 'Criar Vídeo';
+        if (url.includes('/edit')) return 'Editar Vídeo';
+        if (url.match(/\/admin\/videos\/\d+$/)) return 'Visualizar Vídeo';
+        return 'Vídeos';
+    }
+    
+    // Categorias
+    if (url.startsWith('/admin/categorias')) {
+        if (url === '/admin/categorias') return 'Categorias';
+        if (url.includes('/create')) return 'Criar Categoria';
+        if (url.includes('/edit')) return 'Editar Categoria';
+        return 'Categorias';
+    }
+    
+    // Tags
+    if (url.startsWith('/admin/tags')) {
+        if (url === '/admin/tags') return 'Tags';
+        if (url.includes('/create')) return 'Criar Tag';
+        if (url.includes('/edit')) return 'Editar Tag';
+        return 'Tags';
+    }
+    
+    // Autores
+    if (url.startsWith('/admin/autores')) {
+        if (url === '/admin/autores') return 'Autores';
+        if (url.includes('/create')) return 'Criar Autor';
+        if (url.includes('/edit')) return 'Editar Autor';
+        return 'Autores';
+    }
     
     return 'Admin';
 });
+
+// Função para obter a seção principal do breadcrumb
+const getBreadcrumbSection = () => {
+    const url = page.url;
+    
+    if (url.startsWith('/admin/users')) {
+        return { name: 'Usuários', url: '/admin/users' };
+    }
+    if (url.startsWith('/admin/noticias')) {
+        return { name: 'Notícias', url: '/admin/noticias' };
+    }
+    if (url.startsWith('/admin/videos')) {
+        return { name: 'Vídeos', url: '/admin/videos' };
+    }
+    if (url.startsWith('/admin/categorias')) {
+        return { name: 'Categorias', url: '/admin/categorias' };
+    }
+    if (url.startsWith('/admin/tags')) {
+        return { name: 'Tags', url: '/admin/tags' };
+    }
+    if (url.startsWith('/admin/autores')) {
+        return { name: 'Autores', url: '/admin/autores' };
+    }
+    
+    return null;
+};
+
+// Verifica se está na página índice da seção
+const isOnSectionIndex = () => {
+    const url = page.url;
+    
+    return url === '/admin/users' ||
+           url === '/admin/noticias' ||
+           url === '/admin/videos' ||
+           url === '/admin/categorias' ||
+           url === '/admin/tags' ||
+           url === '/admin/autores';
+};
+
+// Obtém o nome específico da página atual
+const getSpecificPageName = () => {
+    const url = page.url;
+    
+    if (url.includes('/create')) {
+        if (url.includes('/users')) return 'Criar Usuário';
+        if (url.includes('/noticias')) return 'Criar Notícia';
+        if (url.includes('/videos')) return 'Criar Vídeo';
+        if (url.includes('/categorias')) return 'Criar Categoria';
+        if (url.includes('/tags')) return 'Criar Tag';
+        if (url.includes('/autores')) return 'Criar Autor';
+    }
+    
+    if (url.includes('/edit')) {
+        if (url.includes('/users')) return 'Editar Usuário';
+        if (url.includes('/noticias')) return 'Editar Notícia';
+        if (url.includes('/videos')) return 'Editar Vídeo';
+        if (url.includes('/categorias')) return 'Editar Categoria';
+        if (url.includes('/tags')) return 'Editar Tag';
+        if (url.includes('/autores')) return 'Editar Autor';
+    }
+    
+    if (url.match(/\/admin\/users\/\d+$/)) return 'Detalhes do Usuário';
+    if (url.match(/\/admin\/noticias\/\d+$/)) return 'Visualizar Notícia';
+    if (url.match(/\/admin\/videos\/\d+$/)) return 'Visualizar Vídeo';
+    
+    return currentPageName.value;
+};
 
 // Fecha os menus quando clica fora
 onClickOutside(userMenuRef, () => {

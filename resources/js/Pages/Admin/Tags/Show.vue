@@ -3,34 +3,6 @@
         <!-- Cabeçalho da Página -->
         <section class="bg-white shadow-sm border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <!-- Breadcrumb -->
-                <nav class="text-sm mb-6" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2">
-                        <li>
-                            <Link href="/admin" class="text-azul-lazuli hover:text-azul-oxford transition-colors flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                                </svg>
-                                Admin
-                            </Link>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <Link :href="route('admin.tags.index')" class="text-azul-lazuli hover:text-azul-oxford transition-colors">
-                                Tags
-                            </Link>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-azul-oxford font-medium">{{ tag.nome }}</span>
-                        </li>
-                    </ol>
-                </nav>
-
                 <!-- Cabeçalho da Tag -->
                 <div class="bg-gradient-to-r from-azul-oxford to-azul-lazuli text-white rounded-lg p-8">
                     <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">

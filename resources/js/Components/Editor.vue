@@ -8,6 +8,7 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
+import { FontFamily } from "@tiptap/extension-font-family";
 import { Color } from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
 import BoldIcon from "vue-material-design-icons/FormatBold.vue";
@@ -60,6 +61,26 @@ const imageAlt = ref('');
 const linkUrl = ref('');
 const linkText = ref('');
 
+// Estados para seleção de fonte
+const showFontDropdown = ref(false);
+const availableFonts = [
+    { name: 'Arial', value: 'Arial, sans-serif' },
+    { name: 'Helvetica', value: 'Helvetica, sans-serif' },
+    { name: 'Times New Roman', value: 'Times New Roman, serif' },
+    { name: 'Georgia', value: 'Georgia, serif' },
+    { name: 'Verdana', value: 'Verdana, sans-serif' },
+    { name: 'Tahoma', value: 'Tahoma, sans-serif' },
+    { name: 'Trebuchet MS', value: 'Trebuchet MS, sans-serif' },
+    { name: 'Impact', value: 'Impact, sans-serif' },
+    { name: 'Courier New', value: 'Courier New, monospace' },
+    { name: 'Lucida Console', value: 'Lucida Console, monospace' },
+    { name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' },
+    { name: 'Roboto', value: 'Roboto, sans-serif' },
+    { name: 'Open Sans', value: 'Open Sans, sans-serif' },
+    { name: 'Lato', value: 'Lato, sans-serif' },
+    { name: 'Montserrat', value: 'Montserrat, sans-serif' }
+];
+
 const editor = useEditor({
     content: props.modelValue,
     extensions: [
@@ -85,6 +106,9 @@ const editor = useEditor({
             types: ['heading', 'paragraph'],
         }),
         TextStyle,
+        FontFamily.configure({
+            types: ['textStyle'],
+        }),
         Color,
         Highlight.configure({
             HTMLAttributes: {
@@ -148,6 +172,26 @@ const removeLink = () => {
     editor.value.chain().focus().unsetLink().run();
 };
 
+// Funções para fonte
+const toggleFontDropdown = () => {
+    showFontDropdown.value = !showFontDropdown.value;
+};
+
+const setFontFamily = (fontValue) => {
+    editor.value.chain().focus().setFontFamily(fontValue).run();
+    showFontDropdown.value = false;
+};
+
+const getCurrentFont = () => {
+    if (!editor.value) return 'Arial';
+    const currentFont = editor.value.getAttributes('textStyle').fontFamily;
+    if (!currentFont) return 'Arial';
+    
+    // Encontrar a fonte na lista de fontes disponíveis
+    const font = availableFonts.find(f => f.value === currentFont);
+    return font ? font.name : currentFont.split(',')[0];
+};
+
 // Função para upload de arquivo de imagem
 const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -162,10 +206,11 @@ const handleImageUpload = (event) => {
 </script>
 
 <template>
-    <div v-bind="attrs" class="border rounded-lg">
+    <div v-bind="attrs" class="border rounded-lg" @click="showFontDropdown = false">
         <section
             v-if="editor"
             class="buttons flex text-azul-oxford items-center flex-wrap gap-2 border-b border-gray-200 p-4 bg-gray-50"
+            @click.stop
         >
             <!-- Formatação básica -->
             <div class="flex items-center gap-1 border-r border-gray-300 pr-2">
@@ -241,6 +286,41 @@ const handleImageUpload = (event) => {
                 >
                     H3
                 </button>
+            </div>
+
+            <!-- Seletor de Fonte -->
+            <div class="relative flex items-center gap-1 border-r border-gray-300 pr-2">
+                <button
+                    @click="toggleFontDropdown"
+                    class="p-2 rounded hover:bg-blue-100 transition-colors text-xs font-medium min-w-[100px] text-left flex items-center justify-between"
+                    title="Selecionar fonte"
+                >
+                    <span class="truncate">{{ getCurrentFont() }}</span>
+                    <svg class="w-3 h-3 ml-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                
+                <!-- Dropdown de fontes -->
+                <div
+                    v-if="showFontDropdown"
+                    @click.stop
+                    class="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-300 rounded-md shadow-xl z-50 max-h-72 overflow-y-auto"
+                >
+                    <div class="py-1">
+                        <button
+                            v-for="font in availableFonts"
+                            :key="font.value"
+                            @click="setFontFamily(font.value)"
+                            class="w-full text-left px-4 py-3 text-sm hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 flex items-center"
+                            :style="{ fontFamily: font.value }"
+                            :class="{ 'bg-blue-100 text-blue-800': getCurrentFont() === font.name }"
+                        >
+                            <span class="flex-1">{{ font.name }}</span>
+                            <span v-if="getCurrentFont() === font.name" class="text-blue-600 ml-2">✓</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Alinhamento -->

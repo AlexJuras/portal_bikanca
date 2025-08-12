@@ -18,6 +18,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.0.14",
         "@tiptap/extension-color": "^3.0.7",
+        "@tiptap/extension-font-family": "^3.1.0",
         "@tiptap/extension-highlight": "^3.0.7",
         "@tiptap/extension-image": "^3.0.7",
         "@tiptap/extension-link": "^3.0.7",

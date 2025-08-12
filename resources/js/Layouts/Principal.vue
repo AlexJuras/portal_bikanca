@@ -81,7 +81,7 @@ onUnmounted(() => {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #aeeeeeff;
+    background-color: #8a8eff;
     transition: width 0.3s ease;
 }
 
@@ -93,12 +93,12 @@ onUnmounted(() => {
 <template>
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
-        <header class="bg-gradient-to-b from-azul-oxford to-azul-noite shadow-lg">
+        <header class="bg-[#2122af] shadow-lg border-b-2 border-[#4c54ff]">
             <!-- Top Bar -->
-            <div class="bg-azul-noite py-2">
+            <div class="bg-[#4c54ff] py-2">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center text-sm">
-                        <div class="text-white">
+                        <div class="text-white font-medium">
                             <span>{{ dataAtual }}</span>
                         </div>
                     </div>
@@ -107,16 +107,11 @@ onUnmounted(() => {
 
             <!-- Main Header -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-20">
+                <div class="flex items-center justify-between h-24">
                     <!-- Logo -->
                     <div class="flex items-center">
-                        <Link href="/" class="flex items-center">
-                            <div class="bg-[url(/public/logo.png)] size-10 bg-cover bg-center"></div>
-                            <div class="text-2xl text-white font-bold hover:text-celeste hover:text-3xl duration-300">IKANCA</div>
-                            <div class="ml-2 text-xs text-white">
-                                <div>PORTAL DE</div>
-                                <div>NOTÍCIAS</div>
-                            </div>
+                        <Link href="/" class="flex items-center hover:scale-105 transition-transform duration-300">
+                            <div class="bg-[url(/public/logo.png)] w-22 h-22 bg-contain bg-center bg-no-repeat"></div>
                         </Link>
                     </div>
 
@@ -126,9 +121,9 @@ onUnmounted(() => {
                             <!-- Link para todas as notícias -->
                             <Link
                                 href="/noticias"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
+                                class="nav-link text-white hover:text-[#8a8eff] px-3 py-2 text-sm font-medium hover:scale-110"
                                 :class="{
-                                    'border-b-2 border-azul-celeste':
+                                    'border-b-2 border-[#8a8eff]':
                                         $page.url.startsWith('/noticias') && !$page.url.includes('/categoria/'),
                                 }"
                             >
@@ -140,9 +135,9 @@ onUnmounted(() => {
                                 v-for="categoria in categoriasVisiveis"
                                 :key="`nav-${categoria.id}`"
                                 :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
+                                class="nav-link text-white hover:text-[#8a8eff] px-3 py-2 text-sm font-medium hover:scale-110"
                                 :class="{
-                                    'border-b-2 border-azul-celeste':
+                                    'border-b-2 border-[#8a8eff]':
                                         $page.url.includes(`/noticias/categoria/${categoria.slug || categoria.id}`),
                                 }"
                             >
@@ -157,7 +152,7 @@ onUnmounted(() => {
                                 @mouseleave="esconderDropdown"
                             >
                                 <button
-                                    class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium flex items-center hover:scale-120"
+                                    class="nav-link text-white hover:text-[#8a8eff] px-3 py-2 text-sm font-medium flex items-center hover:scale-110"
                                 >
                                     Mais Categorias
                                     <svg
@@ -181,7 +176,7 @@ onUnmounted(() => {
                                             v-for="categoria in categoriasDropdown"
                                             :key="`dropdown-${categoria.id}`"
                                             :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
-                                            class="block px-4 py-2 text-sm text-azul-oxford hover:bg-celeste hover:text-white transition-colors"
+                                            class="block px-4 py-2 text-sm text-[#2122af] hover:bg-[#8a8eff] hover:text-white transition-colors"
                                         >
                                             {{ categoria.nome }}
                                         </Link>
@@ -192,9 +187,9 @@ onUnmounted(() => {
                             <!-- Links fixos adicionais -->
                             <Link
                                 href="/videos"
-                                class="nav-link text-white hover:text-celeste px-3 py-2 text-sm font-medium hover:scale-120"
+                                class="nav-link text-white hover:text-[#8a8eff] px-3 py-2 text-sm font-medium hover:scale-110"
                                 :class="{
-                                    'border-b-2 border-azul-celeste':
+                                    'border-b-2 border-[#8a8eff]':
                                         $page.url.startsWith('/videos'),
                                 }"
                             >
@@ -207,7 +202,7 @@ onUnmounted(() => {
                     <div class="md:hidden mobile-menu-container">
                         <button
                             @click="toggleMobileMenu"
-                            class="text-white hover:text-celeste p-2 focus:outline-none focus:ring-2 focus:ring-celeste relative z-10"
+                            class="text-white hover:text-[#8a8eff] p-2 focus:outline-none focus:ring-2 focus:ring-[#8a8eff] relative z-10"
                             type="button"
                             aria-label="Abrir menu"
                         >
@@ -250,16 +245,16 @@ onUnmounted(() => {
             <!-- Mobile Navigation -->
             <div 
                 v-show="mostraMenuMobile" 
-                class="md:hidden bg-azul-noite mobile-menu-container transition-all duration-300 ease-in-out"
+                class="md:hidden bg-[#1a1b7a] mobile-menu-container transition-all duration-300 ease-in-out"
                 style="transform-origin: top"
             >
                 <div class="px-2 pt-2 pb-3 space-y-1">
                     <!-- Link para todas as notícias -->
                     <Link
                         href="/noticias"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
+                        class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.startsWith('/noticias') && !$page.url.includes('/categoria/'),
                         }"
                     >
@@ -271,9 +266,9 @@ onUnmounted(() => {
                         v-for="categoria in categorias"
                         :key="`mobile-${categoria.id}`"
                         :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
+                        class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.includes(`/noticias/categoria/${categoria.slug || categoria.id}`),
                         }"
                     >
@@ -283,9 +278,9 @@ onUnmounted(() => {
                     <!-- Link fixo adicional -->
                     <Link
                         href="/videos"
-                        class="block px-3 py-2 text-white hover:bg-azul-lazuli rounded-md"
+                        class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-azul-oxford bg-opacity-50 border-l-4 border-azul-celeste':
+                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.startsWith('/videos'),
                         }"
                     >
@@ -301,41 +296,30 @@ onUnmounted(() => {
         </main>
 
         <!-- Footer -->
-        <footer class="bg-azul-oxford text-white">
+        <footer class="bg-[#2122af] text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Logo e Descrição -->
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">
-                            <span class="text-celeste">B</span>ikanca
-                        </h3>
-                        <p class="text-cinza mb-4">
-                            Portal de notícias comprometido com a informação
-                            precisa e imparcial. Cobrimos os principais
-                            acontecimentos do Brasil e do mundo com
-                            credibilidade e transparência.
-                        </p>
-                    </div>
+                    <div class="bg-[url(/public/logo.png)] size-40 bg-cover bg-center"></div>
 
                     <!-- Contato -->
                     <div>
-                        <h4 class="text-lg font-semibold mb-4 celeste">
+                        <h4 class="text-lg font-semibold mb-4 text-white">
                             Contato
                         </h4>
-                        <div class="space-y-2 text-cinza">
+                        <div class="space-y-2 text-white">
                             <p>contato@bikanca.com.br</p>
-                            <p>redacao@bikanca.com.br</p>
-                            <p>+55 (11) 9999-9999</p>
+                            <p>(86) 9419-6377</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Bar -->
-            <div class="bg-azul-noite py-4">
+            <div class="bg-[#1a1b7a] py-4">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div
-                        class="flex flex-col md:flex-row justify-between items-center text-sm text-cinza"
+                        class="flex flex-col md:flex-row justify-between items-center text-sm text-white"
                     >
                         <p>
                             &copy; 2025 Portal Bikanca. Todos os direitos
@@ -343,7 +327,7 @@ onUnmounted(() => {
                         </p>
                         <Link 
                             href="/admin"
-                            class="text-cinza hover:text-celeste transition-colors duration-500 text-sm ml-4"
+                            class="text-white hover:text-[#8a8eff] transition-colors duration-500 text-sm ml-4"
                             title="Painel Administrativo"
                         >
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

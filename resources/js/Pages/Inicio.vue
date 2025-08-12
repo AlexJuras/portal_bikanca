@@ -180,6 +180,18 @@ onUnmounted(() => {
 
 <template>
     <div class="min-h-screen bg-gray-50">
+        <!-- Espaço Publicitário - Banner Topo -->
+        <section class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="bg-gradient-to-r from-gray-100 to-gray-200 h-20 md:h-24 rounded-lg flex items-center justify-center text-gray-600 border-2 border-dashed border-gray-300">
+                    <div class="text-center">
+                        <p class="text-sm font-medium">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-xs mt-1">Banner Superior 728x90</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Hero Section com Carrossel -->
         <section class="bg-white shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

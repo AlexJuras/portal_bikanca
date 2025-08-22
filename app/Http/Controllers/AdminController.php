@@ -40,13 +40,6 @@ class AdminController extends Controller
             ->take(8)
             ->get();
 
-        // Notícias populares
-        $noticiasPopulares = Noticia::with(['autor', 'categoria'])
-            ->where('status', 'publicada')
-            ->orderBy('visualizacoes', 'desc')
-            ->take(5)
-            ->get();
-
         // Categorias mais usadas com contagem de notícias
         $categoriasMaisUsadas = Categoria::withCount('noticias')
             ->orderBy('noticias_count', 'desc')
@@ -82,7 +75,6 @@ class AdminController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'estatisticas' => $estatisticas,
             'ultimasNoticias' => $ultimasNoticias,
-            'noticiasPopulares' => $noticiasPopulares,
             'categoriasMaisUsadas' => $categoriasMaisUsadas,
             'tagsMaisUsadas' => $tagsMaisUsadas,
             'autoresMaisAtivos' => $autoresMaisAtivos,

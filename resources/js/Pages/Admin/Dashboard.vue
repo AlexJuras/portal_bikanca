@@ -407,10 +407,6 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    noticiasPopulares: {
-        type: Array,
-        required: true,
-    },
     categoriasMaisUsadas: {
         type: Array,
         required: true,

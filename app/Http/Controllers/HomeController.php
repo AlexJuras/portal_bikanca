@@ -23,13 +23,6 @@ class HomeController extends Controller
         // Buscar notícias mais recentes para o carrossel (primeiras 5 em destaque)
         $noticiasCarrossel = $noticiasDestaque->take(5);
 
-        // Buscar notícias mais lidas (baseado em visualizações)
-        $noticiasMaisLidas = Noticia::with(['categoria', 'autor', 'imagem_capa'])
-            ->where('status', 'publicada')
-            ->orderBy('visualizacoes', 'desc')
-            ->take(8) // Aumentado de 5 para 8
-            ->get();
-
         // Buscar os 3 vídeos mais recentes registrados no portal
         $videosDestaque = Video::with(['categoria', 'autor'])
             ->videos() // Filtrar apenas registros do tipo 'video'
@@ -60,7 +53,6 @@ class HomeController extends Controller
         return Inertia::render('Inicio', [
             'noticiasDestaque' => $noticiasDestaque,
             'noticiasCarrossel' => $noticiasCarrossel,
-            'noticiasMaisLidas' => $noticiasMaisLidas,
             'videosDestaque' => $videosDestaque,
             'categorias' => $categorias,
             'noticiasPorCategoria' => $noticiasPorCategoria,

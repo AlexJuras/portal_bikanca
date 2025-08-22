@@ -178,7 +178,6 @@ class AutorController extends Controller
             'total_noticias' => $autor->noticias()->count(),
             'noticias_publicadas' => $autor->noticias()->where('status', 'publicada')->count(),
             'noticias_recentes' => $autor->noticias()->where('status', 'publicada')->where('publicada_em', '>=', now()->subDays(30))->count(),
-            'mais_visualizada' => $autor->noticias()->where('status', 'publicada')->orderBy('visualizacoes', 'desc')->first(),
         ];
 
         return Inertia::render('Admin/Autores/Show', [

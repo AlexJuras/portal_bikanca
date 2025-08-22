@@ -53,8 +53,16 @@ class TagController extends Controller
                   ->take(10);
         }]);
 
+        // Estatísticas da tag
+        $estatisticas = [
+            'total_noticias' => $tag->noticias()->count(),
+            'noticias_publicadas' => $tag->noticias()->where('status', 'publicado')->count(),
+            'noticias_recentes' => $tag->noticias()->where('status', 'publicado')->where('publicada_em', '>=', now()->subDays(30))->count(),
+        ];
+
         return Inertia::render('Admin/Tags/Show', [
-            'tag' => $tag
+            'tag' => $tag,
+            'estatisticas' => $estatisticas
         ]);
     }
 

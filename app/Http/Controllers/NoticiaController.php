@@ -20,15 +20,8 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
-        $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
-            ->publicadas()
-            ->orderBy('visualizacoes', 'desc')
-            ->limit(5)
-            ->get();
-
         return Inertia::render('Noticias/Index', [
-            'noticias' => $noticias,
-            'maisLidas' => $maisLidas
+            'noticias' => $noticias
         ]);
     }
 
@@ -254,17 +247,9 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
-        $maisLidas = Noticia::with('autor', 'categoria', 'imagem_capa')
-            ->publicadas()
-            ->where('categoria_id', $categoriaObj->id)
-            ->orderBy('visualizacoes', 'desc')
-            ->limit(5)
-            ->get();
-
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,
-            'categoria' => $categoriaObj,
-            'maisLidas' => $maisLidas
+            'categoria' => $categoriaObj
         ]);
     }
 

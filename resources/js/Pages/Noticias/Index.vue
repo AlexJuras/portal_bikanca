@@ -23,11 +23,6 @@ const props = defineProps({
         required: true,
         default: () => [],
     },
-    maisLidas: {
-        type: Array,
-        required: true,
-        default: () => [],
-    },
     categoria: {
         type: Object,
         required: false,
@@ -282,7 +277,6 @@ onMounted(() => {
                                 class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-azul-oxford"
                             >
                                 <option value="date">Mais recentes</option>
-                                <option value="views">Mais lidas</option>
                             </select>
                         </div>
 
@@ -548,43 +542,6 @@ onMounted(() => {
                     <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8">
                         <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
                         <p class="text-gray-400 text-xs">Banner Lateral 300x250</p>
-                    </div>
-
-                    <!-- Mais Lidas -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                        <h3 class="text-xl font-bold text-azul-oxford mb-4 flex items-center">
-                            <span class="text-2xl mr-2">📈</span>
-                            Mais Lidas
-                        </h3>
-                        <div class="space-y-4">
-                            <article
-                                v-for="(noticia, index) in maisLidas"
-                                :key="noticia.id"
-                                class="flex space-x-3 pb-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 -mx-2 px-2 py-2 rounded transition-colors cursor-pointer"
-                            >
-                                <div class="flex-shrink-0">
-                                    <span class="text-2xl font-bold text-celeste">{{ index + 1 }}</span>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-1">
-                                        <span
-                                            v-if="noticia.categoria"
-                                            class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded"
-                                        >
-                                            {{ noticia.categoria.nome }}
-                                        </span>
-                                    </div>
-                                    <h4 class="font-semibold text-azul-oxford text-sm mb-1 line-clamp-2">
-                                        {{ noticia.titulo }}
-                                    </h4>
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-cinza text-xs">
-                                            {{ formatDate(noticia.publicada_em) }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
                     </div>
 
                     <!-- Espaço para Propaganda - Sidebar Rodapé -->

@@ -79,22 +79,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Mais Visualizada -->
-                        <div class="bg-white rounded-lg shadow-sm p-6">
-                            <div class="flex items-center">
-                                <div class="bg-orange-500 rounded-lg p-3">
-                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600">Mais vista</p>
-                                    <p class="text-2xl font-bold text-orange-600">{{ estatisticas.mais_visualizada?.visualizacoes || 0 }}</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -246,10 +230,6 @@
                             <div v-if="tag.slug" class="flex justify-between">
                                 <span class="text-gray-600">Slug:</span>
                                 <span class="font-medium">{{ tag.slug }}</span>
-                            </div>
-                            <div v-if="estatisticas.mais_visualizada" class="border-t pt-3 mt-3">
-                                <span class="text-gray-600 text-xs">Notícia mais vista:</span>
-                                <p class="font-medium text-sm mt-1">{{ estatisticas.mais_visualizada.titulo }}</p>
                             </div>
                         </div>
                     </div>

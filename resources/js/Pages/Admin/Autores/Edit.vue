@@ -51,10 +51,36 @@ const handleFotoChange = (event) => {
 
 // Função para submeter o formulário
 const submit = () => {
-    form.put(route('admin.autores.update', props.autor.id), {
+    // Verificar se o nome está preenchido antes de enviar
+    if (!form.nome || form.nome.trim() === '') {
+        form.setError('nome', 'O nome é obrigatório.');
+        return;
+    }
+    
+    // Log para debug
+    console.log('Dados do formulário antes do envio:', {
+        nome: form.nome,
+        email: form.email,
+        bio: form.bio,
+        foto: form.foto
+    });
+    
+    // Usar POST com _method=PUT para melhor compatibilidade com uploads
+    form.post(route('admin.autores.update', props.autor.id), {
+        _method: 'PUT',
         forceFormData: true,
         onSuccess: () => {
+            console.log('Sucesso na atualização');
             // Redirect será feito automaticamente pelo controller
+        },
+        onError: (errors) => {
+            console.error('Erros de validação:', errors);
+        },
+        onBefore: () => {
+            console.log('Iniciando envio do formulário');
+        },
+        onFinish: () => {
+            console.log('Finalizado envio do formulário');
         }
     });
 };
@@ -101,6 +127,10 @@ const submit = () => {
                         />
                         <div v-if="form.errors.nome" class="mt-1 text-sm text-red-600">
                             {{ form.errors.nome }}
+                        </div>
+                        <!-- Verificação adicional de campo vazio -->
+                        <div v-else-if="!form.nome || form.nome.trim() === ''" class="mt-1 text-sm text-yellow-600">
+                            O nome é obrigatório
                         </div>
                     </div>
 

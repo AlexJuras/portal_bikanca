@@ -110,12 +110,41 @@ class AutorController extends Controller
 
     public function update(Request $request, Autor $autor)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:autors,email,' . $autor->id,
-            'bio' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        // Debug para verificar os dados recebidos
+        \Log::info('Dados recebidos no update:', [
+            'all' => $request->all(),
+            'nome' => $request->input('nome'),
+            'method' => $request->method(),
+            'has_nome' => $request->has('nome'),
+            'filled_nome' => $request->filled('nome')
         ]);
+        
+        try {
+            $validatedData = $request->validate([
+                'nome' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:autors,email,' . $autor->id,
+                'bio' => 'nullable|string',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ], [
+                'nome.required' => 'O nome é obrigatório.',
+                'nome.string' => 'O nome deve ser um texto válido.',
+                'nome.max' => 'O nome não pode ter mais que 255 caracteres.',
+                'email.email' => 'O e-mail deve ter um formato válido.',
+                'email.unique' => 'Este e-mail já está sendo usado por outro autor.',
+                'foto.image' => 'O arquivo deve ser uma imagem.',
+                'foto.mimes' => 'A foto deve ser um arquivo do tipo: jpeg, png, jpg, gif.',
+                'foto.max' => 'A foto não pode ser maior que 2MB.',
+            ]);
+            
+            \Log::info('Validação passou:', $validatedData);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Erro de validação:', [
+                'errors' => $e->errors(),
+                'message' => $e->getMessage()
+            ]);
+            throw $e;
+        }
 
         $data = $request->only(['nome', 'email', 'bio']);
 

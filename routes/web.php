@@ -79,7 +79,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(functi
         Route::post('/', [AutorController::class, 'store'])->name('store');
         Route::get('/{autor}', [AutorController::class, 'show'])->name('show');
         Route::get('/{autor}/edit', [AutorController::class, 'edit'])->name('edit');
-        Route::put('/{autor}', [AutorController::class, 'update'])->name('update');
+        Route::match(['PUT', 'POST'], '/{autor}', [AutorController::class, 'update'])->name('update');
         Route::delete('/{autor}', [AutorController::class, 'destroy'])->name('destroy');
     });
     

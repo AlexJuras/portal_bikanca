@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import Principal from "@/Layouts/Principal.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 
 // Importar imagem do usuário
@@ -126,6 +126,11 @@ const clearFilters = () => {
     searchQuery.value = "";
     sortBy.value = "date";
     currentPage.value = 1;
+};
+
+// Função para navegar para categoria
+const navigateToCategory = (categorySlug) => {
+    router.visit(`/noticias/categoria/${categorySlug}`);
 };
 
 // Função para formatar número de visualizações
@@ -373,119 +378,147 @@ onMounted(() => {
 
         <!-- Conteúdo Principal -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Conteúdo Principal -->
-                <div class="lg:col-span-8">
-                    <!-- Notícia Principal em Destaque (apenas se "Todas" estiver selecionado e sem busca) -->
-                    <article
-                        v-if="categoriaSelecionada === 'all' && !searchQuery.trim() && noticiaDestaque"
-                        class="bg-white rounded-lg shadow-sm overflow-hidden mb-8"
-                    >
+            <!-- Notícia Principal em Destaque (apenas se "Todas" estiver selecionado e sem busca) -->
+            <section
+                v-if="categoriaSelecionada === 'all' && !searchQuery.trim() && noticiaDestaque"
+                class="mb-12"
+            >
+                <article class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Imagem da notícia destaque -->
                         <div class="relative">
                             <Link :href="route('noticias.show', noticiaDestaque.slug)">
                                 <img
                                     v-if="noticiaDestaque.imagem_capa"
                                     :src="noticiaDestaque.imagem_capa?.caminho"
                                     :alt="noticiaDestaque.titulo"
-                                    class="w-full h-80 object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                    class="w-full h-80 lg:h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-300 rounded-lg"
                                 />
                             </Link>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-
-                            <!-- Conteúdo sobreposto -->
-                            <div class="absolute bottom-0 left-0 right-0 p-6">
-                                <div class="flex items-center space-x-2 mb-2">
-                                    <span
-                                        v-if="noticiaDestaque.categoria"
-                                        class="bg-azul-lazuli text-white px-2 py-1 rounded text-xs font-medium"
-                                    >
-                                        {{ noticiaDestaque.categoria.nome }}
-                                    </span>
-                                    <span class="text-white text-sm">
-                                        {{ formatDate(noticiaDestaque.publicada_em) }}
-                                    </span>
-                                </div>
-
-                                <Link :href="route('noticias.show', noticiaDestaque.slug)">
-                                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight cursor-pointer hover:text-celeste transition-colors">
-                                        {{ noticiaDestaque.titulo }}
-                                    </h2>
-                                </Link>
-
-                                <p class="text-gray-200 text-sm mb-4 line-clamp-2">
-                                    {{ noticiaDestaque.resumo }}
-                                </p>
-
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <img
-                                            :src="noticiaDestaque.autor?.foto ? `/storage/${noticiaDestaque.autor.foto}` : userImage"
-                                            :alt="noticiaDestaque.autor?.nome"
-                                            class="w-8 h-8 rounded-full border-2 border-white object-cover"
-                                            @error="$event.target.src = userImage"
-                                        />
-                                        <div>
-                                            <p class="text-white text-sm font-medium">
-                                                {{ noticiaDestaque.autor?.nome }}
-                                            </p>
-                                            <p class="text-gray-300 text-xs">Jornalista</p>
-                                        </div>
-                                    </div>
-
-                                    <Link
-                                        :href="route('noticias.show', noticiaDestaque.slug)"
-                                        class="bg-azul-oxford hover:bg-azul-noite text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                                    >
-                                        Ler Matéria
-                                    </Link>
-                                </div>
+                            <div class="absolute top-4 left-4">
+                                <span
+                                    v-if="noticiaDestaque.categoria"
+                                    class="bg-azul-lazuli text-white px-3 py-1 rounded-full text-sm font-medium"
+                                >
+                                    {{ noticiaDestaque.categoria.nome }}
+                                </span>
                             </div>
                         </div>
-                    </article>
 
-                    <!-- Espaço para Propaganda - Meio do Conteúdo -->
-                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8">
+                        <!-- Conteúdo da notícia destaque -->
+                        <div class="p-8 flex flex-col justify-center">
+                            <div class="mb-4">
+                                <span class="text-azul-lazuli text-sm font-medium">
+                                    {{ formatDate(noticiaDestaque.publicada_em) }}
+                                </span>
+                            </div>
+
+                            <Link :href="route('noticias.show', noticiaDestaque.slug)">
+                                <h1 class="text-3xl lg:text-4xl font-bold text-azul-oxford mb-4 leading-tight cursor-pointer hover:text-azul-lazuli transition-colors">
+                                    {{ noticiaDestaque.titulo }}
+                                </h1>
+                            </Link>
+
+                            <p class="text-gray-600 text-lg mb-6 line-clamp-3">
+                                {{ noticiaDestaque.resumo }}
+                            </p>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <img
+                                        :src="noticiaDestaque.autor?.foto ? `/storage/${noticiaDestaque.autor.foto}` : userImage"
+                                        :alt="noticiaDestaque.autor?.nome"
+                                        class="w-10 h-10 rounded-full border-2 border-gray-200 object-cover"
+                                        @error="$event.target.src = userImage"
+                                    />
+                                    <div>
+                                        <p class="text-azul-oxford text-sm font-medium">
+                                            {{ noticiaDestaque.autor?.nome }}
+                                        </p>
+                                        <p class="text-gray-500 text-xs">Jornalista</p>
+                                    </div>
+                                </div>
+
+                                <Link
+                                    :href="route('noticias.show', noticiaDestaque.slug)"
+                                    class="bg-azul-oxford hover:bg-azul-noite text-white px-6 py-3 rounded-lg text-sm font-medium transition-all flex items-center space-x-2"
+                                >
+                                    <span>Ler Matéria</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Grade Principal de Notícias -->
+            <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                <!-- Conteúdo Principal - 3 colunas -->
+                <div class="xl:col-span-3">
+                    <!-- Espaço para Banner Horizontal -->
+                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-8">
                         <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
                         <p class="text-gray-400 text-xs">Banner Horizontal 728x90</p>
                     </div>
 
-                    <!-- Grade de Notícias -->
-                    <div v-if="noticiasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                    <!-- Grade de Notícias - Layout Masonry -->
+                    <div v-if="noticiasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <article
-                            v-for="noticia in noticiasFiltradas"
+                            v-for="(noticia, index) in noticiasFiltradas"
                             :key="noticia.id"
-                            class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                            :class="[
+                                'bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group',
+                                // Destaque para a primeira notícia se não houver destaque principal
+                                index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'md:col-span-2 lg:col-span-2' : ''
+                            ]"
                         >
                             <div class="relative overflow-hidden">
                                 <Link :href="route('noticias.show', noticia.slug)">
                                     <img
                                         :src="noticia.imagem_capa?.caminho"
                                         :alt="noticia.titulo"
-                                        class="w-full h-48 object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                                        :class="[
+                                            'w-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300',
+                                            index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'h-64' : 'h-48'
+                                        ]"
                                     />
                                 </Link>
-                            </div>
-
-                            <div class="p-6">
-                                <div class="flex items-center justify-between mb-3">
+                                <div class="absolute top-3 left-3">
                                     <span
                                         v-if="noticia.categoria"
-                                        class="bg-azul-lazuli text-white px-2 py-1 rounded text-xs font-medium"
+                                        class="bg-azul-lazuli text-white px-2 py-1 rounded-full text-xs font-medium"
                                     >
                                         {{ noticia.categoria.nome }}
                                     </span>
-                                    <span class="text-cinza text-xs">
+                                </div>
+                            </div>
+
+                            <div :class="[
+                                'p-6',
+                                index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'p-8' : ''
+                            ]">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-azul-lazuli text-xs font-medium">
                                         {{ formatDate(noticia.publicada_em) }}
                                     </span>
                                 </div>
 
                                 <Link :href="route('noticias.show', noticia.slug)">
-                                    <h3 class="text-lg font-semibold text-azul-oxford mb-2 line-clamp-2 cursor-pointer hover:text-azul-lazuli transition-colors">
+                                    <h3 :class="[
+                                        'font-semibold text-azul-oxford mb-3 cursor-pointer group-hover:text-azul-lazuli transition-colors line-clamp-2',
+                                        index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'text-xl lg:text-2xl mb-4' : 'text-lg'
+                                    ]">
                                         {{ noticia.titulo }}
                                     </h3>
                                 </Link>
 
-                                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                <p :class="[
+                                    'text-gray-600 mb-4 line-clamp-3',
+                                    index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'text-base' : 'text-sm'
+                                ]">
                                     {{ noticia.resumo }}
                                 </p>
 
@@ -497,57 +530,100 @@ onMounted(() => {
                                             class="w-6 h-6 rounded-full object-cover"
                                             @error="$event.target.src = userImage"
                                         />
-                                        <span class="text-sm text-cinza">{{ noticia.autor?.nome }}</span>
+                                        <span class="text-sm text-gray-500">{{ noticia.autor?.nome }}</span>
                                     </div>
 
-                                    <div class="flex items-center space-x-4">
-                                        <Link
-                                            :href="route('noticias.show', noticia.slug)"
-                                            class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium"
-                                        >
-                                            Leia mais
-                                        </Link>
-                                    </div>
+                                    <Link
+                                        :href="route('noticias.show', noticia.slug)"
+                                        class="text-azul-lazuli hover:text-azul-oxford text-sm font-medium flex items-center space-x-1 group-hover:translate-x-1 transition-transform"
+                                    >
+                                        <span>Leia mais</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </Link>
                                 </div>
                             </div>
                         </article>
                     </div>
 
                     <!-- Estado vazio quando não há resultados -->
-                    <div v-else class="text-center py-12">
-                        <div class="text-6xl mb-4">🔍</div>
-                        <h3 class="text-xl font-semibold text-azul-oxford mb-2">
+                    <div v-else class="text-center py-16">
+                        <div class="text-8xl mb-6">🔍</div>
+                        <h3 class="text-2xl font-bold text-azul-oxford mb-4">
                             Nenhuma notícia encontrada
                         </h3>
-                        <p class="text-gray-600 mb-4">
-                            Não encontramos notícias que correspondam aos seus critérios de pesquisa.
+                        <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                            Não encontramos notícias que correspondam aos seus critérios de pesquisa. Tente outras palavras-chave ou limpe os filtros.
                         </p>
                         <button
                             @click="clearFilters"
-                            class="bg-azul-oxford hover:bg-azul-noite text-white px-6 py-3 rounded-lg font-medium transition-all"
+                            class="bg-azul-oxford hover:bg-azul-noite text-white px-8 py-3 rounded-lg font-medium transition-all inline-flex items-center space-x-2"
                         >
-                            Limpar filtros e ver todas as notícias
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>Limpar filtros</span>
                         </button>
                     </div>
 
-                    <!-- Paginação Melhorada -->
-                    <div v-if="noticiasFiltradas.length > 0" class="flex items-center justify-center mb-8">
-                        <Pagination :links="noticias.links" class="bg-white rounded-lg shadow-sm p-4" />
+                    <!-- Paginação -->
+                    <div v-if="noticiasFiltradas.length > 0" class="mt-12">
+                        <Pagination :links="noticias.links" class="bg-white rounded-lg shadow-sm p-6" />
                     </div>
                 </div>
 
-                <!-- Sidebar -->
-                <div class="lg:col-span-4">
-                    <!-- Espaço para Propaganda - Sidebar Topo -->
-                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-8">
-                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-gray-400 text-xs">Banner Lateral 300x250</p>
+                <!-- Sidebar Otimizada -->
+                <div class="xl:col-span-1">
+                    <!-- Banner Lateral Topo -->
+                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-8 sticky top-8">
+                        <div class="text-4xl mb-3">📢</div>
+                        <p class="text-gray-600 text-sm font-medium mb-2">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-gray-500 text-xs">Banner Lateral 300x250</p>
+                        <div class="mt-4 text-xs text-gray-400">
+                            Anuncie aqui e alcance milhares de leitores
+                        </div>
                     </div>
 
-                    <!-- Espaço para Propaganda - Sidebar Rodapé -->
-                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-gray-400 text-xs">Banner Vertical 300x600</p>
+                    <!-- Categorias Rápidas (apenas na página geral) -->
+                    <div v-if="!isVisualizandoCategoria" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                        <h3 class="text-lg font-bold text-azul-oxford mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            Navegue por Categoria
+                        </h3>
+                        <div class="space-y-2">
+                            <button
+                                v-for="categoria in categorias.slice(0, 6)"
+                                :key="categoria.id"
+                                @click="navigateToCategory(categoria.slug)"
+                                class="w-full text-left px-3 py-2 rounded-lg hover:bg-azul-oxford hover:text-white transition-colors text-sm border border-gray-200 hover:border-azul-oxford"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span>{{ categoria.nome }}</span>
+                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600">
+                                        {{ categoria.noticias_count || 0 }}
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                        <Link 
+                            href="/noticias"
+                            class="block mt-4 text-center text-azul-lazuli hover:text-azul-oxford text-sm font-medium"
+                        >
+                            Ver todas as categorias →
+                        </Link>
+                    </div>
+
+                    <!-- Banner Lateral Rodapé -->
+                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <div class="text-4xl mb-3">🎯</div>
+                        <p class="text-gray-600 text-sm font-medium mb-2">ESPAÇO PUBLICITÁRIO</p>
+                        <p class="text-gray-500 text-xs">Banner Vertical 300x600</p>
+                        <div class="mt-4 text-xs text-gray-400">
+                            Ideal para campanhas de longo prazo
+                        </div>
                     </div>
                 </div>
             </div>
@@ -666,5 +742,59 @@ input[type="text"]:focus {
 .category-button-active {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-1px);
+}
+
+/* Hover effects melhorados */
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+
+.group:hover .group-hover\:text-azul-lazuli {
+    color: #007fff;
+}
+
+.group:hover .group-hover\:translate-x-1 {
+    transform: translateX(0.25rem);
+}
+
+/* Sticky sidebar */
+.sticky {
+    position: sticky;
+    top: 2rem;
+}
+
+/* Grid responsivo melhorado */
+@media (min-width: 768px) {
+    .md\:col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:col-span-2 {
+        grid-column: span 2 / span 2;
+    }
+    
+    .lg\:col-span-3 {
+        grid-column: span 3 / span 3;
+    }
+}
+
+/* Hover effects para cards */
+.hover\:shadow-lg:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Banner publicitário */
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+/* Melhor contraste em botões */
+button:focus,
+a:focus {
+    outline: 2px solid #007fff;
+    outline-offset: 2px;
 }
 </style>

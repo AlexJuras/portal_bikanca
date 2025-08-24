@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AnuncioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
@@ -104,6 +105,18 @@ Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(functi
         Route::put('/{midia}', [VideoController::class, 'update'])->name('update');
         Route::delete('/{midia}', [VideoController::class, 'destroy'])->name('destroy');
     });
+    
+    // Gerenciamento de Anúncios (área restrita)
+    Route::prefix('anuncios')->name('anuncios.')->group(function () {
+        Route::get('/', [AnuncioController::class, 'index'])->name('index');
+        Route::get('/create', [AnuncioController::class, 'create'])->name('create');
+        Route::post('/', [AnuncioController::class, 'store'])->name('store');
+        Route::get('/{anuncio}', [AnuncioController::class, 'show'])->name('show');
+        Route::get('/{anuncio}/edit', [AnuncioController::class, 'edit'])->name('edit');
+        Route::put('/{anuncio}', [AnuncioController::class, 'update'])->name('update');
+        Route::delete('/{anuncio}', [AnuncioController::class, 'destroy'])->name('destroy');
+        Route::patch('/{anuncio}/toggle-ativo', [AnuncioController::class, 'toggleAtivo'])->name('toggle-ativo');
+    });
 });
 
 // ====== ROTAS PÚBLICAS DE NOTÍCIAS ======
@@ -119,4 +132,11 @@ Route::prefix('videos')->name('videos.')->group(function () {
     // Páginas públicas
     Route::get('/', [VideoController::class, 'index'])->name('index');
     Route::get('/{midia}', [VideoController::class, 'show'])->name('show')->where('midia', '[0-9]+');
+});
+
+// ====== API ANÚNCIOS PÚBLICOS ======
+Route::prefix('api/anuncios')->name('api.anuncios.')->group(function () {
+    Route::get('/{posicao}/{pagina}', [AnuncioController::class, 'getAnunciosPublicos'])->name('publicos');
+    Route::post('/{anuncio}/impressao', [AnuncioController::class, 'incrementarImpressao'])->name('impressao');
+    Route::post('/{anuncio}/clique', [AnuncioController::class, 'incrementarClique'])->name('clique');
 });

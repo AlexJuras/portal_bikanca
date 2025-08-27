@@ -7,6 +7,61 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
+/**
+ * @property int $id
+ * @property string $nome
+ * @property string $tipo
+ * @property string|null $imagem
+ * @property string|null $html_content
+ * @property string|null $script_content
+ * @property string|null $link
+ * @property bool $nova_aba
+ * @property string|null $dimensoes
+ * @property int|null $largura
+ * @property int|null $altura
+ * @property bool $ativo
+ * @property bool $ativo_global
+ * @property \Illuminate\Support\Carbon|null $data_inicio
+ * @property \Illuminate\Support\Carbon|null $data_fim
+ * @property int $impressoes
+ * @property int $cliques
+ * @property int $ordem
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnuncioPagina> $paginas
+ * @property string|null $observacoes
+ * @property-read mixed $dimensoes_formatada
+ * @property-read mixed $imagem_url
+ * @property-read int|null $paginas_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AnuncioPagina> $paginasAtivas
+ * @property-read int|null $paginas_ativas_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio ativo()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio valido()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereAltura($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereAtivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereAtivoGlobal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereCliques($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereDataFim($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereDataInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereDimensoes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereHtmlContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereImagem($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereImpressoes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereLargura($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereLink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereNome($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereNovaAba($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereObservacoes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereScriptContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereTipo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Anuncio whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Anuncio extends Model
 {
     use HasFactory;

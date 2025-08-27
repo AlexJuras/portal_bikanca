@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Anuncio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AnuncioController extends Controller

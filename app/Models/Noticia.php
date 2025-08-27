@@ -8,6 +8,51 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
 
+/**
+ * @property int $id
+ * @property string $titulo
+ * @property string $slug
+ * @property string|null $resumo
+ * @property string $conteudo
+ * @property string $status
+ * @property bool $destaque_home
+ * @property int $visualizacoes
+ * @property int $cliques
+ * @property string|null $layout
+ * @property int|null $autor_id
+ * @property int|null $categoria_id
+ * @property string|null $imagem_capa
+ * @property \Illuminate\Support\Carbon|null $publicada_em
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Autor|null $autor
+ * @property-read \App\Models\Categoria|null $categoria
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Tag> $tags
+ * @property-read \App\Models\Midia|null $capa
+ * @property-read int|null $tags_count
+ * @method static \Database\Factories\NoticiaFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia publicadas()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereAutorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereCategoriaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereCliques($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereConteudo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereDestaqueHome($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereImagemCapa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereLayout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia wherePublicadaEm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereResumo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereTitulo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Noticia whereVisualizacoes($value)
+ * @mixin \Eloquent
+ */
 class Noticia extends Model
 {
     use HasFactory;

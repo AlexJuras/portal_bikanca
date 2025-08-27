@@ -5,6 +5,60 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string|null $caminho
+ * @property string|null $legenda
+ * @property string|null $formato
+ * @property string|null $creditos
+ * @property string $tipo
+ * @property string|null $titulo
+ * @property string|null $descricao
+ * @property string|null $url_externa
+ * @property string|null $thumbnail
+ * @property string|null $duracao
+ * @property int|null $categoria_id
+ * @property int|null $autor_id
+ * @property int $visualizacoes
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $publicada_em
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Categoria|null $categoria
+ * @property-read \App\Models\Autor|null $autor
+ * @property-read mixed $embed_url
+ * @property-read mixed $embed_url_standard
+ * @property-read mixed $thumbnail_url
+ * @property-read mixed $youtube_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Noticia> $noticiasCapa
+ * @property-read int|null $noticias_capa_count
+ * @method static \Database\Factories\MidiaFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia imagens()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia publicadas()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia videos()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereAutorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereCaminho($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereCategoriaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereCreditos($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereDescricao($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereDuracao($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereFormato($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereLegenda($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia wherePublicadaEm($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereThumbnail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereTipo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereTitulo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereUrlExterna($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Midia whereVisualizacoes($value)
+ * @mixin \Eloquent
+ */
 class Midia extends Model
 {
     /** @use HasFactory<\Database\Factories\MidiaFactory> */

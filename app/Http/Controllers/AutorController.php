@@ -6,6 +6,7 @@ use App\Models\Autor;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AutorController extends Controller

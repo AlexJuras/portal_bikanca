@@ -9,6 +9,8 @@ use App\Models\Categoria;
 use App\Models\Tag;
 use App\Models\Anuncio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 

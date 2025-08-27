@@ -386,17 +386,15 @@ onUnmounted(() => {
                             
                             <!-- Conteúdo -->
                             <div class="p-4">
-                                <h3 class="font-bold text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors mb-2">
+                                <h3 class="font-bold text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors mb-3">
                                     {{ noticia.titulo }}
                                 </h3>
                                 
-                                <p class="text-gray-600 text-sm line-clamp-2 mb-3">
-                                    {{ noticia.resumo }}
-                                </p>
-                                
                                 <!-- Meta -->
                                 <div class="flex items-center justify-between text-xs text-gray-500">
-                                    <span>{{ noticia.autor?.nome }}</span>
+                                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
+                                        {{ noticia.categoria?.nome }}
+                                    </span>
                                     <span>{{ formatarData(noticia.publicada_em) }}</span>
                                 </div>
                             </div>

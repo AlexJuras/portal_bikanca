@@ -260,6 +260,13 @@ class NoticiaController extends Controller
             abort(404, 'Notícia não encontrada ou não publicada.');
         }
 
+        // Incrementar visualizações (apenas uma vez por sessão por notícia)
+        $sessionKey = 'noticia_viewed_' . $noticia->id;
+        if (!session()->has($sessionKey)) {
+            $noticia->incrementarVisualizacoes();
+            session()->put($sessionKey, true);
+        }
+
         $noticiaComRelacionamentos = $noticia->load(['autor', 'categoria', 'tags', 'imagem_capa']);
 
         $noticiasRelacionadas = Noticia::with(['autor', 'categoria', 'imagem_capa'])
@@ -273,5 +280,23 @@ class NoticiaController extends Controller
             'noticia' => $noticiaComRelacionamentos,
             'noticiasRelacionadas' => $noticiasRelacionadas
         ]);
+    }
+
+    /**
+     * Incrementar contador de cliques
+     */
+    public function incrementarClique(Noticia $noticia)
+    {
+        // Controle anti-spam: máximo 1 clique por IP por notícia a cada 5 minutos
+        $cacheKey = 'noticia_clicked_' . $noticia->id . '_' . request()->ip();
+        
+        if (!\Cache::has($cacheKey)) {
+            $noticia->incrementarCliques();
+            \Cache::put($cacheKey, true, now()->addMinutes(5));
+            
+            return response()->json(['success' => true, 'action' => 'incremented']);
+        } else {
+            return response()->json(['success' => true, 'action' => 'already_counted']);
+        }
     }
 }

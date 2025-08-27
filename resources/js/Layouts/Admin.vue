@@ -149,6 +149,29 @@
                                 <!-- Divisor -->
                                 <div class="border-t border-gray-100 my-2"></div>
                                 
+                                <!-- Seção: Relatórios -->
+                                <div class="px-4 py-1">
+                                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Relatórios</h3>
+                                </div>
+
+                                <!-- Estatísticas -->
+                                <Link
+                                    :href="route('admin.estatisticas.noticias')"
+                                    @click="showNavMenu = false"
+                                    class="flex items-center px-4 py-2 text-sm transition-colors"
+                                    :class="$page.url.startsWith('/admin/estatisticas')
+                                        ? 'bg-azul-lazuli text-white font-medium'
+                                        : 'text-gray-700 hover:bg-gray-50'"
+                                >
+                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    Estatísticas
+                                </Link>
+
+                                <!-- Divisor -->
+                                <div class="border-t border-gray-100 my-2"></div>
+                                
                                 <!-- Seção: Usuários -->
                                 <div class="px-4 py-1">
                                     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Usuários</h3>
@@ -715,6 +738,12 @@ const currentPageName = computed(() => {
         return 'Autores';
     }
     
+    // Estatísticas
+    if (url.startsWith('/admin/estatisticas')) {
+        if (url.includes('/noticias')) return 'Estatísticas das Notícias';
+        return 'Estatísticas';
+    }
+    
     return 'Admin';
 });
 
@@ -743,6 +772,9 @@ const getBreadcrumbSection = () => {
     if (url.startsWith('/admin/autores')) {
         return { name: 'Autores', url: '/admin/autores' };
     }
+    if (url.startsWith('/admin/estatisticas')) {
+        return { name: 'Estatísticas', url: '/admin/estatisticas/noticias' };
+    }
     
     return null;
 };
@@ -757,7 +789,8 @@ const isOnSectionIndex = () => {
            url === '/admin/anuncios' ||
            url === '/admin/categorias' ||
            url === '/admin/tags' ||
-           url === '/admin/autores';
+           url === '/admin/autores' ||
+           url === '/admin/estatisticas/noticias';
 };
 
 // Obtém o nome específico da página atual

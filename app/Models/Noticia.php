@@ -20,6 +20,7 @@ class Noticia extends Model
         'status',
         'destaque_home',
         'visualizacoes',
+        'cliques',
         'layout',
         'autor_id',
         'categoria_id',
@@ -101,5 +102,21 @@ class Noticia extends Model
     public function scopePublicadas($query)
     {
         return $query->where('status', 'publicada');
+    }
+
+    /**
+     * Incrementar contador de visualizações
+     */
+    public function incrementarVisualizacoes()
+    {
+        $this->increment('visualizacoes');
+    }
+
+    /**
+     * Incrementar contador de cliques
+     */
+    public function incrementarCliques()
+    {
+        $this->increment('cliques');
     }
 }

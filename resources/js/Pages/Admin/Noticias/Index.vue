@@ -134,6 +134,11 @@
                             <th
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
+                                Estatísticas
+                            </th>
+                            <th
+                                class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
                                 Homepage
                             </th>
                             <th
@@ -250,6 +255,23 @@
                                 class="px-4 py-4 whitespace-nowrap text-sm text-gray-500"
                             >
                                 {{ formatDate(noticia.updated_at) }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-center">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center justify-center gap-1 text-xs">
+                                        <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="font-medium text-blue-600">{{ noticia.visualizacoes || 0 }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-1 text-xs">
+                                        <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                                        </svg>
+                                        <span class="font-medium text-green-600">{{ noticia.cliques || 0 }}</span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center">
                                 <label class="inline-flex items-center cursor-pointer">
@@ -406,6 +428,28 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Estatísticas Mobile -->
+                            <div class="mt-3 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="text-xs font-medium text-blue-600">{{ noticia.visualizacoes || 0 }}</span>
+                                        <span class="text-xs text-gray-500">views</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                                        </svg>
+                                        <span class="text-xs font-medium text-green-600">{{ noticia.cliques || 0 }}</span>
+                                        <span class="text-xs text-gray-500">cliques</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Toggle Destaque Mobile -->
                             <div class="mt-3 flex items-center justify-between">
                                 <div class="flex items-center">

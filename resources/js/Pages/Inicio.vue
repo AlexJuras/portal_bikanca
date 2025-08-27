@@ -96,6 +96,24 @@ const gerarUrlNoticia = (noticia) => {
     return `${window.location.origin}/noticias/${noticia.slug || noticia.id}`;
 };
 
+// Função para incrementar cliques
+const incrementarClique = async (noticia) => {
+    try {
+        // Usar slug se disponível, senão usar ID
+        const identificador = noticia.slug || noticia.id;
+        await fetch(route('noticias.increment-clique', identificador), {
+            method: 'GET'
+        });
+    } catch (error) {
+        console.log('Erro ao incrementar clique:', error);
+    }
+};
+
+// Função para lidar com cliques em notícias
+const handleNoticiaClick = (noticia) => {
+    incrementarClique(noticia);
+};
+
 const compartilharFacebook = (noticia) => {
     const url = gerarUrlNoticia(noticia);
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
@@ -208,6 +226,7 @@ onUnmounted(() => {
                                 :href="route('noticias.show', { noticia: noticia.slug })" 
                                 class="absolute inset-0 z-10 cursor-pointer"
                                 :title="`Ler: ${noticia.titulo}`"
+                                @click="handleNoticiaClick(noticia)"
                             ></Link>
                             
                             <!-- Imagem de fundo -->
@@ -313,7 +332,9 @@ onUnmounted(() => {
                     
                     <!-- Imagem da notícia - Maior destaque -->
                     <div class="relative overflow-hidden">
-                        <Link :href="route('noticias.show', { noticia: noticia.slug })" class="block">
+                        <Link :href="route('noticias.show', { noticia: noticia.slug })" 
+                              class="block"
+                              @click="handleNoticiaClick(noticia)">
                             <img 
                                 :src="noticia.imagem_capa?.caminho || '/logo.png'" 
                                 :alt="noticia.titulo"
@@ -342,7 +363,8 @@ onUnmounted(() => {
                     <div class="p-6">
                         <h3 class="font-bold text-lg text-[#001f3e] leading-tight">
                             <Link :href="route('noticias.show', { noticia: noticia.slug })" 
-                                  class="hover:text-[#2122af] transition-colors duration-200 line-clamp-3">
+                                  class="hover:text-[#2122af] transition-colors duration-200 line-clamp-3"
+                                  @click="handleNoticiaClick(noticia)">
                                 {{ noticia.titulo }}
                             </Link>
                         </h3>
@@ -519,7 +541,8 @@ onUnmounted(() => {
                             </div>
                         </div>
 
-                        <Link :href="`/noticias/${categoria.noticias[0].slug || categoria.noticias[0].id}`">
+                        <Link :href="`/noticias/${categoria.noticias[0].slug || categoria.noticias[0].id}`"
+                              @click="handleNoticiaClick(categoria.noticias[0])">
                             <div class="relative aspect-video bg-gray-200 rounded-lg overflow-hidden mb-3">
                                 <img 
                                     :src="categoria.noticias[0].imagem_capa?.caminho || '/logo.png'"
@@ -604,7 +627,9 @@ onUnmounted(() => {
                                 </div>
                             </div>
 
-                            <Link :href="`/noticias/${noticia.slug || noticia.id}`" class="flex-1">
+                            <Link :href="`/noticias/${noticia.slug || noticia.id}`" 
+                                  class="flex-1"
+                                  @click="handleNoticiaClick(noticia)">
                                 <h5 class="font-semibold text-sm text-azul-oxford line-clamp-2 group-hover:text-azul-noite transition-colors mb-1">
                                     {{ noticia.titulo }}
                                 </h5>

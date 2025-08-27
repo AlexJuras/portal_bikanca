@@ -48,6 +48,24 @@ const sortBy = ref("date"); // 'date' ou 'views'
 const searchQuery = ref("");
 const currentPage = ref(1);
 const newsPerPage = 9;
+
+// Função para incrementar cliques
+const incrementarClique = async (noticia) => {
+    try {
+        // Usar slug se disponível, senão usar ID
+        const identificador = noticia.slug || noticia.id;
+        await fetch(route('noticias.increment-clique', identificador), {
+            method: 'GET'
+        });
+    } catch (error) {
+        console.log('Erro ao incrementar clique:', error);
+    }
+};
+
+// Função para lidar com cliques em notícias
+const handleNoticiaClick = (noticia) => {
+    incrementarClique(noticia);
+};
 const totalNews = ref(156); // Total simulado
 
 // Computed para filtrar notícias
@@ -387,7 +405,7 @@ onMounted(() => {
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <!-- Imagem da notícia destaque -->
                         <div class="relative">
-                            <Link :href="route('noticias.show', noticiaDestaque.slug)">
+                            <Link :href="route('noticias.show', noticiaDestaque.slug)" @click="handleNoticiaClick(noticiaDestaque)">
                                 <img
                                     v-if="noticiaDestaque.imagem_capa"
                                     :src="noticiaDestaque.imagem_capa?.caminho"
@@ -413,7 +431,7 @@ onMounted(() => {
                                 </span>
                             </div>
 
-                            <Link :href="route('noticias.show', noticiaDestaque.slug)">
+                            <Link :href="route('noticias.show', noticiaDestaque.slug)" @click="handleNoticiaClick(noticiaDestaque)">
                                 <h1 class="text-3xl lg:text-4xl font-bold text-azul-oxford mb-4 leading-tight cursor-pointer hover:text-azul-lazuli transition-colors">
                                     {{ noticiaDestaque.titulo }}
                                 </h1>
@@ -476,7 +494,7 @@ onMounted(() => {
                             ]"
                         >
                             <div class="relative overflow-hidden">
-                                <Link :href="route('noticias.show', noticia.slug)">
+                                <Link :href="route('noticias.show', noticia.slug)" @click="handleNoticiaClick(noticia)">
                                     <img
                                         :src="noticia.imagem_capa?.caminho"
                                         :alt="noticia.titulo"
@@ -506,7 +524,7 @@ onMounted(() => {
                                     </span>
                                 </div>
 
-                                <Link :href="route('noticias.show', noticia.slug)">
+                                <Link :href="route('noticias.show', noticia.slug)" @click="handleNoticiaClick(noticia)">
                                     <h3 :class="[
                                         'font-semibold text-azul-oxford mb-3 cursor-pointer group-hover:text-azul-lazuli transition-colors line-clamp-2',
                                         index === 0 && (categoriaSelecionada !== 'all' || searchQuery.trim()) ? 'text-xl lg:text-2xl mb-4' : 'text-lg'

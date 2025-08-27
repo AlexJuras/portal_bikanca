@@ -7,40 +7,28 @@
           <div class="flex justify-between items-center mb-6">
             <div>
               <h2 class="text-2xl font-bold text-gray-900">Gerenciar Anúncios</h2>
-              <p class="text-gray-600 mt-1">Configure e gerencie todos os anúncios do site</p>
+              <p class="text-gray-600 mt-1">Crie anúncios e depois atribua-os às páginas do site</p>
             </div>
-            <Link 
-              :href="route('admin.anuncios.create')" 
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
-            >
-              Novo Anúncio
-            </Link>
+            <div class="flex space-x-3">
+              <Link 
+                :href="route('admin.anuncios-pagina.index')" 
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              >
+                <i class="fas fa-cog mr-2"></i>
+                Configurar Páginas
+              </Link>
+              <Link 
+                :href="route('admin.anuncios.create')" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              >
+                <i class="fas fa-plus mr-2"></i>
+                Novo Anúncio
+              </Link>
+            </div>
           </div>
 
           <!-- Filtros -->
-          <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Posição</label>
-              <select 
-                v-model="filtros.posicao" 
-                @change="filtrarAnuncios"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="">Todas as posições</option>
-                <option v-for="(label, key) in posicoes" :key="key" :value="key">{{ label }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Página</label>
-              <select 
-                v-model="filtros.pagina" 
-                @change="filtrarAnuncios"
-                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="">Todas as páginas</option>
-                <option v-for="(label, key) in paginas" :key="key" :value="key">{{ label }}</option>
-              </select>
-            </div>
+          <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
               <select 
@@ -63,6 +51,16 @@
                 <option value="1">Ativo</option>
                 <option value="0">Inativo</option>
               </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+              <input
+                v-model="filtros.search"
+                @input="filtrarAnuncios"
+                type="text"
+                placeholder="Nome do anúncio..."
+                class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
             </div>
           </div>
 
@@ -91,13 +89,13 @@
                           {{ anuncio.nome }}
                         </h3>
                         <div class="mt-1 flex items-center space-x-4 text-sm text-gray-500">
-                          <span>{{ posicoes[anuncio.posicao] || anuncio.posicao }}</span>
-                          <span>•</span>
-                          <span>{{ paginas[anuncio.pagina] || anuncio.pagina }}</span>
-                          <span>•</span>
                           <span>{{ tipos[anuncio.tipo] || anuncio.tipo }}</span>
                           <span v-if="anuncio.dimensoes_formatada">•</span>
                           <span v-if="anuncio.dimensoes_formatada">{{ anuncio.dimensoes_formatada }}</span>
+                          <span v-if="anuncio.ativo_global">•</span>
+                          <span v-if="anuncio.ativo_global" class="text-green-600">Disponível para atribuição</span>
+                          <span v-else class="text-red-600">•</span>
+                          <span v-else class="text-red-600">Indisponível</span>
                         </div>
                         
                         <!-- Estatísticas -->
@@ -147,6 +145,7 @@
                     </Link>
 
                     <!-- Editar -->
+                    <!-- Editar -->
                     <Link 
                       :href="route('admin.anuncios.edit', anuncio.id)"
                       class="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
@@ -184,7 +183,7 @@
         <div class="mt-2 px-7 py-3">
           <p class="text-sm text-gray-500">
             Tem certeza que deseja excluir o anúncio "{{ anuncioParaExcluir.nome }}"?
-            Esta ação não pode ser desfeita.
+            Esta ação também removerá o anúncio de todas as páginas onde está atribuído.
           </p>
         </div>
         <div class="flex justify-center space-x-4 mt-4">
@@ -216,17 +215,14 @@ defineOptions({ layout: Admin })
 
 const props = defineProps({
   anuncios: Object,
-  posicoes: Object,
-  paginas: Object,
   tipos: Object,
 })
 
 const anuncioParaExcluir = ref(null)
 const filtros = ref({
-  posicao: '',
-  pagina: '',
   tipo: '',
-  ativo: ''
+  ativo: '',
+  search: ''
 })
 
 const formatarData = (data) => {
@@ -236,15 +232,13 @@ const formatarData = (data) => {
 const filtrarAnuncios = () => {
   const params = {}
   
-  Object.keys(filtros.value).forEach(key => {
-    if (filtros.value[key]) {
-      params[key] = filtros.value[key]
-    }
-  })
-  
+  if (filtros.value.tipo) params.tipo = filtros.value.tipo
+  if (filtros.value.ativo) params.ativo = filtros.value.ativo
+  if (filtros.value.search) params.search = filtros.value.search
+
   router.get(route('admin.anuncios.index'), params, {
     preserveState: true,
-    replace: true
+    preserveScroll: true
   })
 }
 

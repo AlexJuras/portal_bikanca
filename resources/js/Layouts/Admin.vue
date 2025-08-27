@@ -102,19 +102,39 @@
                                 </Link>
 
                                 <!-- Anúncios -->
-                                <Link
-                                    :href="route('admin.anuncios.index')"
-                                    @click="showNavMenu = false"
-                                    class="flex items-center px-4 py-2 text-sm transition-colors"
-                                    :class="$page.url.startsWith('/admin/anuncios')
-                                        ? 'bg-azul-lazuli text-white font-medium'
-                                        : 'text-gray-700 hover:bg-gray-50'"
-                                >
-                                    <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                                    </svg>
-                                    Anúncios
-                                </Link>
+                                <div class="relative">
+                                    <button
+                                        @click="showAnunciosMenu = !showAnunciosMenu"
+                                        class="flex items-center w-full px-4 py-2 text-sm transition-colors"
+                                        :class="$page.url.startsWith('/admin/anuncios')
+                                            ? 'bg-azul-lazuli text-white font-medium'
+                                            : 'text-gray-700 hover:bg-gray-50'"
+                                    >
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                        </svg>
+                                        Anúncios
+                                        <svg class="ml-auto h-4 w-4 transition-transform" :class="showAnunciosMenu ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+                                    <div v-show="showAnunciosMenu" class="pl-8 bg-gray-50">
+                                        <Link
+                                            :href="route('admin.anuncios.index')"
+                                            @click="showNavMenu = false"
+                                            class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                                        >
+                                            Gerenciar Anúncios
+                                        </Link>
+                                        <Link
+                                            :href="route('admin.anuncios-pagina.index')"
+                                            @click="showNavMenu = false"
+                                            class="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                                        >
+                                            Configurar Páginas
+                                        </Link>
+                                    </div>
+                                </div>
 
                                 <!-- Categorias -->
                                 <Link
@@ -661,6 +681,7 @@ import { onClickOutside } from "@vueuse/core";
 const showUserMenu = ref(false);
 const showMobileMenu = ref(false);
 const showNavMenu = ref(false);
+const showAnunciosMenu = ref(false);
 const userMenuRef = ref(null);
 const navMenuRef = ref(null);
 

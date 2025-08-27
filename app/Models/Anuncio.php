@@ -13,8 +13,6 @@ class Anuncio extends Model
 
     protected $fillable = [
         'nome',
-        'posicao',
-        'pagina',
         'tipo',
         'imagem',
         'html_content',
@@ -25,7 +23,7 @@ class Anuncio extends Model
         'largura',
         'altura',
         'ativo',
-        'ordem',
+        'ativo_global',
         'data_inicio',
         'data_fim',
         'impressoes',
@@ -35,30 +33,31 @@ class Anuncio extends Model
 
     protected $casts = [
         'ativo' => 'boolean',
+        'ativo_global' => 'boolean',
         'nova_aba' => 'boolean',
         'data_inicio' => 'datetime',
         'data_fim' => 'datetime',
         'impressoes' => 'integer',
         'cliques' => 'integer',
-        'ordem' => 'integer',
         'largura' => 'integer',
         'altura' => 'integer',
     ];
 
+    // Relacionamentos
+    public function paginas()
+    {
+        return $this->hasMany(AnuncioPagina::class);
+    }
+
+    public function paginasAtivas()
+    {
+        return $this->hasMany(AnuncioPagina::class)->where('ativo', true)->orderBy('ordem');
+    }
+
     // Scopes
     public function scopeAtivo($query)
     {
-        return $query->where('ativo', true);
-    }
-
-    public function scopePorPosicao($query, $posicao)
-    {
-        return $query->where('posicao', $posicao);
-    }
-
-    public function scopePorPagina($query, $pagina)
-    {
-        return $query->where('pagina', $pagina);
+        return $query->where('ativo', true)->where('ativo_global', true);
     }
 
     public function scopeValido($query)
@@ -75,9 +74,19 @@ class Anuncio extends Model
         });
     }
 
-    public function scopeOrdenado($query)
+    // Métodos para obter anúncios de uma página específica
+    public static function parasPagina($pagina, $limite = 3)
     {
-        return $query->orderBy('ordem', 'asc')->orderBy('created_at', 'desc');
+        return static::ativo()
+            ->valido()
+            ->whereHas('paginasAtivas', function ($query) use ($pagina) {
+                $query->where('pagina', $pagina);
+            })
+            ->with(['paginasAtivas' => function ($query) use ($pagina) {
+                $query->where('pagina', $pagina)->orderBy('ordem');
+            }])
+            ->take($limite)
+            ->get();
     }
 
     // Accessors
@@ -131,33 +140,7 @@ class Anuncio extends Model
         return round(($this->cliques / $this->impressoes) * 100, 2);
     }
 
-    // Static methods para posições e páginas disponíveis
-    public static function getPosicoes()
-    {
-        return [
-            'banner-topo' => 'Banner Topo (970x250)',
-            'banner-lateral-topo' => 'Banner Lateral Topo (300x250)',
-            'banner-lateral-meio' => 'Banner Lateral Meio (300x250)',
-            'banner-lateral-rodape' => 'Banner Lateral Rodapé (300x600)',
-            'banner-meio-conteudo' => 'Banner Meio do Conteúdo (728x90)',
-            'banner-rodape' => 'Banner Rodapé (970x250)',
-            'banner-flutuante' => 'Banner Flutuante',
-            'sidebar-widget' => 'Widget Sidebar',
-        ];
-    }
-
-    public static function getPaginas()
-    {
-        return [
-            'home' => 'Página Inicial',
-            'noticias' => 'Listagem de Notícias',
-            'noticia-individual' => 'Página Individual de Notícia',
-            'categoria' => 'Páginas de Categoria',
-            'videos' => 'Página de Vídeos',
-            'todas' => 'Todas as Páginas',
-        ];
-    }
-
+    // Static methods
     public static function getTipos()
     {
         return [

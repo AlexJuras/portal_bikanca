@@ -14,14 +14,11 @@ class AnuncioController extends Controller
      */
     public function index()
     {
-        $anuncios = Anuncio::orderBy('ordem', 'asc')
-            ->orderBy('created_at', 'desc')
+        $anuncios = Anuncio::orderBy('created_at', 'desc')
             ->paginate(15);
 
         return Inertia::render('Admin/Anuncios/Index', [
             'anuncios' => $anuncios,
-            'posicoes' => Anuncio::getPosicoes(),
-            'paginas' => Anuncio::getPaginas(),
             'tipos' => Anuncio::getTipos(),
         ]);
     }
@@ -31,9 +28,7 @@ class AnuncioController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Anuncios/Create', [
-            'posicoes' => Anuncio::getPosicoes(),
-            'paginas' => Anuncio::getPaginas(),
+        return Inertia::render('Admin/Anuncios/CreateSimple', [
             'tipos' => Anuncio::getTipos(),
         ]);
     }
@@ -43,41 +38,70 @@ class AnuncioController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'posicao' => 'required|string',
-            'pagina' => 'required|string',
-            'tipo' => 'required|in:imagem,html,script',
-            'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'html_content' => 'nullable|string',
-            'script_content' => 'nullable|string',
-            'link' => 'nullable|url',
-            'nova_aba' => 'boolean',
-            'dimensoes' => 'nullable|string',
-            'largura' => 'nullable|integer|min:1|max:2000',
-            'altura' => 'nullable|integer|min:1|max:2000',
-            'ativo' => 'boolean',
-            'ordem' => 'nullable|integer|min:0',
-            'data_inicio' => 'nullable|date',
-            'data_fim' => 'nullable|date|after_or_equal:data_inicio',
-            'observacoes' => 'nullable|string',
-        ]);
+        // Log dos dados recebidos para debug
+        \Log::info('Dados recebidos para criar anúncio:', $request->all());
 
-        if ($request->hasFile('imagem')) {
-            $validated['imagem'] = $request->file('imagem')->store('anuncios', 'public');
+        try {
+            $validated = $request->validate([
+                'nome' => 'required|string|max:255',
+                'tipo' => 'nullable|in:imagem,html,script',
+                'tipo_fonte' => 'nullable|in:url,upload,adsense',
+                'imagem_url' => 'nullable|string',
+                'imagem_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+                'adsense_code' => 'nullable|string',
+                'link' => 'nullable|url',
+                'nova_aba' => 'nullable|boolean',
+                'ativo' => 'nullable|boolean',
+                'ativo_global' => 'nullable|boolean',
+            ]);
+
+            // Processar diferentes tipos de conteúdo
+            if ($validated['tipo_fonte'] === 'upload' && $request->hasFile('imagem_file')) {
+                // Upload de arquivo
+                $validated['imagem'] = $request->file('imagem_file')->store('anuncios', 'public');
+                $validated['tipo'] = 'imagem';
+            } elseif ($validated['tipo_fonte'] === 'url' && !empty($validated['imagem_url'])) {
+                // URL da imagem
+                $validated['imagem'] = $validated['imagem_url'];
+                $validated['tipo'] = 'imagem';
+            } elseif ($validated['tipo_fonte'] === 'adsense' && !empty($validated['adsense_code'])) {
+                // Código AdSense
+                $validated['script_content'] = $validated['adsense_code'];
+                $validated['tipo'] = 'script';
+                $validated['link'] = null; // AdSense não precisa de link
+                $validated['nova_aba'] = null;
+            }
+
+            // Limpar campos não utilizados
+            unset($validated['tipo_fonte'], $validated['imagem_url'], $validated['imagem_file'], $validated['adsense_code']);
+
+            // Definir valores padrão
+            $validated['tipo'] = $validated['tipo'] ?? 'imagem';
+            $validated['nova_aba'] = $validated['nova_aba'] ?? true;
+            $validated['ativo'] = $validated['ativo'] ?? true;
+            $validated['ativo_global'] = $validated['ativo_global'] ?? true;
+            $validated['impressoes'] = 0;
+            $validated['cliques'] = 0;
+
+            \Log::info('Dados validados:', $validated);
+
+            $anuncio = Anuncio::create($validated);
+
+            \Log::info('Anúncio criado com sucesso:', ['id' => $anuncio->id]);
+
+            return redirect()->route('admin.anuncios.index')
+                ->with('success', 'Anúncio criado com sucesso!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar anúncio:', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return back()->withErrors(['erro' => 'Erro ao criar anúncio: ' . $e->getMessage()]);
         }
-
-        // Se não foi definida uma ordem, usar a próxima disponível
-        if (!isset($validated['ordem'])) {
-            $validated['ordem'] = Anuncio::where('posicao', $validated['posicao'])
-                ->where('pagina', $validated['pagina'])
-                ->max('ordem') + 1;
-        }
-
-        $anuncio = Anuncio::create($validated);
-
-        return redirect()->route('admin.anuncios.index')
-            ->with('success', 'Anúncio criado com sucesso!');
     }
 
     /**
@@ -97,8 +121,6 @@ class AnuncioController extends Controller
     {
         return Inertia::render('Admin/Anuncios/Edit', [
             'anuncio' => $anuncio,
-            'posicoes' => Anuncio::getPosicoes(),
-            'paginas' => Anuncio::getPaginas(),
             'tipos' => Anuncio::getTipos(),
         ]);
     }
@@ -110,8 +132,6 @@ class AnuncioController extends Controller
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'posicao' => 'required|string',
-            'pagina' => 'required|string',
             'tipo' => 'required|in:imagem,html,script',
             'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'html_content' => 'nullable|string',
@@ -122,7 +142,7 @@ class AnuncioController extends Controller
             'largura' => 'nullable|integer|min:1|max:2000',
             'altura' => 'nullable|integer|min:1|max:2000',
             'ativo' => 'boolean',
-            'ordem' => 'nullable|integer|min:0',
+            'ativo_global' => 'boolean',
             'data_inicio' => 'nullable|date',
             'data_fim' => 'nullable|date|after_or_equal:data_inicio',
             'observacoes' => 'nullable|string',
@@ -151,6 +171,9 @@ class AnuncioController extends Controller
         if ($anuncio->imagem && Storage::disk('public')->exists($anuncio->imagem)) {
             Storage::disk('public')->delete($anuncio->imagem);
         }
+
+        // Remover todas as atribuições do anúncio às páginas
+        $anuncio->paginas()->delete();
 
         $anuncio->delete();
 
@@ -205,5 +228,25 @@ class AnuncioController extends Controller
             ->get();
 
         return response()->json($anuncios);
+    }
+
+    /**
+     * Registrar impressão de anúncio
+     */
+    public function registrarImpressao(Anuncio $anuncio)
+    {
+        $anuncio->increment('impressoes');
+        
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Registrar clique de anúncio
+     */
+    public function registrarClique(Anuncio $anuncio)
+    {
+        $anuncio->increment('cliques');
+        
+        return response()->json(['success' => true]);
     }
 }

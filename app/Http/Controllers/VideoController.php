@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Midia;
 use App\Models\Categoria;
 use App\Models\Autor;
+use App\Models\Anuncio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,9 +25,13 @@ class VideoController extends Controller
             ->limit(5)
             ->get();
 
+        // Buscar anúncios ativos para a página de vídeos
+        $anunciosVideos = Anuncio::parasPagina('videos', 3);
+
         return Inertia::render('Videos/Index', [
             'videos' => $videos,
             'maisAssistidos' => $maisAssistidos,
+            'anuncios' => $anunciosVideos,
         ]);
     }
 

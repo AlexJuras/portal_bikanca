@@ -28,6 +28,10 @@ const props = defineProps({
         required: false,
         default: null,
     },
+    anuncios: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 // Atualizar dados da página baseado na categoria
@@ -385,12 +389,15 @@ onMounted(() => {
         </section>
 
         <!-- Espaço para Propaganda - Banner Principal -->
-        <section class="bg-white border-b">
+        <section v-if="anuncios.length > 0 && anuncios[0]" class="bg-white border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
-                    <p class="text-gray-400 text-xs">Banner Principal 970x250</p>
-                </div>
+                <a :href="anuncios[0].link" target="_blank" rel="noopener noreferrer" class="block">
+                    <img 
+                        :src="anuncios[0].imagem" 
+                        :alt="anuncios[0].nome" 
+                        class="w-full h-32 md:h-40 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                    />
+                </a>
             </div>
         </section>
 
@@ -477,9 +484,14 @@ onMounted(() => {
                 <!-- Conteúdo Principal - 3 colunas -->
                 <div class="xl:col-span-3">
                     <!-- Espaço para Banner Horizontal -->
-                    <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-8">
-                        <p class="text-gray-500 text-sm mb-2">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-gray-400 text-xs">Banner Horizontal 728x90</p>
+                    <div v-if="anuncios.length > 1 && anuncios[1]" class="mb-8">
+                        <a :href="anuncios[1].link" target="_blank" rel="noopener noreferrer" class="block">
+                            <img 
+                                :src="anuncios[1].imagem" 
+                                :alt="anuncios[1].nome" 
+                                class="w-full h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                            />
+                        </a>
                     </div>
 
                     <!-- Grade de Notícias - Layout Masonry -->
@@ -594,13 +606,14 @@ onMounted(() => {
                 <!-- Sidebar Otimizada -->
                 <div class="xl:col-span-1">
                     <!-- Banner Lateral Topo -->
-                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center mb-8 sticky top-8">
-                        <div class="text-4xl mb-3">📢</div>
-                        <p class="text-gray-600 text-sm font-medium mb-2">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-gray-500 text-xs">Banner Lateral 300x250</p>
-                        <div class="mt-4 text-xs text-gray-400">
-                            Anuncie aqui e alcance milhares de leitores
-                        </div>
+                    <div v-if="anuncios.length > 2 && anuncios[2]" class="mb-8 sticky top-8">
+                        <a :href="anuncios[2].link" target="_blank" rel="noopener noreferrer" class="block">
+                            <img 
+                                :src="anuncios[2].imagem" 
+                                :alt="anuncios[2].nome" 
+                                class="w-full h-48 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                            />
+                        </a>
                     </div>
 
                     <!-- Categorias Rápidas (apenas na página geral) -->
@@ -632,16 +645,6 @@ onMounted(() => {
                         >
                             Ver todas as categorias →
                         </Link>
-                    </div>
-
-                    <!-- Banner Lateral Rodapé -->
-                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <div class="text-4xl mb-3">🎯</div>
-                        <p class="text-gray-600 text-sm font-medium mb-2">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-gray-500 text-xs">Banner Vertical 300x600</p>
-                        <div class="mt-4 text-xs text-gray-400">
-                            Ideal para campanhas de longo prazo
-                        </div>
                     </div>
                 </div>
             </div>

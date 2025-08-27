@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Noticia;
 use App\Models\Categoria;
 use App\Models\Video;
+use App\Models\Anuncio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -54,12 +55,16 @@ class HomeController extends Controller
             $noticiasPorCategoria[strtolower($categoria->nome)] = $categoria->noticias;
         }
 
+        // Buscar anúncios ativos para a página home
+        $anunciosHome = Anuncio::parasPagina('home', 3);
+
         return Inertia::render('Inicio', [
             'ultimasNoticias' => $ultimasNoticias,
             'noticiasCarrossel' => $noticiasCarrossel,
             'videosDestaque' => $videosDestaque,
             'categorias' => $categorias,
             'noticiasPorCategoria' => $noticiasPorCategoria,
+            'anuncios' => $anunciosHome,
         ]);
     }
 }

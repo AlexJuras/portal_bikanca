@@ -7,6 +7,7 @@ use App\Models\Noticia;
 use App\Models\Autor;
 use App\Models\Categoria;
 use App\Models\Tag;
+use App\Models\Anuncio;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -20,8 +21,12 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
+        // Buscar anúncios ativos para a página de notícias
+        $anunciosNoticias = Anuncio::parasPagina('noticias', 3);
+
         return Inertia::render('Noticias/Index', [
-            'noticias' => $noticias
+            'noticias' => $noticias,
+            'anuncios' => $anunciosNoticias,
         ]);
     }
 
@@ -247,9 +252,13 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
+        // Buscar anúncios ativos para a página de categoria
+        $anunciosCategoria = Anuncio::parasPagina('categoria', 3);
+
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,
-            'categoria' => $categoriaObj
+            'categoria' => $categoriaObj,
+            'anuncios' => $anunciosCategoria,
         ]);
     }
 

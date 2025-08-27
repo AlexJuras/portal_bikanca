@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\EstatisticasController;
 use App\Http\Controllers\AnuncioController;
+use App\Http\Controllers\AnuncioPaginaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutorController;
 use App\Http\Controllers\CategoriaController;
@@ -25,6 +26,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // ====== API ROUTES ======
 Route::post('/api/videos/{midia}/view', [VideoController::class, 'incrementView'])->name('videos.increment-view');
 Route::get('/api/noticias/{noticia}/clique', [NoticiaController::class, 'incrementarClique'])->name('noticias.increment-clique');
+Route::post('/api/anuncios/{anuncio}/impressao', [AnuncioController::class, 'registrarImpressao'])->name('anuncios.impressao');
+Route::post('/api/anuncios/{anuncio}/clique', [AnuncioController::class, 'registrarClique'])->name('anuncios.clique');
 
 // Rota de teste para verificar estatísticas
 Route::get('/api/noticias/{noticia}/stats', function(App\Models\Noticia $noticia) {
@@ -129,6 +132,15 @@ Route::prefix('admin')->name('admin.')->middleware(['admin.auth'])->group(functi
         Route::put('/{anuncio}', [AnuncioController::class, 'update'])->name('update');
         Route::delete('/{anuncio}', [AnuncioController::class, 'destroy'])->name('destroy');
         Route::patch('/{anuncio}/toggle-ativo', [AnuncioController::class, 'toggleAtivo'])->name('toggle-ativo');
+    });
+    
+    // Gerenciamento de Anúncios por Página (área restrita)
+    Route::prefix('anuncios-pagina')->name('anuncios-pagina.')->group(function () {
+        Route::get('/', [AnuncioPaginaController::class, 'index'])->name('index');
+        Route::post('/', [AnuncioPaginaController::class, 'store'])->name('store');
+        Route::delete('/{anuncioPagina}', [AnuncioPaginaController::class, 'destroy'])->name('destroy');
+        Route::patch('/{anuncioPagina}/toggle-ativo', [AnuncioPaginaController::class, 'toggleAtivo'])->name('toggle-ativo');
+        Route::post('/reordenar', [AnuncioPaginaController::class, 'reordenar'])->name('reordenar');
     });
     
     // Estatísticas (área restrita)

@@ -20,6 +20,10 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    anuncios: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 // Função para lidar com erros de thumbnail
@@ -84,6 +88,19 @@ const getYoutubeId = (url) => {
                     <!-- Botão Admin (removido da área pública) -->
                     <!-- O botão de criar vídeos deve estar apenas na área admin -->
                 </div>
+            </div>
+        </section>
+
+        <!-- Espaço Publicitário - Banner Topo -->
+        <section v-if="anuncios.length > 0 && anuncios[0]" class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <a :href="anuncios[0].link" target="_blank" rel="noopener noreferrer" class="block">
+                    <img 
+                        :src="anuncios[0].imagem" 
+                        :alt="anuncios[0].nome" 
+                        class="w-full h-20 md:h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                    />
+                </a>
             </div>
         </section>
 
@@ -161,6 +178,17 @@ const getYoutubeId = (url) => {
                         </p>
                     </div>
 
+                    <!-- Espaço Publicitário - Banner Meio -->
+                    <div v-if="anuncios.length > 1 && anuncios[1]" class="my-8">
+                        <a :href="anuncios[1].link" target="_blank" rel="noopener noreferrer" class="block">
+                            <img 
+                                :src="anuncios[1].imagem" 
+                                :alt="anuncios[1].nome" 
+                                class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                            />
+                        </a>
+                    </div>
+
                     <!-- Paginação -->
                     <div v-if="videos.links" class="mt-8">
                         <Pagination :links="videos.links" />
@@ -212,6 +240,17 @@ const getYoutubeId = (url) => {
                                 </VideoPlayer>
                             </article>
                         </div>
+                    </div>
+
+                    <!-- Espaço Publicitário - Banner Lateral -->
+                    <div v-if="anuncios.length > 2 && anuncios[2]" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <a :href="anuncios[2].link" target="_blank" rel="noopener noreferrer" class="block">
+                            <img 
+                                :src="anuncios[2].imagem" 
+                                :alt="anuncios[2].nome" 
+                                class="w-full h-48 object-cover hover:opacity-95 transition-opacity"
+                            />
+                        </a>
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import Principal from '@/Layouts/Principal.vue'
 import VideoPlayer from '@/Components/VideoPlayer.vue'
+import AnuncioRenderer from '@/Components/AnuncioRenderer.vue'
 
 defineOptions({ layout: Principal });
 
@@ -15,6 +16,7 @@ const props = defineProps({
     videosDestaque: { type: Array, default: () => [] },
     categorias: { type: Array, default: () => [] },
     noticiasPorCategoria: { type: Object, default: () => ({}) },
+    anuncios: { type: Array, default: () => [] },
 });
 
 // Carrossel
@@ -198,14 +200,12 @@ onUnmounted(() => {
 <template>
     <div class="min-h-screen bg-gray-50">
         <!-- Espaço Publicitário - Banner Topo -->
-        <section class="bg-white border-b border-gray-200">
+        <section v-if="anuncios.length > 0 && anuncios[0]" class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div class="bg-gradient-to-r from-gray-100 to-gray-200 h-20 md:h-24 rounded-lg flex items-center justify-center text-gray-600 border-2 border-dashed border-gray-300">
-                    <div class="text-center">
-                        <p class="text-sm font-medium">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-xs mt-1">Banner Superior 728x90</p>
-                    </div>
-                </div>
+                <AnuncioRenderer 
+                    :anuncio="anuncios[0]" 
+                    image-class="w-full h-20 md:h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                />
             </div>
         </section>
 
@@ -372,13 +372,11 @@ onUnmounted(() => {
                 </div>
             </div>
         </section>            <!-- Espaço Publicitário - Banner Meio -->
-            <section class="mb-12">
-                <div class="bg-gray-300 h-32 rounded-lg flex items-center justify-center text-gray-600">
-                    <div class="text-center">
-                        <p class="text-sm font-medium">ESPAÇO PUBLICITÁRIO</p>
-                        <p class="text-xs">Banner 728x120</p>
-                    </div>
-                </div>
+            <section v-if="anuncios.length > 1 && anuncios[1]" class="mb-12">
+                <AnuncioRenderer 
+                    :anuncio="anuncios[1]" 
+                    image-class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                />
             </section>
 
             <!-- Seção de Vídeos -->
@@ -654,6 +652,38 @@ onUnmounted(() => {
                             </div>
                         </article>
                     </div>
+                </section>
+
+                <!-- Espaço Publicitário - Banner Rodapé -->
+                <section v-if="anuncios.length > 2 && anuncios[2]" class="mb-12">
+                    <!-- Anúncio tipo imagem -->
+                    <a 
+                        v-if="anuncios[2].tipo === 'imagem'" 
+                        :href="anuncios[2].link" 
+                        :target="anuncios[2].nova_aba ? '_blank' : '_self'" 
+                        rel="noopener noreferrer" 
+                        class="block"
+                    >
+                        <img 
+                            :src="anuncios[2].imagem" 
+                            :alt="anuncios[2].nome" 
+                            class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                        />
+                    </a>
+                    
+                    <!-- Anúncio tipo script/AdSense -->
+                    <div 
+                        v-else-if="anuncios[2].tipo === 'script'" 
+                        v-html="anuncios[2].script_content"
+                        class="adsense-container"
+                    ></div>
+                    
+                    <!-- Anúncio tipo HTML -->
+                    <div 
+                        v-else-if="anuncios[2].tipo === 'html'" 
+                        v-html="anuncios[2].html_content"
+                        class="html-ad-container"
+                    ></div>
                 </section>
             </div>
         </div>

@@ -6,8 +6,8 @@
           <!-- Header -->
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900">Editar Anúncio</h2>
-              <p class="text-gray-600 mt-1">Modifique as configurações do anúncio</p>
+              <h2 class="text-2xl font-bold text-gray-900">Configurar Posição de Anúncio</h2>
+              <p class="text-gray-600 mt-1">{{ posicoes[anuncio.posicao] }} - {{ paginas[anuncio.pagina] }}</p>
             </div>
             <div class="flex space-x-3">
               <Link 
@@ -53,43 +53,23 @@
                 <!-- Posição -->
                 <div>
                   <label for="posicao" class="block text-sm font-medium text-gray-700 mb-1">
-                    Posição *
+                    Posição (Fixo)
                   </label>
-                  <select
-                    id="posicao"
-                    v-model="form.posicao"
-                    required
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="">Selecione uma posição</option>
-                    <option v-for="(label, key) in posicoes" :key="key" :value="key">
-                      {{ label }}
-                    </option>
-                  </select>
-                  <div v-if="$page.props.errors.posicao" class="text-red-600 text-sm mt-1">
-                    {{ $page.props.errors.posicao }}
+                  <div class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
+                    {{ posicoes[form.posicao] }}
                   </div>
+                  <p class="text-xs text-gray-500 mt-1">Esta posição não pode ser alterada</p>
                 </div>
 
                 <!-- Página -->
                 <div>
                   <label for="pagina" class="block text-sm font-medium text-gray-700 mb-1">
-                    Página *
+                    Página (Fixo)
                   </label>
-                  <select
-                    id="pagina"
-                    v-model="form.pagina"
-                    required
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="">Selecione uma página</option>
-                    <option v-for="(label, key) in paginas" :key="key" :value="key">
-                      {{ label }}
-                    </option>
-                  </select>
-                  <div v-if="$page.props.errors.pagina" class="text-red-600 text-sm mt-1">
-                    {{ $page.props.errors.pagina }}
+                  <div class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
+                    {{ paginas[form.pagina] }}
                   </div>
+                  <p class="text-xs text-gray-500 mt-1">Esta página não pode ser alterada</p>
                 </div>
 
                 <!-- Tipo -->

@@ -292,7 +292,18 @@ onUnmounted(() => {
             <!-- Notícias em Destaque -->
         <!-- Seção Últimas Notícias -->
         <section class="mb-16">
-            <h2 class="text-3xl font-bold text-[#2122af] mb-8 text-center">Últimas Notícias</h2>
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-[#2122af]">Últimas Notícias</h2>
+                <Link 
+                    href="/noticias"
+                    class="bg-[#4c54ff] hover:bg-[#2122af] text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium text-sm flex items-center gap-2"
+                >
+                    Ver todas
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </Link>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div v-for="(noticia, index) in ultimasNoticias" :key="noticia.id" 
                      class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl border border-gray-100 hover:border-[#8a8eff] transition-all duration-300 group">

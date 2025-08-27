@@ -330,9 +330,9 @@ onUnmounted(() => {
                     
                     <!-- Conteúdo da notícia - Apenas título -->
                     <div class="p-6">
-                        <h3 class="font-bold text-lg text-[#2122af] leading-tight">
+                        <h3 class="font-bold text-lg text-[#001f3e] leading-tight">
                             <Link :href="route('noticias.show', { noticia: noticia.slug })" 
-                                  class="hover:text-[#4c54ff] transition-colors duration-200 line-clamp-3">
+                                  class="hover:text-[#2122af] transition-colors duration-200 line-clamp-3">
                                 {{ noticia.titulo }}
                             </Link>
                         </h3>

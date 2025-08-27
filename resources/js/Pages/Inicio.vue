@@ -235,10 +235,6 @@ onUnmounted(() => {
                                         {{ noticia.titulo }}
                                     </h2>
                                     
-                                    <p class="text-lg md:text-xl text-gray-200 mb-6 line-clamp-2">
-                                        {{ noticia.resumo }}
-                                    </p>
-                                    
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-3">
                                             <img

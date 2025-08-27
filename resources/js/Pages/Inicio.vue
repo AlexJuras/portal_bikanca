@@ -219,18 +219,21 @@ onUnmounted(() => {
                             <!-- Overlay gradient -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             
-                            <!-- Conteúdo -->
+                            <!-- Categoria e Data no Topo -->
+                            <div class="absolute top-0 left-0 right-0 p-6 md:p-8 z-20 pointer-events-none">
+                                <div class="flex items-center space-x-4">
+                                    <span class="bg-azul-celeste px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg">
+                                        {{ noticia.categoria?.nome }}
+                                    </span>
+                                    <span class="text-sm text-white/90 bg-black/50 px-3 py-1 rounded-full shadow-lg">
+                                        {{ formatarData(noticia.publicada_em) }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Conteúdo na Parte Inferior -->
                             <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white z-20 pointer-events-none">
                                 <div class="max-w-4xl">
-                                    <div class="flex items-center space-x-4 mb-4">
-                                        <span class="bg-azul-celeste px-3 py-1 rounded-full text-sm font-medium">
-                                            {{ noticia.categoria?.nome }}
-                                        </span>
-                                        <span class="text-sm opacity-90">
-                                            {{ formatarData(noticia.publicada_em) }}
-                                        </span>
-                                    </div>
-                                    
                                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight hover:text-celeste transition-colors">
                                         {{ noticia.titulo }}
                                     </h2>

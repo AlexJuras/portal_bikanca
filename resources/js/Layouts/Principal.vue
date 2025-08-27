@@ -415,8 +415,8 @@ onUnmounted(() => {
                             Contato
                         </h4>
                         <div class="space-y-2 text-white">
-                            <p>contato@bikanca.com.br</p>
-                            <p>(86) 9419-6377</p>
+                            <p>bikancajornalismo@gmail.com</p>
+                            <p>Whatsapp: (86) 9 9419-6377</p>
                         </div>
                     </div>
                 </div>

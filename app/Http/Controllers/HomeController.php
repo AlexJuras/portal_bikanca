@@ -12,16 +12,20 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Buscar notícias em destaque (marcadas para aparecer na home)
-        $noticiasDestaque = Noticia::with(['categoria', 'autor', 'imagem_capa'])
+        // Buscar notícias em destaque para o carrossel (marcadas para aparecer na home)
+        $noticiasCarrossel = Noticia::with(['categoria', 'autor', 'imagem_capa'])
             ->where('status', 'publicada')
             ->where('destaque_home', true)
             ->orderBy('publicada_em', 'desc')
-            ->take(8) // Aumentado de 6 para 8
+            ->take(5)
             ->get();
 
-        // Buscar notícias mais recentes para o carrossel (primeiras 5 em destaque)
-        $noticiasCarrossel = $noticiasDestaque->take(5);
+        // Buscar as últimas 12 notícias para a seção principal
+        $ultimasNoticias = Noticia::with(['categoria', 'autor', 'imagem_capa'])
+            ->where('status', 'publicada')
+            ->orderBy('publicada_em', 'desc')
+            ->take(12)
+            ->get();
 
         // Buscar os 3 vídeos mais recentes registrados no portal
         $videosDestaque = Video::with(['categoria', 'autor'])
@@ -51,7 +55,7 @@ class HomeController extends Controller
         }
 
         return Inertia::render('Inicio', [
-            'noticiasDestaque' => $noticiasDestaque,
+            'ultimasNoticias' => $ultimasNoticias,
             'noticiasCarrossel' => $noticiasCarrossel,
             'videosDestaque' => $videosDestaque,
             'categorias' => $categorias,

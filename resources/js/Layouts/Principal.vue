@@ -137,7 +137,7 @@ onUnmounted(() => {
 <template>
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
-        <header class="bg-[#2122af] shadow-lg border-b-2 border-[#4c54ff]">
+        <header class="bg-[rgba(33,34,175,255)] shadow-lg border-b-2 border-[#4c54ff]">
             <!-- Top Bar -->
             <div class="bg-[#4c54ff] py-2">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,7 +283,7 @@ onUnmounted(() => {
                                             v-for="categoria in categoriasDropdown"
                                             :key="`dropdown-${categoria.id}`"
                                             :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
-                                            class="block px-4 py-2 text-sm text-[#2122af] hover:bg-[#8a8eff] hover:text-white transition-colors"
+                                            class="block px-4 py-2 text-sm text-[rgba(33,34,175,255)] hover:bg-[#8a8eff] hover:text-white transition-colors"
                                         >
                                             {{ categoria.nome }}
                                         </Link>
@@ -361,7 +361,7 @@ onUnmounted(() => {
                         href="/noticias"
                         class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
+                            'bg-[rgba(33,34,175,255)] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.startsWith('/noticias') && !$page.url.includes('/categoria/'),
                         }"
                     >
@@ -375,7 +375,7 @@ onUnmounted(() => {
                         :href="`/noticias/categoria/${categoria.slug || categoria.id}`"
                         class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
+                            'bg-[rgba(33,34,175,255)] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.includes(`/noticias/categoria/${categoria.slug || categoria.id}`),
                         }"
                     >
@@ -387,7 +387,7 @@ onUnmounted(() => {
                         href="/videos"
                         class="block px-3 py-2 text-white hover:bg-[#4c54ff] rounded-md"
                         :class="{
-                            'bg-[#2122af] bg-opacity-70 border-l-4 border-[#8a8eff]':
+                            'bg-[rgba(33,34,175,255)] bg-opacity-70 border-l-4 border-[#8a8eff]':
                                 $page.url.startsWith('/videos'),
                         }"
                     >
@@ -403,7 +403,7 @@ onUnmounted(() => {
         </main>
 
         <!-- Footer -->
-        <footer class="bg-[#2122af] text-white">
+        <footer class="bg-[rgba(33,34,175,255)] text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Logo e Descrição -->

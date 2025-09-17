@@ -252,8 +252,8 @@ onUnmounted(() => {
                             
                             <!-- Conteúdo na Parte Inferior -->
                             <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white z-20 pointer-events-none">
-                                <div class="max-w-4xl">
-                                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight hover:text-celeste transition-colors">
+                                <div class="max-w-4xl max-h-1/2 md:max-h-none overflow-hidden">
+                                    <h2 class="text-lg sm:text-xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight hover:text-celeste transition-colors">
                                         {{ noticia.titulo }}
                                     </h2>
                                     

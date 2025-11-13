@@ -120,9 +120,22 @@ class AnuncioController extends Controller
      */
     public function edit(Anuncio $anuncio)
     {
-        return Inertia::render('Admin/Anuncios/Edit', [
-            'anuncio' => $anuncio,
-            'tipos' => Anuncio::getTipos(),
+        // Carregar as páginas associadas ao anúncio
+        $anuncio->load('paginas');
+        
+        // Determinar o tipo_fonte baseado no tipo
+        $tipo_fonte = 'url';
+        if ($anuncio->tipo === 'script') {
+            $tipo_fonte = 'adsense';
+        } elseif ($anuncio->imagem && !filter_var($anuncio->imagem, FILTER_VALIDATE_URL)) {
+            $tipo_fonte = 'upload';
+        }
+        
+        return Inertia::render('Admin/Anuncios/EditSimple', [
+            'anuncio' => array_merge($anuncio->toArray(), [
+                'tipo_fonte' => $tipo_fonte,
+                'imagem_url' => $anuncio->imagem && filter_var($anuncio->imagem, FILTER_VALIDATE_URL) ? $anuncio->imagem : null,
+            ]),
         ]);
     }
 
@@ -131,31 +144,51 @@ class AnuncioController extends Controller
      */
     public function update(Request $request, Anuncio $anuncio)
     {
+        Log::info('Update anuncio - dados recebidos:', $request->all());
+        
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
             'tipo' => 'required|in:imagem,html,script',
-            'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'html_content' => 'nullable|string',
-            'script_content' => 'nullable|string',
+            'tipo_fonte' => 'nullable|string',
+            'imagem_url' => 'nullable|url',
+            'imagem_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'adsense_code' => 'nullable|string',
             'link' => 'nullable|url',
             'nova_aba' => 'boolean',
-            'dimensoes' => 'nullable|string',
-            'largura' => 'nullable|integer|min:1|max:2000',
-            'altura' => 'nullable|integer|min:1|max:2000',
             'ativo' => 'boolean',
             'ativo_global' => 'boolean',
-            'data_inicio' => 'nullable|date',
-            'data_fim' => 'nullable|date|after_or_equal:data_inicio',
-            'observacoes' => 'nullable|string',
         ]);
 
-        if ($request->hasFile('imagem')) {
-            // Deletar imagem antiga se existir
-            if ($anuncio->imagem && Storage::disk('public')->exists($anuncio->imagem)) {
-                Storage::disk('public')->delete($anuncio->imagem);
+        // Processar tipo de anúncio
+        if ($validated['tipo'] === 'script' && $request->filled('adsense_code')) {
+            $validated['script_content'] = $request->adsense_code;
+            $validated['imagem'] = null;
+        } elseif ($validated['tipo'] === 'imagem') {
+            // Upload de arquivo
+            if ($request->hasFile('imagem_file')) {
+                // Deletar imagem antiga se existir
+                if ($anuncio->imagem && !filter_var($anuncio->imagem, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($anuncio->imagem)) {
+                    Storage::disk('public')->delete($anuncio->imagem);
+                }
+                $validated['imagem'] = $request->file('imagem_file')->store('anuncios', 'public');
+                Log::info('Imagem do arquivo salva em:', ['path' => $validated['imagem']]);
             }
-            $validated['imagem'] = $request->file('imagem')->store('anuncios', 'public');
+            // URL de imagem
+            elseif ($request->filled('imagem_url')) {
+                // Se tinha imagem local antiga, deletar
+                if ($anuncio->imagem && !filter_var($anuncio->imagem, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($anuncio->imagem)) {
+                    Storage::disk('public')->delete($anuncio->imagem);
+                }
+                $validated['imagem'] = $request->imagem_url;
+                Log::info('Imagem da URL salva:', ['url' => $validated['imagem']]);
+            }
+            $validated['script_content'] = null;
         }
+
+        // Remover campos temporários da validação
+        unset($validated['tipo_fonte'], $validated['imagem_url'], $validated['imagem_file'], $validated['adsense_code']);
+
+        Log::info('Dados validados para atualizar:', $validated);
 
         $anuncio->update($validated);
 

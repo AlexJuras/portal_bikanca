@@ -16,9 +16,14 @@
                 >
                   {{ anuncio.ativo ? 'Ativo' : 'Inativo' }}
                 </span>
-                <span class="text-gray-500">{{ posicoes[anuncio.posicao] || anuncio.posicao }}</span>
-                <span class="text-gray-500">•</span>
-                <span class="text-gray-500">{{ paginas[anuncio.pagina] || anuncio.pagina }}</span>
+                <span 
+                  :class="anuncio.ativo_global 
+                    ? 'bg-blue-100 text-blue-800' 
+                    : 'bg-gray-100 text-gray-800'"
+                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                >
+                  {{ anuncio.ativo_global ? 'Disponível' : 'Indisponível' }}
+                </span>
               </div>
             </div>
             <div class="flex space-x-3">
@@ -46,7 +51,7 @@
                 
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-white">
                   <!-- Anúncio do tipo Imagem -->
-                  <div v-if="anuncio.tipo === 'imagem' && anuncio.imagem_url">
+                  <div v-if="anuncio.tipo === 'imagem' && anuncio.imagem">
                     <a 
                       v-if="anuncio.link" 
                       :href="anuncio.link" 
@@ -54,7 +59,7 @@
                       class="block"
                     >
                       <img 
-                        :src="anuncio.imagem_url" 
+                        :src="getImageUrl(anuncio.imagem)" 
                         :alt="anuncio.nome"
                         class="max-w-full h-auto rounded"
                         :style="anuncio.largura && anuncio.altura ? `max-width: ${anuncio.largura}px; max-height: ${anuncio.altura}px;` : ''"
@@ -62,7 +67,7 @@
                     </a>
                     <img 
                       v-else
-                      :src="anuncio.imagem_url" 
+                      :src="getImageUrl(anuncio.imagem)" 
                       :alt="anuncio.nome"
                       class="max-w-full h-auto rounded"
                       :style="anuncio.largura && anuncio.altura ? `max-width: ${anuncio.largura}px; max-height: ${anuncio.altura}px;` : ''"
@@ -139,7 +144,7 @@
                 <div class="space-y-3">
                   <div>
                     <span class="text-sm text-gray-600 block">Tipo</span>
-                    <span class="text-sm font-medium text-gray-900">{{ tipos[anuncio.tipo] || anuncio.tipo }}</span>
+                    <span class="text-sm font-medium text-gray-900">{{ getTipoLabel(anuncio.tipo) }}</span>
                   </div>
                   
                   <div v-if="anuncio.dimensoes_formatada">
@@ -236,10 +241,22 @@ defineOptions({ layout: Admin })
 
 const props = defineProps({
   anuncio: Object,
-  posicoes: Object,
-  paginas: Object,
-  tipos: Object,
 })
+
+const getTipoLabel = (tipo) => {
+  const tipos = {
+    'imagem': 'Imagem com Link',
+    'html': 'Código HTML Personalizado',
+    'script': 'Script de Terceiros (Google Ads, etc.)',
+  }
+  return tipos[tipo] || tipo
+}
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return ''
+  if (imagePath.startsWith('http')) return imagePath
+  return `/storage/${imagePath}`
+}
 
 const formatarData = (data) => {
   return new Date(data).toLocaleDateString('pt-BR')

@@ -6,8 +6,8 @@
           <!-- Header -->
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900">Configurar Posição de Anúncio</h2>
-              <p class="text-gray-600 mt-1">{{ posicoes[anuncio.posicao] }} - {{ paginas[anuncio.pagina] }}</p>
+              <h2 class="text-2xl font-bold text-gray-900">Editar Anúncio</h2>
+              <p class="text-gray-600 mt-1">{{ anuncio.nome }}</p>
             </div>
             <div class="flex space-x-3">
               <Link 

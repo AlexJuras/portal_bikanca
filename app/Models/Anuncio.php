@@ -204,4 +204,31 @@ class Anuncio extends Model
             'script' => 'Script de Terceiros (Google Ads, etc.)',
         ];
     }
+
+    public static function getPosicoes()
+    {
+        return [
+            'topo' => 'Topo da Página',
+            'lateral-direita' => 'Lateral Direita',
+            'lateral-esquerda' => 'Lateral Esquerda',
+            'meio-conteudo' => 'Meio do Conteúdo',
+            'rodape' => 'Rodapé',
+            'popup' => 'Pop-up',
+            'banner-principal' => 'Banner Principal',
+            'entre-noticias' => 'Entre Notícias',
+        ];
+    }
+
+    public static function getPaginas()
+    {
+        return [
+            'inicio' => 'Página Inicial',
+            'noticias' => 'Listagem de Notícias',
+            'noticia-single' => 'Página de Notícia Individual',
+            'videos' => 'Listagem de Vídeos',
+            'video-single' => 'Página de Vídeo Individual',
+            'categorias' => 'Página de Categorias',
+            'todas' => 'Todas as Páginas',
+        ];
+    }
 }

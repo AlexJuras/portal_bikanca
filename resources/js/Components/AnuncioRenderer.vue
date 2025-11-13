@@ -1,18 +1,20 @@
 <template>
-    <div v-if="anuncio" class="anuncio-display">
+    <div v-if="anuncio" class="anuncio-display" :class="containerClass">
         <!-- Anúncio tipo imagem -->
         <a 
             v-if="anuncio.tipo === 'imagem'" 
             :href="anuncio.link" 
             :target="anuncio.nova_aba ? '_blank' : '_self'" 
             rel="noopener noreferrer" 
-            class="block"
+            class="block overflow-hidden"
+            :class="wrapperClass"
             @click="registrarClique"
         >
             <img 
                 :src="getImagePath(anuncio.imagem)" 
                 :alt="anuncio.nome" 
-                :class="imageClass"
+                :class="computedImageClass"
+                :style="imageStyle"
                 @load="registrarImpressao"
             />
         </a>
@@ -36,17 +38,61 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 
 const props = defineProps({
     anuncio: {
         type: Object,
         required: true
     },
+    // Classe customizada para a imagem (sobrescreve o padrão)
     imageClass: {
         type: String,
-        default: 'w-full h-auto object-cover rounded-lg hover:opacity-95 transition-opacity'
+        default: null
+    },
+    // Tipo de layout: 'banner-topo', 'banner-lateral', 'banner-meio', 'quadrado'
+    layout: {
+        type: String,
+        default: 'banner-topo'
+    },
+    // Container class para o wrapper externo
+    containerClass: {
+        type: String,
+        default: ''
+    },
+    // Wrapper class para o link
+    wrapperClass: {
+        type: String,
+        default: ''
     }
+})
+
+// Classes responsivas baseadas no layout
+const computedImageClass = computed(() => {
+    if (props.imageClass) {
+        return props.imageClass
+    }
+    
+    const layouts = {
+        'banner-topo': 'w-full h-auto object-contain max-h-24 md:max-h-32 rounded-lg hover:opacity-95 transition-opacity',
+        'banner-meio': 'w-full h-auto object-contain max-h-32 md:max-h-48 rounded-lg hover:opacity-95 transition-opacity',
+        'banner-lateral': 'w-full h-auto object-contain max-h-60 rounded-lg hover:opacity-95 transition-opacity',
+        'quadrado': 'w-full h-auto object-cover aspect-square rounded-lg hover:opacity-95 transition-opacity',
+        'retangular': 'w-full h-auto object-cover aspect-video rounded-lg hover:opacity-95 transition-opacity'
+    }
+    
+    return layouts[props.layout] || layouts['banner-topo']
+})
+
+// Estilo inline para dimensões específicas do anúncio
+const imageStyle = computed(() => {
+    if (props.anuncio.largura && props.anuncio.altura) {
+        return {
+            maxWidth: `${props.anuncio.largura}px`,
+            maxHeight: `${props.anuncio.altura}px`
+        }
+    }
+    return {}
 })
 
 const getImagePath = (imagePath) => {

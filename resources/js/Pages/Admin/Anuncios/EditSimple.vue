@@ -183,6 +183,37 @@
                                 </div>
                             </div>
 
+                            <!-- Guia de Dimensões -->
+                            <div v-if="form.tipo_fonte !== 'adsense'" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 class="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Dimensões Recomendadas
+                                </h3>
+                                <div class="space-y-2 text-sm text-blue-800">
+                                    <div class="flex items-start gap-2">
+                                        <span class="font-medium min-w-[140px]">Banner Topo:</span>
+                                        <span>728x90px ou 970x90px (Mobile: 320x50px)</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="font-medium min-w-[140px]">Banner Meio:</span>
+                                        <span>728x90px ou 970x250px</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="font-medium min-w-[140px]">Banner Lateral:</span>
+                                        <span>300x250px ou 300x600px</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="font-medium min-w-[140px]">Quadrado:</span>
+                                        <span>250x250px ou 300x300px</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-blue-700 mt-3 italic">
+                                    💡 Dica: As imagens serão automaticamente redimensionadas para se ajustar ao espaço disponível, mantendo a proporção original.
+                                </p>
+                            </div>
+
                             <!-- Opções -->
                             <div class="space-y-3">
                                 <div v-if="form.tipo_fonte !== 'adsense'" class="flex items-center">

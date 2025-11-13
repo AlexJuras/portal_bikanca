@@ -204,7 +204,8 @@ onUnmounted(() => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <AnuncioRenderer 
                     :anuncio="anuncios[0]" 
-                    image-class="w-full h-20 md:h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                    layout="banner-topo"
+                    wrapper-class="flex justify-center"
                 />
             </div>
         </section>
@@ -375,7 +376,8 @@ onUnmounted(() => {
             <section v-if="anuncios.length > 1 && anuncios[1]" class="mb-12">
                 <AnuncioRenderer 
                     :anuncio="anuncios[1]" 
-                    image-class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
+                    layout="banner-meio"
+                    wrapper-class="flex justify-center"
                 />
             </section>
 

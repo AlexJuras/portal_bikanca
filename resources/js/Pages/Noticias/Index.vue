@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import Principal from "@/Layouts/Principal.vue";
 import { Link, router } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
+import AnuncioRenderer from "@/Components/AnuncioRenderer.vue";
 
 // Importar imagem do usuário
 const userImage = '/images/user-placeholder.png';
@@ -391,13 +392,11 @@ onMounted(() => {
         <!-- Espaço para Propaganda - Banner Principal -->
         <section v-if="anuncios.length > 0 && anuncios[0]" class="bg-white border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <a :href="anuncios[0].link" target="_blank" rel="noopener noreferrer" class="block">
-                    <img 
-                        :src="anuncios[0].imagem" 
-                        :alt="anuncios[0].nome" 
-                        class="w-full h-32 md:h-40 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                    />
-                </a>
+                <AnuncioRenderer 
+                    :anuncio="anuncios[0]" 
+                    layout="banner-topo"
+                    wrapper-class="flex justify-center"
+                />
             </div>
         </section>
 
@@ -485,13 +484,11 @@ onMounted(() => {
                 <div class="xl:col-span-3">
                     <!-- Espaço para Banner Horizontal -->
                     <div v-if="anuncios.length > 1 && anuncios[1]" class="mb-8">
-                        <a :href="anuncios[1].link" target="_blank" rel="noopener noreferrer" class="block">
-                            <img 
-                                :src="anuncios[1].imagem" 
-                                :alt="anuncios[1].nome" 
-                                class="w-full h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                            />
-                        </a>
+                        <AnuncioRenderer 
+                            :anuncio="anuncios[1]" 
+                            layout="banner-meio"
+                            wrapper-class="flex justify-center"
+                        />
                     </div>
 
                     <!-- Grade de Notícias - Layout Masonry -->
@@ -607,13 +604,11 @@ onMounted(() => {
                 <div class="xl:col-span-1">
                     <!-- Banner Lateral Topo -->
                     <div v-if="anuncios.length > 2 && anuncios[2]" class="mb-8 sticky top-8">
-                        <a :href="anuncios[2].link" target="_blank" rel="noopener noreferrer" class="block">
-                            <img 
-                                :src="anuncios[2].imagem" 
-                                :alt="anuncios[2].nome" 
-                                class="w-full h-48 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                            />
-                        </a>
+                        <AnuncioRenderer 
+                            :anuncio="anuncios[2]" 
+                            layout="banner-lateral"
+                            wrapper-class="flex justify-center"
+                        />
                     </div>
 
                     <!-- Categorias Rápidas (apenas na página geral) -->

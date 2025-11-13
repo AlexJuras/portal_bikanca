@@ -4,6 +4,7 @@ import Principal from "@/Layouts/Principal.vue";
 import { Link } from "@inertiajs/vue3";
 import Pagination from "@/Components/Pagination.vue";
 import VideoPlayer from "@/Components/VideoPlayer.vue";
+import AnuncioRenderer from "@/Components/AnuncioRenderer.vue";
 
 defineOptions({ layout: Principal });
 
@@ -94,13 +95,11 @@ const getYoutubeId = (url) => {
         <!-- Espaço Publicitário - Banner Topo -->
         <section v-if="anuncios.length > 0 && anuncios[0]" class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <a :href="anuncios[0].link" target="_blank" rel="noopener noreferrer" class="block">
-                    <img 
-                        :src="anuncios[0].imagem" 
-                        :alt="anuncios[0].nome" 
-                        class="w-full h-20 md:h-24 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                    />
-                </a>
+                <AnuncioRenderer 
+                    :anuncio="anuncios[0]" 
+                    layout="banner-topo"
+                    wrapper-class="flex justify-center"
+                />
             </div>
         </section>
 
@@ -180,13 +179,11 @@ const getYoutubeId = (url) => {
 
                     <!-- Espaço Publicitário - Banner Meio -->
                     <div v-if="anuncios.length > 1 && anuncios[1]" class="my-8">
-                        <a :href="anuncios[1].link" target="_blank" rel="noopener noreferrer" class="block">
-                            <img 
-                                :src="anuncios[1].imagem" 
-                                :alt="anuncios[1].nome" 
-                                class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                            />
-                        </a>
+                        <AnuncioRenderer 
+                            :anuncio="anuncios[1]" 
+                            layout="banner-meio"
+                            wrapper-class="flex justify-center"
+                        />
                     </div>
 
                     <!-- Paginação -->
@@ -244,13 +241,11 @@ const getYoutubeId = (url) => {
 
                     <!-- Espaço Publicitário - Banner Lateral -->
                     <div v-if="anuncios.length > 2 && anuncios[2]" class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <a :href="anuncios[2].link" target="_blank" rel="noopener noreferrer" class="block">
-                            <img 
-                                :src="anuncios[2].imagem" 
-                                :alt="anuncios[2].nome" 
-                                class="w-full h-48 object-cover hover:opacity-95 transition-opacity"
-                            />
-                        </a>
+                        <AnuncioRenderer 
+                            :anuncio="anuncios[2]" 
+                            layout="banner-lateral"
+                            wrapper-class="flex justify-center"
+                        />
                     </div>
                 </div>
             </div>

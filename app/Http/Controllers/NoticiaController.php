@@ -25,6 +25,11 @@ class NoticiaController extends Controller
 
         // Buscar anúncios ativos para a página de notícias
         $anunciosNoticias = Anuncio::parasPagina('noticias', 3);
+        
+        Log::info('Anúncios para página noticias:', [
+            'count' => $anunciosNoticias->count(),
+            'anuncios' => $anunciosNoticias->toArray()
+        ]);
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,

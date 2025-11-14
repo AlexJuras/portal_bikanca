@@ -232,17 +232,6 @@ const shareTwitter = () => {
 
                 <!-- Sidebar -->
                 <div class="lg:col-span-4 space-y-8">
-                    <!-- Banner de Propaganda 1 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 text-center">
-                            <h3 class="text-lg font-bold mb-2">Publicidade</h3>
-                            <p class="text-sm opacity-90">Espaço para anúncio</p>
-                            <div class="mt-4 bg-white/20 rounded h-24 flex items-center justify-center">
-                                <span class="text-xs">300x120</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Notícias Relacionadas -->
                     <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-xl font-bold text-azul-oxford mb-6 border-b pb-2">
@@ -272,17 +261,6 @@ const shareTwitter = () => {
                                     </p>
                                 </Link>
                             </article>
-                        </div>
-                    </div>
-
-                    <!-- Banner de Propaganda 2 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg p-6 text-center">
-                            <h3 class="text-lg font-bold mb-2">Anúncio</h3>
-                            <p class="text-sm opacity-90">Espaço para propaganda</p>
-                            <div class="mt-4 bg-white/20 rounded h-32 flex items-center justify-center">
-                                <span class="text-xs">300x150</span>
-                            </div>
                         </div>
                     </div>
                 </div>

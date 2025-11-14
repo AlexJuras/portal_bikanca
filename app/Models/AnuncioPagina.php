@@ -58,8 +58,9 @@ class AnuncioPagina extends Model
     }
 
     // Máximo de anúncios por página
-    public static function getMaxAnunciosPorPagina()
+    public static function getMaxAnunciosPorPagina($pagina = null)
     {
-        return 3;
+        // Página inicial pode ter 2 anúncios, demais apenas 1
+        return ($pagina === 'home') ? 2 : 1;
     }
 }

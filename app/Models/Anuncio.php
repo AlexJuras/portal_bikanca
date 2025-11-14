@@ -132,16 +132,26 @@ class Anuncio extends Model
     // Métodos para obter anúncios de uma página específica
     public static function parasPagina($pagina, $limite = 3)
     {
+        // Buscar anúncios através da tabela pivot, ordenados pela ordem
+        $anuncioPaginaIds = AnuncioPagina::where('pagina', $pagina)
+            ->where('ativo', true)
+            ->orderBy('ordem')
+            ->take($limite)
+            ->pluck('anuncio_id');
+
+        if ($anuncioPaginaIds->isEmpty()) {
+            return collect([]);
+        }
+
+        // Buscar os anúncios mantendo a ordem da consulta pivot
         return static::ativo()
             ->valido()
-            ->whereHas('paginasAtivas', function ($query) use ($pagina) {
-                $query->where('pagina', $pagina);
+            ->whereIn('id', $anuncioPaginaIds)
+            ->get()
+            ->sortBy(function ($anuncio) use ($anuncioPaginaIds) {
+                return $anuncioPaginaIds->search($anuncio->id);
             })
-            ->with(['paginasAtivas' => function ($query) use ($pagina) {
-                $query->where('pagina', $pagina)->orderBy('ordem');
-            }])
-            ->take($limite)
-            ->get();
+            ->values();
     }
 
     // Accessors

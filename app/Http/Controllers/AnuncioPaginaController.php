@@ -23,17 +23,19 @@ class AnuncioPaginaController extends Controller
                 ->orderBy('ordem')
                 ->get();
             
+            $maxPorPagina = AnuncioPagina::getMaxAnunciosPorPagina($paginaKey);
+            
             $configuracoes[$paginaKey] = [
                 'nome' => $paginaNome,
                 'anuncios' => $anunciosAtribuidos,
-                'slots_disponiveis' => AnuncioPagina::getMaxAnunciosPorPagina() - $anunciosAtribuidos->count()
+                'slots_disponiveis' => $maxPorPagina - $anunciosAtribuidos->count(),
+                'max_anuncios' => $maxPorPagina
             ];
         }
         
         return Inertia::render('Admin/AnunciosPagina/Index', [
             'configuracoes' => $configuracoes,
             'anunciosDisponiveis' => Anuncio::where('ativo_global', true)->get(['id', 'nome', 'tipo']),
-            'maxAnunciosPorPagina' => AnuncioPagina::getMaxAnunciosPorPagina()
         ]);
     }
 
@@ -42,31 +44,31 @@ class AnuncioPaginaController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('AnuncioPagina store - Dados recebidos:', $request->all());
+
         $validated = $request->validate([
             'anuncio_id' => 'required|exists:anuncios,id',
             'pagina' => 'required|string|in:home,noticias,categoria,videos',
-            'ordem' => 'required|integer|min:1|max:3'
+            'ordem' => 'required|integer|min:1|max:2' // Max 2 para home, mas validação aceita até 2
         ]);
 
-        // Verificar se a posição já está ocupada
+        \Log::info('AnuncioPagina store - Dados validados:', $validated);
+
+        // Verificar se a posição já está ocupada (independente do anúncio)
         $existeNaPosicao = AnuncioPagina::where('pagina', $validated['pagina'])
             ->where('ordem', $validated['ordem'])
             ->exists();
 
+        \Log::info('AnuncioPagina store - Posição ocupada?', ['existe' => $existeNaPosicao]);
+
         if ($existeNaPosicao) {
-            return back()->withErrors(['ordem' => 'Esta posição já está ocupada nesta página.']);
+            \Log::warning('AnuncioPagina store - Posição já ocupada');
+            return back()->withErrors(['ordem' => 'Esta posição já está ocupada nesta página. Escolha outra posição.']);
         }
 
-        // Verificar se o anúncio já está atribuído a esta página
-        $jaAtribuido = AnuncioPagina::where('anuncio_id', $validated['anuncio_id'])
-            ->where('pagina', $validated['pagina'])
-            ->exists();
-
-        if ($jaAtribuido) {
-            return back()->withErrors(['anuncio_id' => 'Este anúncio já está atribuído a esta página.']);
-        }
-
-        AnuncioPagina::create($validated);
+        // Criar atribuição (permite o mesmo anúncio em posições diferentes)
+        $created = AnuncioPagina::create($validated);
+        \Log::info('AnuncioPagina store - Criado com sucesso:', ['id' => $created->id]);
 
         return redirect()->route('admin.anuncios-pagina.index')
             ->with('success', 'Anúncio atribuído com sucesso!');

@@ -25,8 +25,8 @@ class VideoController extends Controller
             ->limit(5)
             ->get();
 
-        // Buscar anúncios ativos para a página de vídeos
-        $anunciosVideos = Anuncio::parasPagina('videos', 3);
+        // Buscar anúncios ativos para a página de vídeos (limite: 1)
+        $anunciosVideos = Anuncio::parasPagina('videos', 1);
 
         return Inertia::render('Videos/Index', [
             'videos' => $videos,

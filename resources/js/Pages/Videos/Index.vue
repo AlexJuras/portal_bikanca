@@ -177,15 +177,6 @@ const getYoutubeId = (url) => {
                         </p>
                     </div>
 
-                    <!-- Espaço Publicitário - Banner Meio -->
-                    <div v-if="anuncios.length > 1 && anuncios[1]" class="my-8">
-                        <AnuncioRenderer 
-                            :anuncio="anuncios[1]" 
-                            layout="banner-meio"
-                            wrapper-class="flex justify-center"
-                        />
-                    </div>
-
                     <!-- Paginação -->
                     <div v-if="videos.links" class="mt-8">
                         <Pagination :links="videos.links" />
@@ -237,15 +228,6 @@ const getYoutubeId = (url) => {
                                 </VideoPlayer>
                             </article>
                         </div>
-                    </div>
-
-                    <!-- Espaço Publicitário - Banner Lateral -->
-                    <div v-if="anuncios.length > 2 && anuncios[2]" class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <AnuncioRenderer 
-                            :anuncio="anuncios[2]" 
-                            layout="banner-lateral"
-                            wrapper-class="flex justify-center"
-                        />
                     </div>
                 </div>
             </div>

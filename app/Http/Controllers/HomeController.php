@@ -55,8 +55,8 @@ class HomeController extends Controller
             $noticiasPorCategoria[strtolower($categoria->nome)] = $categoria->noticias;
         }
 
-        // Buscar anúncios ativos para a página home
-        $anunciosHome = Anuncio::parasPagina('home', 3);
+        // Buscar anúncios ativos para a página home (limite: 2)
+        $anunciosHome = Anuncio::parasPagina('home', 2);
 
         return Inertia::render('Inicio', [
             'ultimasNoticias' => $ultimasNoticias,

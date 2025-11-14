@@ -23,8 +23,8 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
-        // Buscar anúncios ativos para a página de notícias
-        $anunciosNoticias = Anuncio::parasPagina('noticias', 3);
+        // Buscar anúncios ativos para a página de notícias (limite: 1)
+        $anunciosNoticias = Anuncio::parasPagina('noticias', 1);
         
         Log::info('Anúncios para página noticias:', [
             'count' => $anunciosNoticias->count(),
@@ -259,8 +259,8 @@ class NoticiaController extends Controller
             ->latest('publicada_em')
             ->paginate(10);
 
-        // Buscar anúncios ativos para a página de categoria
-        $anunciosCategoria = Anuncio::parasPagina('categoria', 3);
+        // Buscar anúncios ativos para a página de categoria (limite: 1)
+        $anunciosCategoria = Anuncio::parasPagina('categoria', 1);
 
         return Inertia::render('Noticias/Index', [
             'noticias' => $noticias,

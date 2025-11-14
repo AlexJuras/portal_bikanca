@@ -482,15 +482,6 @@ onMounted(() => {
             <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
                 <!-- Conteúdo Principal - 3 colunas -->
                 <div class="xl:col-span-3">
-                    <!-- Espaço para Banner Horizontal -->
-                    <div v-if="anuncios.length > 1 && anuncios[1]" class="mb-8">
-                        <AnuncioRenderer 
-                            :anuncio="anuncios[1]" 
-                            layout="banner-meio"
-                            wrapper-class="flex justify-center"
-                        />
-                    </div>
-
                     <!-- Grade de Notícias - Layout Masonry -->
                     <div v-if="noticiasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <article
@@ -602,15 +593,6 @@ onMounted(() => {
 
                 <!-- Sidebar Otimizada -->
                 <div class="xl:col-span-1">
-                    <!-- Banner Lateral Topo -->
-                    <div v-if="anuncios.length > 2 && anuncios[2]" class="mb-8 sticky top-8">
-                        <AnuncioRenderer 
-                            :anuncio="anuncios[2]" 
-                            layout="banner-lateral"
-                            wrapper-class="flex justify-center"
-                        />
-                    </div>
-
                     <!-- Categorias Rápidas (apenas na página geral) -->
                     <div v-if="!isVisualizandoCategoria" class="bg-white rounded-lg shadow-sm p-6 mb-8">
                         <h3 class="text-lg font-bold text-azul-oxford mb-4 flex items-center">

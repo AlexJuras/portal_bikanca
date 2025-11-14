@@ -18,6 +18,18 @@
             </Link>
           </div>
 
+          <!-- Mensagens de Sucesso/Erro -->
+          <div v-if="$page.props.flash?.success" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ $page.props.flash.success }}</span>
+          </div>
+          
+          <div v-if="Object.keys($page.props.errors || {}).length > 0" class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Erro!</strong>
+            <ul class="mt-2 list-disc list-inside">
+              <li v-for="(error, field) in $page.props.errors" :key="field">{{ error }}</li>
+            </ul>
+          </div>
+
           <!-- Grid de Páginas -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div v-for="(configuracao, paginaKey) in configuracoes" :key="paginaKey" 
@@ -27,7 +39,7 @@
               <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-900">{{ configuracao.nome }}</h3>
                 <span class="text-sm text-gray-500 bg-white px-2 py-1 rounded">
-                  {{ configuracao.anuncios.length }}/{{ maxAnunciosPorPagina }} anúncios
+                  {{ configuracao.anuncios.length }}/{{ configuracao.max_anuncios }} anúncio(s)
                 </span>
               </div>
 
@@ -114,7 +126,7 @@
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
                       >
                         <option value="">Posição</option>
-                        <option v-for="i in maxAnunciosPorPagina" :key="i" :value="i"
+                        <option v-for="i in configuracao.max_anuncios" :key="i" :value="i"
                                 :disabled="isPosicaoOcupada(paginaKey, i)">
                           Posição {{ i }} {{ isPosicaoOcupada(paginaKey, i) ? '(ocupada)' : '' }}
                         </option>
@@ -135,7 +147,7 @@
               <!-- Limite Atingido -->
               <div v-else class="border-t pt-4 text-center text-gray-500">
                 <i class="fas fa-info-circle mr-1"></i>
-                Limite máximo de anúncios atingido ({{ maxAnunciosPorPagina }})
+                Limite máximo de anúncios atingido ({{ configuracao.max_anuncios }})
               </div>
             </div>
           </div>
@@ -155,7 +167,6 @@ defineOptions({ layout: Admin })
 const props = defineProps({
   configuracoes: Object,
   anunciosDisponiveis: Array,
-  maxAnunciosPorPagina: Number,
 })
 
 // Estado para novos anúncios
@@ -180,11 +191,21 @@ const adicionarAnuncio = (paginaKey) => {
     ordem: parseInt(novoAnuncio[paginaKey].ordem)
   }
 
+  console.log('Enviando dados:', dados)
+
   router.post(route('admin.anuncios-pagina.store'), dados, {
-    onSuccess: () => {
+    onSuccess: (page) => {
+      console.log('Sucesso:', page)
       // Limpar formulário
       novoAnuncio[paginaKey].anuncio_id = ''
       novoAnuncio[paginaKey].ordem = ''
+    },
+    onError: (errors) => {
+      console.error('Erros de validação:', errors)
+      alert('Erro ao adicionar anúncio: ' + JSON.stringify(errors))
+    },
+    onFinish: () => {
+      console.log('Requisição finalizada')
     }
   })
 }

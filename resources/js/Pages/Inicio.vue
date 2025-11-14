@@ -655,38 +655,6 @@ onUnmounted(() => {
                         </article>
                     </div>
                 </section>
-
-                <!-- Espaço Publicitário - Banner Rodapé -->
-                <section v-if="anuncios.length > 2 && anuncios[2]" class="mb-12">
-                    <!-- Anúncio tipo imagem -->
-                    <a 
-                        v-if="anuncios[2].tipo === 'imagem'" 
-                        :href="anuncios[2].link" 
-                        :target="anuncios[2].nova_aba ? '_blank' : '_self'" 
-                        rel="noopener noreferrer" 
-                        class="block"
-                    >
-                        <img 
-                            :src="anuncios[2].imagem" 
-                            :alt="anuncios[2].nome" 
-                            class="w-full h-32 object-cover rounded-lg hover:opacity-95 transition-opacity"
-                        />
-                    </a>
-                    
-                    <!-- Anúncio tipo script/AdSense -->
-                    <div 
-                        v-else-if="anuncios[2].tipo === 'script'" 
-                        v-html="anuncios[2].script_content"
-                        class="adsense-container"
-                    ></div>
-                    
-                    <!-- Anúncio tipo HTML -->
-                    <div 
-                        v-else-if="anuncios[2].tipo === 'html'" 
-                        v-html="anuncios[2].html_content"
-                        class="html-ad-container"
-                    ></div>
-                </section>
             </div>
         </div>
     </div>
